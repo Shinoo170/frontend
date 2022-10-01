@@ -1,0 +1,471 @@
+
+/* ------------------------------------------------
+[ Container ] */
+
+.container {
+    --nav-height: 56px;
+    --icon-size: 25px;
+    --dropdown-color: rgb(250, 205, 83) ;
+    width: 100%;
+    min-width: 250px;
+    height: var(--nav-height);
+    background-color: #6f77f3;
+    color: white;
+    font-size: 20px;
+    justify-content: space-between;
+    display: flex;
+}
+
+.container i{
+    font-size: var(--icon-size);
+}
+
+/* ------------------------------------------------
+[ brand ] */
+
+.logoDetails{
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+    font-family: Poppins;
+}
+
+/* ------------------------------------------------
+[ Main Menu ] */
+
+.menuContainer {
+    display: contents;
+}
+
+.wrapMenu {
+    display: contents;
+}
+
+.wrapMenu .menu {
+    display: contents;
+}
+
+.wrapMenu .blockBlur{
+    display: none;
+    opacity: 0;
+}
+
+.menu .item {
+    position: relative;
+    height: var(--nav-height);
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    font-family: Sarabun;
+    font-weight: 200;
+    min-width:fit-content;
+}
+
+.menu .item:hover {
+    background-color:#3ca0e7;
+}
+
+/* ------------------------------------------------
+[ Dropdown ] */
+
+.menu .dropdownContainer {
+    position: relative;
+    height: var(--nav-height);
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    font-family: Sarabun;
+    font-weight: 200;
+    min-width:fit-content;
+}
+
+.menu .dropdownContainer .dropdown {
+    position: absolute;
+    background-color: #828af3;
+    display: none;
+    top: 50px;
+    width: 130px;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px 10px 10px 10px;
+    box-shadow: 0px 3px 5px -1px #ccc;
+    transition: all ease 0.5s;
+    z-index: 3;
+}
+
+.menu .dropdownContainer .dropdownTitle{
+    cursor: pointer;
+}
+
+.menu .dropdownContainer .dropdownIcon{
+    display: none;
+}
+
+.menu .dropdownContainer:hover .dropdown{
+    display: block;
+    transition: all ease 0.5s;
+}
+
+.menu .dropdownContainer .dropdown .subItem{
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.menu .dropdownContainer .dropdown .subItem:hover{
+    padding-left: 10px;
+    background-color:#3ca0e7;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+/* ------------------------------------------------
+[ Search bar ] */
+
+.searchBar {
+    position: relative;
+    background: #fff;
+    width: 400px;
+    height: 34px;
+    top: 10px;
+    border-radius: 15px;
+    
+    margin-left: auto;
+    margin-right: auto;
+    transition: ease all 1s;
+}
+
+.searchBar .searchForm .searchInput {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding-left: 15px;
+    width: calc(100% - 30px);
+    /* transition: ease all 1s; */
+}
+
+.searchBar .searchForm .searchIcon{
+    position: relative;
+    align-items: center;
+    color: black;
+    top: 5px;
+    transition: ease all 1s;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.searchBar .searchForm .searchBarToggle{
+    position: absolute;
+    margin-left: auto;
+    margin-right: 0px;
+    align-items: center;
+    cursor: pointer;
+    top: 2px;
+    display: none;
+    color: black;
+}
+
+/* ------------------------------------------------
+[ Search bar mobile ] */
+
+.searchBar2Container {
+    background: rgb(132, 165, 255);
+    position: fixed;
+    width: 100%;
+    height: var(--nav-height);
+    display: block;
+    transform: translateX(100%);
+    padding-left: 10px;
+    padding-right: 10px;
+    transition: ease all 0.5s;
+    z-index: 2;
+}
+.searchBar2 {
+    position: relative;
+    background: white;
+    max-width: 400px;
+    height: 34px;
+    border-radius: 15px;
+    padding-left: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    top: 10px;
+    transition: ease all 1s;
+}
+.searchBar2 .searchForm .backIcon {
+    position: absolute;
+    align-items: center;
+    font-size: 30px;
+    color: black;
+    z-index: 2;
+    cursor: pointer;
+    transition: ease all 1s;
+}
+.searchBar2 .searchForm .searchInput {
+    position: relative;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: calc(100% - 35px);
+    transition: ease 1s;
+    padding-left: 30px;
+    font-size: 18px;
+    transition: ease all 1s;
+}
+.searchBar2 .searchForm .searchIcon{
+    position: relative;
+    align-items: center;
+    color: black;
+    top: 5px;
+    padding-right: 10px;
+    transition: ease 1s;
+    transition: ease all 1s;
+    cursor: pointer;
+}
+
+/* ------------------------------------------------
+[ Right menu ] */
+
+.rightMenu {
+    min-width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+.rightMenu .item{
+    padding: 5px;
+}
+.rightMenu .item .notification {
+    position: relative;
+    display: inline;
+}
+.rightMenu .item .notification .notificationNum {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 10px;
+    min-width: 15px;
+    width: auto;
+    height: 15px;
+    border-radius: 50%;
+    background-color: red;
+    text-align: center;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */    
+}
+
+.rightMenu .userInfo{
+    padding: 15px;
+}
+
+.rightMenu .toggleMenuIcon{
+    padding: 5px 15px 5px 10px;
+    display: none;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 720px){
+    /* ------------------------------------------------
+    [ Search Bar ] */
+    .searchBar {
+        position: relative;
+        background-color: transparent;
+        margin-right: 0px;
+        margin-left: auto;
+        width: 40px;
+        transition: none;
+        
+        /* ! mobile issus */
+        /* animation: smallSearchBar 0.75s; */
+    }
+    .searchBar .searchForm .searchInput {
+        display: none;
+        transition: ease 1s;
+    }
+    .searchBar .searchForm .searchIcon {
+        color: white;
+        transition: ease 1s;
+        display: none;
+    }
+    .searchBar .searchForm .searchBarToggle{
+        display: block;
+        right: 5px;
+        top: 5px;
+        color: white;
+        /* ! mobile issus */
+        /* animation: moveSearchBarToggle 0.75s; */
+    }
+
+    .searchBar2Container.searchBar2Expand {
+        transition: ease all 0.5s;
+        transform: translateX(0%);
+    }
+
+    @keyframes smallSearchBar {
+        0%{
+            width: 400px;
+            background-color: white;
+        }
+        75%{
+            background-color: white;
+        }
+        100%{
+            width: 40px;
+            background-color: transparent;
+        }
+    }
+    @keyframes moveSearchBarToggle {
+        0%{
+            color: black;
+            right: 10px;
+        }
+        50%{
+            right: 10px;
+        }
+        73%{ 
+            color: black; 
+            right: 10px;
+        }
+        100%{
+            color: white;
+            right: 5px;
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    /* ------------------------------------------------
+    [ Container ] */
+    .menuContainer {
+        position: fixed;
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform: translateX(100%);
+        z-index: 3;
+    }
+    
+    .wrapMenu {
+        position: fixed;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        
+        transition: all ease 0.5s;
+        transform: translateX(0%);
+    }
+    .wrapMenu.menuExpand {
+        transition: all ease 0.5s;
+        transform: translateX(-100%);
+    }
+    .wrapMenu .menu{
+        display: block;
+        width: 100%;
+        background-color: #fff;
+        color: #000;
+        z-index: 3;
+        box-shadow: 5px 10px 18px #888888;
+    }
+    .wrapMenu .blockBlur{
+        display: block;
+        opacity: 1;
+        width: 60%;
+        background-color: transparent;
+    }
+    /* * no longer use */
+    /* .wrapMenu.menuExpand .blockBlur{
+        
+        background-color: rgba(0, 0, 0, 0.05);
+        animation: blurIn 1s;
+    }
+    @keyframes blurIn {
+        0%{ opacity: 0; }
+        60%{ opacity: 0; }
+        100%{ opacity: 1; }
+    } */
+    .menu .item{
+        padding: 6px 10px 5px 10px;
+        margin: 1px 10px 0px 10px;
+        width: auto;
+        height: 40px;
+        display: block;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all ease 0.5s;
+    }
+    .menu .item:hover{
+        background-color: var(--dropdown-color);
+        transition: all ease 0.5s;
+    }
+    /* ------------------------------------------------
+    [ Dropdown ] */
+    .menu .dropdownContainer {
+        display: block;
+        height: auto;
+        padding: 0px;
+    }
+
+    .menu .dropdownContainer .dropdownTitle {
+        width: auto;
+        height: 40px;
+        padding: 6px 10px 5px 10px;
+        margin: 1px 10px 0px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all ease 0.5s;
+    }
+    .menu .dropdownContainer .dropdownTitle:hover {
+        background-color: var(--dropdown-color);
+        transition: all ease 0.5s;
+    }
+    .menu .dropdownContainer .dropdownIcon {
+        display: inline;
+        position: absolute;
+        right: 0;
+        top: 4px;
+        padding: 0px 23px 0px ;
+        font-size: 26px;
+        transition: all ease 0.5s;
+    }
+    .menu .dropdownContainer .dropdownTitle svg{
+        transform: rotate(0deg);
+        transition: all ease 0.5s;
+    }
+    .menu .dropdownContainer.dropdownExpand .dropdownTitle svg{
+        transform: rotate(90deg);
+        transition: all ease 0.5s;
+    }
+    /* * important */
+    .menu .dropdownContainer:hover .dropdown {
+        display: none;
+    }
+    .menu .dropdownContainer.dropdownExpand .dropdown {
+        position: initial;
+        display: block;
+        width: 100%;
+        background-color: transparent;
+        box-shadow: none;
+        padding-top: 5px;
+    }
+    .menu .dropdownContainer.dropdownExpand .dropdown .subItem{
+        padding: 3px 10px 5px 25px;
+        margin: 0px 0px 10px 0px;
+        height: 35px;
+    }
+    .menu .dropdownContainer.dropdownExpand .dropdown .subItem:hover {
+        color: black;
+        background-color: var(--dropdown-color);
+        border-radius: 8px;
+        border-left: none;
+    }
+    /* ------------------------------------------------
+    [ Right menu ] */
+    .rightMenu .userInfo {
+        display: none;
+    }
+    
+    .rightMenu .toggleMenuIcon {
+        display: block;
+    }
+}
