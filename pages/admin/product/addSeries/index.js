@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Upload } from "@aws-sdk/lib-storage";
 import { S3Client, S3 } from "@aws-sdk/client-s3";
 
-export default function addSeries() {
+export default function AddSeries() {
   const [file, setFile] = useState('')
   const [inputData, setInputData] = useState()
 
@@ -51,7 +51,7 @@ export default function addSeries() {
       })
       await parallelUploads3.done()
 
-      const url = process.env.AWS_S3_URL + 'Series/' + imgName
+      const imgURL = process.env.AWS_S3_URL + 'Series/' + imgName
       const myPromise = new Promise( async (resolve, reject) =>
         await axios.post("http://localhost:5000/admin/addSeries", {
           title: inputData.title,
@@ -61,7 +61,7 @@ export default function addSeries() {
           description: inputData.description,
           genres: inputData.genres,
           keyword: inputData.keyword,
-          img: url,
+          img: imgURL,
         }).then( res => {
           resolve( res.data.message )
         }).catch( err => {

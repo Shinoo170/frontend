@@ -3,7 +3,7 @@ import SideNav from 'components/admin/adminSideNavbar'
 
 export const dataContext = createContext()
 
-export default function adminPage(){
+export default function AdminPage(){
 
     return (
         <div>

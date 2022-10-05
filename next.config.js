@@ -11,6 +11,7 @@ module.exports = {
     domains: ['localhost','bookstore-image-1jz3.s3.ap-southeast-1.amazonaws.com'],
   },
   env: {
+    BACKEND: 'https://bookstore-back-end-1jz3.vercel.app/',
     AWS_S3_ACCESS_KEY_ID: 'AKIAYOK47XPQ3HVBESOD',
     AWS_S3_SECRET_ACCESS_KEY: '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',
     AWS_S3_REGION: 'ap-southeast-1',

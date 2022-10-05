@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import SideNav from 'components/admin/adminSideNavbar'
 import styles from './product.module.css'
 
-export default function specificSeries() {
+export default function SpecificSeries() {
     const router = useRouter()
 
     useEffect( () => {

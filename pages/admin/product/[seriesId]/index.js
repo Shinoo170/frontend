@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import SideNav from 'components/admin/adminSideNavbar'
 import styles from './series.module.css'
 
-export default function specificSeries() {
+export default function SpecificSeries() {
     const router = useRouter()
     var url = ''
     function getProductDetails(){

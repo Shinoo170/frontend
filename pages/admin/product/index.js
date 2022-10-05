@@ -7,15 +7,12 @@ import SideNav from 'components/admin/adminSideNavbar'
 
 import styles from './product.module.css'
 
-export default function productPage(){
+export default function ProductPage(){
     const [ listProduct, setListProduct ] = useState([])
     const [ test, setTest] = useState(<div>No value</div>)
     
     // get data
     async function getListProduct(){
-        // const url = 'http://localhost:5000/product/allSeries'
-        // const url = '/api/hello'
-        // const url = 'https://bookstore-back-end-1jz3.vercel.app/'
         const url = 'https://' + process.env.backendURL
 
         axios.get(url).then( (result) => {

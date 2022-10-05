@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const FormData = require('form-data');
 
-export default function addProduct() {
+export default function AddProduct() {
   const [file, setFile] = useState([]);
   const [promise, setPromise] = useState(false);
 

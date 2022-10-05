@@ -6,11 +6,11 @@ import Image from 'next/image'
 import styles from '../styles/Signin.module.css'
 import { FaRegEnvelope, FaLock, FaLongArrowAltRight, FaChevronLeft } from 'react-icons/fa'
 
-const signIn = () => {
+const SignIn = () => {
 
     const signInRequest = async(event) => {
         event.preventDefault()
-        const url = 'http://localhost:5000/auth/signin';
+        const url = process.env.BACKEND + 'auth/signin';
 
         axios.post(url, {
             user: event.target.User.value,

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { useRouter } from 'next/router';
-import Link from "next/link";
-import axios from "axios";
-import Image from "next/image";
+import { useRouter } from 'next/router'
+import Link from "next/link"
+import axios from "axios"
+import Image from "next/image"
 import styles from "../styles/Signup.module.css"
 
 import { ToastContainer, toast } from 'react-toastify'
@@ -15,14 +15,14 @@ import {
     FaChevronLeft,
 } from "react-icons/fa";
 
-const signUp = () => {
+const SignUp = () => {
     const signUpRequest = async (event) => {
-        event.preventDefault();
-        const url = "http://localhost:5000/auth/signup";
+        event.preventDefault()
+        const url = process.env.BACKEND + "auth/signup"
         
-        const email = event.target.Email.value;
-        const password = event.target.user_Password.value;
-        const ConfirmPassword = event.target.ConfirmPassword.value;
+        const email = event.target.Email.value
+        const password = event.target.user_Password.value
+        const ConfirmPassword = event.target.ConfirmPassword.value
         if (email === "" || password === "" || ConfirmPassword === "") {
           toast.warn("All input is required", {
             position: "top-center",
