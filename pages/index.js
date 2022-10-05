@@ -1,9 +1,53 @@
+import { useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Header from '../components/header'
+import axios from 'axios'
+
+import { Upload } from "@aws-sdk/lib-storage";
+import { S3Client, S3 } from "@aws-sdk/client-s3";
+
 
 export default function Home() {
+  const [ file, setFile] = useState([])
+  const [progress , setProgress] = useState(0);
+
+  const selectFile = (e) => {
+    setFile(e.target.files[0]);
+  }
+  const uploadFile = () => {
+    uploadFileProcess(file)
+  }
+  const uploadFileProcess = async (file) => {
+    console.log(file)
+    try {
+      const parallelUploads3 = new Upload({
+        client: new S3Client({
+          region: 'ap-southeast-1',
+          credentials: {
+            accessKeyId: 'AKIAYOK47XPQRN5LHXEO',
+            secretAccessKey: '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'
+          }
+        }),
+        params: { 
+          Bucket: 'bookstore-image-1jz3', 
+          Key: file.name, 
+          Body: file 
+        },
+        partSize: 1024 * 1024 * 10, // optional size of each part, in bytes, at least 10MB
+        leavePartsOnError: false, // optional manually handle dropped parts
+      });
+    
+      parallelUploads3.on("httpUploadProgress", (progress) => {
+        console.log(progress);
+      });
+      await parallelUploads3.done();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <div>
       <Head>
@@ -15,7 +59,10 @@ export default function Home() {
       <div className={styles.container}>
         
         <main className={styles.main}>
-          
+          <div>Native SDK File Upload Progress is {progress}%</div>
+          <input type='file' onChange={ e => selectFile(e)} name='file' />
+          <button onClick={ uploadFile }>upload</button>
+          <img src='https://bookstore-image-1jz3.s3.ap-southeast-1.amazonaws.com/angle.png'/>
         </main>
 
         <footer className={styles.footer}>

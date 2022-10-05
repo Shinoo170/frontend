@@ -1,0 +1,212 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.contentContainer {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: var(--dashboard-background)
+}
+
+.addProductWrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: fit-content;
+    padding: 120px;
+    margin-top: 80px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.fileDropArea {
+    position: relative;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 280px;
+    height: 350px;
+    max-width: 100%;
+    padding: 25px;
+    border: 1px dashed rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+}
+
+.imagesPreview {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+}
+
+.imagesPreview img{
+    position: relative;
+    width: auto;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.inputField {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    opacity: 0;
+    cursor: pointer;
+}
+
+.fakeBtn{
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    padding: 8px 15px;
+    margin-right: 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.msg{
+    font-size: small;
+    font-weight: 300;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
+}
+
+.inputFormWarp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: 40px;
+}
+
+.inputWarp {
+    margin: 5px;
+}
+
+.inputWarp .label {
+    line-height: 1.5;
+}
+
+.inputWarp input {
+    width: 400px;
+    height: 30px;
+    border: 1px solid #BBC1C9;
+    border-radius: 4px;
+    padding-left: 10px;
+}
+
+.inputWarp input:focus{
+    outline: none !important;
+    border: 1px solid rgba(65, 64, 66, 0.911);
+    box-shadow: var(--dashboard-shadow)
+}
+
+.inputWarp textarea {
+    width: 400px;
+    height: 80px;
+    resize: none;
+    border: 1px solid #BBC1C9;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-top: 5px;
+}
+
+.inputWarp textarea:focus {
+    outline: none !important;
+    border: 1px solid rgba(65, 64, 66, 0.911);
+    box-shadow: var(--dashboard-shadow)
+}
+
+/* CSS */
+.button4 {
+  appearance: none;
+  background-color: #FAFBFC;
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+  box-sizing: border-box;
+  color: #24292E;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  list-style: none;
+  padding: 6px 16px;
+  position: relative;
+  transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-wrap: break-word;
+  margin-top: 10px;
+}
+
+.button4:hover {
+  background-color: #F3F4F6;
+  text-decoration: none;
+  transition-duration: 0.1s;
+}
+
+
+.button4:active {
+  background-color: #F3F4F6;
+  box-shadow: rgba(0, 0, 0, 0.308) 0 inset;
+  transition: none 0s;
+}
+
+.button4:focus {
+  outline: 1px transparent;
+}
+
+
+@media screen and (max-width: 1700px) {
+    .contentContainer {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .contentContainer {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+}
+
+@media screen and (max-width: 786px) {
+}
+
+@media screen and (max-width: 576px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .contentContainer {
+        padding: 4rem 1rem 0 1rem;
+    }
+}

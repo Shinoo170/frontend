@@ -1,0 +1,35 @@
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.nav {
+    width: 250px;
+    background-color: aqua;
+}
+
+.content {
+    width: 100%;
+    background-color: blueviolet;
+}
+
+@media screen and (max-width: 1376px) {
+    .nav {
+        width: 78px;
+        background-color: aqua;
+    }
+    .nav:hover {
+        width: 250px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .nav {
+        opacity: 0;
+        display: none;
+    }
+    .nav:hover {
+        width: 250px;
+    }
+}

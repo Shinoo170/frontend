@@ -9,6 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.181.0",
+    "@aws-sdk/lib-storage": "^3.182.0",
+    "aws-sdk": "^2.1227.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.3",
+    "multer": "^1.4.5-lts.1",
     "next": "12.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",

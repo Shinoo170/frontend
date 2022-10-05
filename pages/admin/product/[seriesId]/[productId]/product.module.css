@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.contentContainer {
+    width: 100%;
+    padding: 0 10rem 0 10rem;
+}
+
+
+@media screen and (max-width: 1700px) {
+    .contentContainer {
+        padding: 0 5rem 0 5rem;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .contentContainer {
+        padding: 0 2rem 0 2rem;
+    }
+    
+}
+
+@media screen and (max-width: 1100px) {
+}
+
+
+@media screen and (max-width: 786px) {
+}
+
+@media screen and (max-width: 576px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .contentContainer {
+        padding: 4rem 1rem 0 1rem;
+    }
+}
