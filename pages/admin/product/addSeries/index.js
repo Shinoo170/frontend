@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Upload } from "@aws-sdk/lib-storage";
 import { S3Client, S3 } from "@aws-sdk/client-s3";
 
+import { RiCloseCircleLine } from 'react-icons/ri'
+
 export default function AddSeries() {
   const [file, setFile] = useState('')
   const [inputData, setInputData] = useState()
@@ -51,9 +53,10 @@ export default function AddSeries() {
       })
       await parallelUploads3.done()
 
-      const imgURL = process.env.AWS_S3_URL + 'Series/' + imgName
+      const axiosURL = process.env.BACKEND + '/admin/addSeries'
+      const imgURL = process.env.AWS_S3_URL + '/Series/' + imgName
       const myPromise = new Promise( async (resolve, reject) =>
-        await axios.post("http://localhost:5000/admin/addSeries", {
+        await axios.post( axiosURL , {
           title: inputData.title,
           author: inputData.author,
           illustrator: inputData.illustrator,
@@ -71,10 +74,10 @@ export default function AddSeries() {
       toast.promise(myPromise, {
         pending: "Promise is pending",
         success: {
-          render({data}){ return data }
+          render({data}){return data}
         },
         error: {
-          render({data}){ return data }
+          render({data}){return data}
         }
       })
     } catch(err) {
@@ -143,12 +146,29 @@ export default function AddSeries() {
             </div>
 
             <div className={styles.inputWarp}>
-              <div className={styles.label}>genres</div>
+              
+              <div className={styles.groupLabel}>
+                <div className={styles.label}>genres : </div>
+                <div className={styles.details}>love <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+              </div>
               <input id='genres' name='genres' onChange={(e) => onChangeHandler(e.target)} />
             </div>
 
             <div className={styles.inputWarp}>
-              <div className={styles.label}>Keyword</div>
+              <div className={styles.groupLabel}>
+                <div className={styles.label}>Keywords : </div>
+                <div className={styles.details}>love <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>comedy <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>school <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>isekai <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>princess <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>book <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>monster <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>sword <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>magic <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+                <div className={styles.details}>love <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
+
+              </div>
               <input id='keyword' name='keyword' onChange={(e) => onChangeHandler(e.target)} />
             </div>
 

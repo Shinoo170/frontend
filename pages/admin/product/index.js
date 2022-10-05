@@ -9,18 +9,26 @@ import styles from './product.module.css'
 
 export default function ProductPage(){
     const [ listProduct, setListProduct ] = useState([])
-    const [ test, setTest] = useState(<div>No value</div>)
     
     // get data
     async function getListProduct(){
-        const url = 'https://' + process.env.backendURL
+        const url = process.env.BACKEND + '/product/allSeries'
 
         axios.get(url).then( (result) => {
-
+            setListProduct(result.data)
         }).catch( (err)=> {
+            // Localhost ios issus
+            axios.get('/api/getAllSeries')
+            .then( (result) => { 
+                setListProduct( result.data )
+            })
+            .catch( (err) => {
+                setListProduct( [{img: '', title: err.message , seriesId:'0'}] )
+            })
             
         })
     }
+
     function showProduct(){
         return listProduct.map( (element, index) => {
             return (
@@ -39,7 +47,6 @@ export default function ProductPage(){
         })
     }
     useEffect( () => {
-        setTest(<div>on process</div>)
         getListProduct()
     }, [])
 
@@ -54,7 +61,6 @@ export default function ProductPage(){
                     <div className={styles.listProductContainer} id='listContainer'>
                         { showProduct() }
                     </div>
-                    { test }
                 </div>
             </div>
         </div>

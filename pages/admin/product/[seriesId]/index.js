@@ -6,19 +6,22 @@ import styles from './series.module.css'
 
 export default function SpecificSeries() {
     const router = useRouter()
-    var url = ''
-    function getProductDetails(){
-        axios.get('http://localhost:5000/product/series/').then( (result) => {
-            
-        }).catch( (err)=> {
+    var seriesId = ''
 
+    async function getProductDetails(){
+        const url = process.env.BACKEND + '/product/series/' + seriesId
+
+        axios.get(url).then( (result) => {
+            console.log(result.data)
+        }).catch( (err)=> {
+            console.log(err)
         })
     }
+
     useEffect( () => {
         if(router.isReady){
-            const pid = router.query
-            url = pid.seriesId
-            console.log(pid)
+            seriesId = router.query.seriesId
+            getProductDetails()
         }
     }, [router])
 
@@ -26,7 +29,7 @@ export default function SpecificSeries() {
         <div className={styles.container}>
             <SideNav />
             <div className={styles.contentContainer}>
-                
+
             </div>
         </div>
     );

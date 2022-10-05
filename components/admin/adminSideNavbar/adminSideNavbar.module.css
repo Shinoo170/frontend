@@ -222,12 +222,14 @@
   .sidebar .logoDetails .icon{
     opacity: 0;
     display: none;
-    transition: all ease 0.5s;
+    transition: opacity ease 0.5s;
   }
   .sidebar .logoDetails .logoName{
     opacity: 0;
-    display: none;
-    transition: all ease 0.5s;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    transition: all ease 1s;
   }
   .sidebar .logoDetails .navMenuIcon{
     margin: auto;
@@ -291,8 +293,10 @@
   }
   .sidebar.sidebarExpand .logoDetails .logoName{
     opacity: 1;
-    display: flex;
-    transition: all ease 0.5s;
+    height: auto;
+    width: auto;
+    overflow: none;
+    transition: opacity ease 1s;
   }
   .sidebar.sidebarExpand .logoDetails .navMenuIcon{
     margin: auto;

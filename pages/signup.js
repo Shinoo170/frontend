@@ -172,7 +172,7 @@ const SignUp = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default SignUp;
+export default SignUp
