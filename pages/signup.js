@@ -32,7 +32,7 @@ const SignUp = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-          });
+          })
         } else if (password === ConfirmPassword) {
           axios
             .post(url, {
@@ -41,7 +41,7 @@ const SignUp = () => {
             })
             .then((response) => {
               console.log(response);
-            });
+            })
         } else {
           toast.error("Password not match", {
             position: "top-center",
@@ -51,9 +51,9 @@ const SignUp = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-          });
+          })
         }
-    };
+    }
 
     // redirect to home if already logged in
     const router = useRouter()

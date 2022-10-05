@@ -16,7 +16,7 @@ import {
 import { VscGithubInverted } from 'react-icons/vsc'
 
 
-export default function sideNavbar(){
+export default function SideNavbar(){
     const [ expand, setExpand ] = useState(false) 
     
     return (
