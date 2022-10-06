@@ -1,3 +1,5 @@
+  /* ------------------------------------------------
+  [ container ] */
 .container {
     display: flex;
     flex-direction: row;
@@ -26,6 +28,8 @@
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
+  /* ------------------------------------------------
+  [ file drop area ] */
 .fileDropArea {
     position: relative;
     align-items: center;
@@ -86,6 +90,8 @@
     margin-top: 10px;
 }
 
+  /* ------------------------------------------------
+  [ input form ] */
 .inputFormWarp {
     display: flex;
     flex-direction: column;
@@ -132,6 +138,8 @@
     box-shadow: var(--dashboard-shadow)
 }
 
+  /* ------------------------------------------------
+  [ show genres & keywords ] */
 .groupLabel {
     display: flex;
     flex-wrap: wrap;
@@ -159,7 +167,39 @@
     color: #D92626;
 }
 
-/* CSS */
+  /* ------------------------------------------------
+  [ dropdown ] */
+.groupDropdown .dropdown{
+    position: absolute;
+    max-height: 100px;
+    width: 400px;
+    background-color: #fff;
+    border: 1px solid #BBC1C9;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    overflow-y: scroll;
+    z-index: 2;
+    visibility: hidden;
+}
+
+.groupDropdown input:focus ~ .dropdown{
+    visibility: visible;
+}
+
+
+.dropdown .dropdownList .dropdownItem{
+    padding: 3px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.dropdown .dropdownList .dropdownItem:hover{
+    background-color: #D4D4D4;
+}
+
+
+  /* ------------------------------------------------
+  [ submit button ] */
 .button4 {
   appearance: none;
   background-color: #FAFBFC;

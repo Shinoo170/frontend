@@ -14,6 +14,8 @@ import { RiCloseCircleLine } from 'react-icons/ri'
 export default function AddSeries() {
   const [file, setFile] = useState('')
   const [inputData, setInputData] = useState()
+  const [ genres, setGenres ] = useState([])
+  const [ keywords, setKeyword] = useState([])
 
   const saveFile = (e) => {
     setFile(e.target.files[0])
@@ -81,9 +83,7 @@ export default function AddSeries() {
         }
       })
     } catch(err) {
-
     }
-    
   }
 
   const onChangeHandler = (event) => {
@@ -92,7 +92,40 @@ export default function AddSeries() {
       return {...prev, [name]: value}
     })
   }
-  
+
+  var globalGenres = []
+  const getGenresKeywords = async () => {
+    const url = process.env.BACKEND + '/product/genres'
+    await axios.get(url).then( (result) => {
+      const array = result.data
+      array.forEach( e => {
+        globalGenres.push(e.keyword)
+      })
+      console.log(globalGenres)
+
+      setKeyword(result.data)
+    })
+  }
+
+  function showGenres() {
+    return keywords.map( (element, index) => {
+      return ( 
+        <div id={`genres-${index}`} key={`genres-${index}`} className={styles.dropdownItem}>{element.keyword}</div>
+      )
+    })
+  }
+  function showKeywords() {
+    return keywords.map( (element, index) => {
+      return ( 
+        <div id={`keyword-${index}`} key={`keyword-${index}`} className={styles.dropdownItem}>{element.keyword}</div>
+      )
+    })
+  }
+
+  useEffect( () => {
+    getGenresKeywords()
+  }, [])
+
   return (
     <div className={styles.container}>
       <SideNav />
@@ -151,7 +184,15 @@ export default function AddSeries() {
                 <div className={styles.label}>genres : </div>
                 <div className={styles.details}>love <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
               </div>
-              <input id='genres' name='genres' onChange={(e) => onChangeHandler(e.target)} />
+              
+              <div className={styles.groupDropdown}>
+                <input id='genres' name='genres' onChange={(e) => onChangeHandler(e.target)} autoComplete="off" />
+                <div className={styles.dropdown}>
+                  <div className={styles.dropdownList}>
+                    { showGenres() }
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className={styles.inputWarp}>
@@ -162,14 +203,18 @@ export default function AddSeries() {
                 <div className={styles.details}>school <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
                 <div className={styles.details}>isekai <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
                 <div className={styles.details}>princess <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
-                <div className={styles.details}>book <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
-                <div className={styles.details}>monster <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
-                <div className={styles.details}>sword <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
-                <div className={styles.details}>magic <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
-                <div className={styles.details}>love <div className={styles.removeIcon}><RiCloseCircleLine /></div></div>
 
               </div>
-              <input id='keyword' name='keyword' onChange={(e) => onChangeHandler(e.target)} />
+
+              <div className={styles.groupDropdown}>
+                <input id='keyword' name='keyword' onChange={(e) => onChangeHandler(e.target)} autoComplete="off" />
+                <div className={styles.dropdown}>
+                  <div className={styles.dropdownList}>
+                    { showKeywords() }
+                  </div>
+                </div>
+              </div>
+              
             </div>
 
             <button className={styles.button4} type='submit'>Add Product</button>
