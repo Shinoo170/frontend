@@ -15,16 +15,15 @@ export default function ProductPage(){
     const [ currentPage, setCurrentPage ] = useState(1)
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(10)
     const [ maxPage, setMaxPage ] = useState(0)
-    // get data
     
-
+    // get data
     const getListProduct = async () => {
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/allSeries'
         axios.get(url).then( (result) => {
             // setListProduct(result.data)
             setAllProduct(result.data)
         }).catch( (err)=> {
-            // Localhost ios issus
+            // ! Localhost ios issus
             console.log(err)
             axios.get('/api/getAllSeries')
             .then( (result) => { 
@@ -90,13 +89,13 @@ export default function ProductPage(){
                                 return (
                                     <div key={`item-${index}`} className={styles.itemContainer}>
                                         <Link href={`/admin/product/${element.seriesId}`}>
-                                            <div className={styles.item}>
+                                            <a className={styles.item}>
                                                 <div className={styles.image}>
                                                     <Image src={element.img} alt='img' layout='fill' objectFit='contain' />
                                                 </div>
                                                 <div className={styles.title}>{element.title}</div>
                                                 <button className={styles.btn}>details</button>
-                                            </div>
+                                            </a>
                                         </Link>
                                     </div>
                                 )

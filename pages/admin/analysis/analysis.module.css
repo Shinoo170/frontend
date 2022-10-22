@@ -1,35 +1,98 @@
+
+/* ------------------------------------------------
+[ Container ] */
 .container {
+    display: flex;
     width: 100%;
+    color: #000;
+    background-color: #fff;
+}
+
+
+/* ------------------------------------------------
+[ Brand ] */
+.brand {
+    order: 1;
+    padding: 0 10px 0 20px;
+}
+
+
+/* ------------------------------------------------
+[ Main ] */
+.main {
+    order: 2;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    min-width: fit-content;
 }
 
-.nav {
-    width: 250px;
-    background-color: aqua;
+
+.main .navItem{
+    display: block;
+    font-size: 20px;
+    padding: 10px;
+    min-width: fit-content;
 }
 
-.content {
+
+/* ------------------------------------------------
+[ Dropdown ] */
+.navItem .dropdown .dropdownList{
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+.navItem .dropdown:hover .dropdownList{
+    position: absolute;
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+
+
+/* ------------------------------------------------
+[ Right menu ] */
+.rightMenu {
+    margin: 0 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    order: 3;
     width: 100%;
-    background-color: blueviolet;
+    max-width: 400px;
+    padding: 0 10px;
 }
 
-@media screen and (max-width: 1376px) {
-    .nav {
-        width: 78px;
-        background-color: aqua;
-    }
-    .nav:hover {
-        width: 250px;
-    }
+/* [ Search box ]  */
+.rightMenu .searchBox {
+    display: inline-flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 15px;
+    height: 40px;
+    width: 100%;
 }
 
-@media screen and (max-width: 768px) {
-    .nav {
-        opacity: 0;
-        display: none;
-    }
-    .nav:hover {
-        width: 250px;
-    }
+.rightMenu .searchBox input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding-left: 15px;
+}
+
+/* [ Cart ]  */
+.cart {
+    border: 1px solid #fff;
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+/* [ UserInfo ]  */
+.userInfo {
+    border: 1px solid #fff;
+    border-radius: 10px;
+    padding: 5px 10px;
 }

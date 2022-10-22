@@ -50,12 +50,16 @@
 }
 .tooltip {
     position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: rgba(0, 0, 0, 0.75);
     color: #fff;
     border-radius: 10px;
     visibility: hidden;
     padding: 0px 10px 0px 10px;
-    top: -6%;
+    top: -2px;
+    right: -60px;
     text-align: center;
 }
 .containerBackBtn:hover .tooltip{
@@ -109,7 +113,7 @@
     background: #e6e6e6;
     height: 50px;
     border-radius: 25px;
-    padding: 0 30px 0 68px;
+    padding: 0 30px 0 50px;
 
     outline: none;
     border: none;
@@ -162,7 +166,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    padding-left: 35px;
+    padding-left: 22px;
     pointer-events: none;
     color: #666666;
 

@@ -17,7 +17,7 @@ export default function ProductListSM(prop){
     const [ fullView, setFullView ] = useState(false)
 
     const toggleFullView = () => {
-        setFullView( !fullView)
+        setFullView( !fullView )
     }
     const changePageHandle = (event) => {
         if( ( event === -1 ) && ( currentPage > 1 )){
@@ -71,8 +71,6 @@ export default function ProductListSM(prop){
                         </div>
                     })
                 }
-
-                
             </div>
             <div className={`${styles.pageButtonGroup} ${fullView? '':styles.hide}`}>
                 <button onClick={e => changePageHandle(-1) }><FiChevronLeft /></button>

@@ -213,6 +213,7 @@
     min-width: var(--small-width);
   }
   .sidebar{
+    position: fixed;
     width: var(--small-width);
     min-width: var(--small-width);
   }

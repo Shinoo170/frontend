@@ -1,34 +1,44 @@
-import { useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 import axios from 'axios'
 import Image from 'next/image'
 import styles from '../styles/Signin.module.css'
+import { DataContext } from './_app';
+
+
 import { FaRegEnvelope, FaLock, FaLongArrowAltRight, FaChevronLeft } from 'react-icons/fa'
 
 const SignIn = () => {
+    const { setUserID, setUserName } = useContext(DataContext)
+    const [ login, setLogin] = useState(false)
 
     const signInRequest = async(event) => {
         event.preventDefault()
-        const url = process.env.BACKEND + 'auth/signin';
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/auth/signin';
 
         axios.post(url, {
             user: event.target.User.value,
             password: event.target.Password.value
         }).then((response) => {
-            console.log(response.data.token);
-            sessionStorage.setItem('jwt', response.data.token)
+            console.log(response.data)
+            localStorage.setItem('jwt', response.data.token)
+            localStorage.setItem('displayName', response.data.name)
+            setUserID(response.data.userId)
+            setUserName(response.data.name)
+            setLogin(true)
         }).catch((error) => {
             // password not match
+            console.log(error);
         })
     }
     // redirect to home if already logged in
     const router = useRouter()
     useEffect(()=> {
-        if(sessionStorage.getItem('jwt') || 0){
+        if(localStorage.getItem('jwt')){
             router.push('/')
         }
-    })
+    }, [login])
     
     return (
         <div className={styles.limiter}>
@@ -43,7 +53,7 @@ const SignIn = () => {
                         </Link>
                     </div>
                     <div className={styles.loginPic}>
-                        {/* <Image  src='/signin-pic.png' alt='img' layout='fill' objectFit='contain'/> */}
+                        <Image  src='/logo_infinity.png' alt='img' layout='fill' objectFit='contain'/>
                     </div>
 
                     <form className={styles.loginForm} onSubmit={signInRequest}>

@@ -18,7 +18,7 @@ import {
 const SignUp = () => {
     const signUpRequest = async (event) => {
         event.preventDefault()
-        const url = process.env.BACKEND + "auth/signup"
+        const url = process.env.NEXT_PUBLIC_BACKEND + "/auth/signup"
         
         const email = event.target.Email.value
         const password = event.target.user_Password.value
@@ -87,12 +87,12 @@ const SignUp = () => {
                         </Link>
                     </div>
                     <div className={styles.SignUpPic}>
-                        {/* <Image
-                            src="/signin-pic.png"
+                        <Image
+                            src="/logo_infinity.png"
                             alt="img"
                             layout="fill"
                             objectFit="contain"
-                        /> */}
+                        />
                     </div>
 
                     <form className={styles.SignUpForm} onSubmit={signUpRequest}>

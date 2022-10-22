@@ -16,6 +16,7 @@
     margin: 50px 0;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     background-color: #fff;
+    width: 100%;
 }
 
 .pageTitle {
@@ -142,17 +143,30 @@
     justify-content: center;
     align-items: center;
     height: 25px;
+    width: 35px;
+    background-color: rgb(250, 191, 81);
+    border-radius: 5px;
+    border: none;
 }
 
 @media screen and (max-width: 1700px) {
     .contentContainer {
-        padding: 0 5rem 0 5rem;
+        padding: 0 5rem;
     }
 }
 
 @media screen and (max-width: 1200px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
     .contentContainer {
-        padding: 0 2rem 0 2rem;
+        padding: 0 2rem;
+        position: relative;
+        width: calc(100% - 78px);
+        display: flex;
+        justify-content: center;
+        margin-left: 78px;
     }
     .topMenu input {
         width: 320px;
@@ -199,14 +213,11 @@
 }
 
 @media screen and (max-width: 576px) {
-    .container {
-        display: flex;
-        flex-direction: column;
-    }
     .contentContainer {
         padding: 1rem 1rem 0 1rem;
+        width: 100%;
+        margin-left: 0;
     }
-
     .topMenu {
         display: flex;
         flex-direction: column;

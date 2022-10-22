@@ -1,34 +1,56 @@
 .container {
-  padding: 0 20rem 0 20rem;
-  min-width: 250px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 56px;
+}
+
+.main {
+  background-color: #fff;
+  height: 100vh;
+  width: 100%;
+  width: 70vw;
+  margin: 20px;
+  border-radius: 50px;
+  box-shadow: var(--shadow);
 }
 
 @media screen and (max-width: 1700px) {
-  .container {
-    padding: 0 15rem 0 15rem;
+  .main {
+    width: 80vw;
   }
 }
 
 @media screen and (max-width: 1376px) {
-  .container {
-    padding: 0 10rem 0 10rem;
-  }
+  
 }
 
 @media screen and (max-width: 1200px) {
-  .container {
-    padding: 0 5rem 0 5rem;
-  }
+  
 }
 
+/* ------------------------------------------------
+[ Medium device (tablets) ] */
 @media screen and (max-width: 992px) {
   .container {
-    padding: 0 2rem 0 2rem;
+    padding-top: 95px;
+  }
+  .main {
+    width: 90vw;
   }
 }
 
+/* ------------------------------------------------
+[ Small device (phone) ] */
 @media screen and (max-width: 576px) {
+  
+}
+
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
   .container {
-    padding: 0rem;
+    padding-top: 56px;
   }
 }
