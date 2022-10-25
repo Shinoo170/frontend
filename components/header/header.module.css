@@ -43,7 +43,9 @@
     flex-direction: row;
     align-items: center;
 }
-
+.brand .brandIcon img{
+    height: 50px;
+}
 .brand .mainToggle {
     opacity: 0;
     visibility: hidden;
@@ -418,13 +420,16 @@
         flex-direction: row;
         padding: 0;
     }
+    .brand .brandIcon img{
+        height: 30px;
+    }
     .brand .brandName {
         opacity: 0;
         visibility: hidden;
         display: none;
     }
     .brand .mainToggle {
-        padding: 0 20px;
+        padding: 0 10px 0 20px; 
         opacity: 1;
         visibility: visible;
         display: inline-flex;
@@ -481,6 +486,11 @@
         width: 75%;
         height: 100%;
         background-color: #fff;
+    }
+    /* ------------------------------------------------
+    [ Right menu ] */
+    .rightMenu {
+        padding: 0 10px 0 0;
     }
 
     /* ------------------------------------------------

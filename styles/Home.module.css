@@ -12,7 +12,8 @@
   width: 100%;
   width: 70vw;
   margin: 20px;
-  border-radius: 50px;
+  padding: 30px;
+  border-radius: 40px;
   box-shadow: var(--shadow);
 }
 
@@ -23,7 +24,10 @@
 }
 
 @media screen and (max-width: 1376px) {
-  
+  .main {
+    width: 90vw;
+    border-radius: 30px;
+  }
 }
 
 @media screen and (max-width: 1200px) {
@@ -36,15 +40,14 @@
   .container {
     padding-top: 95px;
   }
-  .main {
-    width: 90vw;
-  }
 }
 
 /* ------------------------------------------------
 [ Small device (phone) ] */
 @media screen and (max-width: 576px) {
-  
+  .main {
+    border-radius: 30px;
+  }
 }
 
 /* ------------------------------------------------
@@ -52,5 +55,8 @@
 @media screen and (max-width: 356px) {
   .container {
     padding-top: 56px;
+  }
+  .main {
+    border-radius: 30px;
   }
 }

@@ -3,15 +3,7 @@ import Link from 'next/link'
 import styles from './adminSideNavbar.module.css'
 
 import {
-    BiMenu,
-    BiLogOut,
-    BiGridAlt,
-    BiMenuAltRight,
-    BiMessageSquareDetail,
-    BiBarChartAlt2,
-    BiHistory,
-    BiDetail,
-    BiCart,
+    BiBarChartAlt2, BiCart, BiDetail, BiGridAlt, BiHistory, BiLayout, BiLogOut, BiMenu, BiMenuAltRight, BiMessageSquareDetail, 
 } from 'react-icons/bi'
 import { VscGithubInverted } from 'react-icons/vsc'
 
@@ -48,6 +40,15 @@ export default function SideNavbar(){
                                 </a>
                             </Link>
                             <span className={styles.tooltip}>Analysis</span>
+                        </li>
+                        <li>
+                            <Link href='/admin/pages'> 
+                                <a>
+                                    <i><BiLayout /></i>
+                                    <span className={styles.linkName}>Pages</span>
+                                </a>
+                            </Link>
+                            <span className={styles.tooltip}>Pages</span>
                         </li>
                         <li>
                             <Link href='/admin/product'> 

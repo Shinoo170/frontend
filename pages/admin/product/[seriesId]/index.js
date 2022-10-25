@@ -6,17 +6,7 @@ import SideNav from 'components/admin/adminSideNavbar'
 import styles from './series.module.css'
 import Link from "next/link"
 
-import SwiperItem from "components/SwiperItem"
 import ProductListSM from "components/productListSM"
-
-import { Swiper, SwiperSlide } from "swiper/react"
-import { FreeMode, Mousewheel, Pagination } from "swiper"
-import "swiper/css"
-import "swiper/css/free-mode"
-import "swiper/css/pagination"
-
-import {HiOutlineChevronDoubleRight} from 'react-icons/hi'
-import { AnalyticsS3BucketDestinationFilterSensitiveLog } from "@aws-sdk/client-s3"
 
 export default function SpecificSeries() {
     const [ seriesId, setSeriesId ] = useState('')
@@ -75,7 +65,6 @@ export default function SpecificSeries() {
     return (
         <div className={styles.container}>
             <SideNav />
-            
             <div className={styles.contentContainer}>
                 <div className={styles.productWrap}>
                     <div className={styles.detailsWrap}>

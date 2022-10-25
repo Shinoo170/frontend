@@ -57,7 +57,7 @@ export default function Header(){
                 </div>
                 <Link href='/'>
                     <a className={styles.brandWrap}>
-                        <div className={styles.brandIcon}><img src='../logo_infinity.png' height={50}/></div>
+                        <div className={styles.brandIcon}><img src='../logo_infinity.png'/></div>
                         <div className={styles.brandName}>PT bookshop</div>
                     </a>
                 </Link>
@@ -71,9 +71,9 @@ export default function Header(){
                             <div className={styles.dropdownIcon}><RiArrowDownSLine/></div>
                         </div>
                         <div className={`${styles.dropdownList} ${mobileProductDropdown? styles.show:''}`}>
-                            <div className={styles.item}><div className={styles.subTitle}>ทั้งหมด</div></div>
-                            <div className={styles.item}><div className={styles.subTitle}>นิยาย</div></div>
-                            <div className={styles.item}><div className={styles.subTitle}>มังงะ</div></div>
+                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products'>ทั้งหมด</Link></div></div>
+                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=novel'>นิยาย</Link></div></div>
+                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=manga'>มังงะ</Link></div></div>
                         </div>
                     </div>
                 </div>
@@ -101,9 +101,9 @@ export default function Header(){
                 <div className={styles.cart}>
                     <MdOutlineShoppingCart />
                 </div>
-                {/* { !isSingIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link></div> } */}
+                { !isSingIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link></div> }
                 {
-                    true && ( <div className={styles.userInfo}>
+                    isSingIn && ( <div className={styles.userInfo}>
                             <div className={styles.profileImage} onClick={e => userDropdownToggleHandle(e)}>
                                 <BiUser />
                             </div>

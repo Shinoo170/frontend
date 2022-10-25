@@ -1,0 +1,206 @@
+/* ------------------------------------------------
+[ Container ] */
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 56px;
+}
+
+/* ------------------------------------------------
+[ Main ] */
+.main {
+    height: 100%;
+    width: 80vw;
+    margin-top: 40px;
+    gap: 20px;
+    display: flex;
+    flex-direction: row;
+    --sideBarWidth: 250px;
+}
+
+/* ------------------------------------------------
+[ Side bar ] */
+.sideBar {
+    width: var(--sideBarWidth);
+    z-index: 10;
+}
+.sideBar .item {
+    background-color: #fff;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+/* make first child no margin */
+.sideBar .item:nth-child(1){
+    margin: 0;
+}
+.item hr{
+    margin: 15px 0;
+}
+.item .selector{
+    width: 100%;
+    height: 250px;
+    overflow-y: scroll;
+}
+
+.item .row {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.item .row .priceInput {
+    width: 50px;
+}
+
+.item .starGroup {
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    font-size: 40px;
+}
+
+.star{
+    color: #bdbdbd;
+    transition: all ease 0.2s;
+}
+.starHover {
+    transition-delay: 0.05s;
+    color: #FFD700;
+}
+
+.fullStarGroup {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    color: #bdbdbd;
+    margin-left: -5px;
+}
+.fullStarGroup:nth-child(1) {
+    margin-left: 0px;
+}
+
+.starHalfRight {
+    position: absolute;
+    left: -0.5px;
+    transform: scaleX(-1);
+}
+
+.labelGroup {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    cursor: pointer;
+}
+.leftLabel{
+    width: 50%;
+    height: 90%;
+}
+.rightLabel{
+    width: 50%;
+    height: 90%;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.item input::-webkit-outer-spin-button,
+.item input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.item input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ------------------------------------------------
+[ List product ] */
+.listProducts {
+    background-color: #fff;
+    box-shadow: var(--shadow);
+    border-radius: 15px;
+    padding: 20px;
+    width: calc(100% - var(--sideBarWidth));
+    height: fit-content;
+}
+
+@media screen and (max-width: 1700px) {
+    
+}
+  
+@media screen and (max-width: 1376px) {
+    .main {
+      width: 90vw;
+    }
+}
+  
+@media screen and (max-width: 1200px) {
+    
+}
+  
+/* ------------------------------------------------
+[ Medium device (tablets) ] */
+@media screen and (max-width: 992px) {
+    .container {
+        padding-top: 95px;
+    }
+    .main {
+        /* background-color: #FFD700; */
+        border-radius: 15px;
+        position: relative;
+        overflow-y: hidden;
+        width: 100%;
+        min-height: 800px;
+        box-shadow: var(--shadow);
+        margin: 40px;
+        display: block;
+    }
+    .sideBar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: transform ease 0.5s;
+    }
+    .show {
+        transform: translateX(0%);
+    }
+    .sideBar .item {
+        box-shadow: none;
+        padding-bottom: 0;
+        margin: 0;
+    }
+    .listProducts {
+        width: 100%;
+        min-height: 800px;
+    }
+    
+    .dummyItem {
+        background-color: #fff;
+        width: 100%;
+        height: 100%;
+    }
+}
+  
+/* ------------------------------------------------
+[ Small device (phone) ] */
+@media screen and (max-width: 576px) {
+    .main {
+        width: 100%;
+        margin: 40px 15px;
+    }
+}
+  
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+    .container {
+      padding-top: 56px;
+    }
+}
