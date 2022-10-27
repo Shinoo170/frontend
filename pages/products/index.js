@@ -168,7 +168,7 @@ export default function Products(){
                         }
                         counter++
                     })
-                    if(product.genres.length === counter) tempSort.push(product)
+                    if(product.genres.length === counter) sort.push(product)
                 })
             } else { sort.push(...tempSort) }
             setFilterProduct(sort)
@@ -177,9 +177,11 @@ export default function Products(){
             if(genresLength > 0){
                 tempSort.filter( product => {
                     filterGenres.forEach( e => {
-                        if(product.genres.indexOf(e) != -1){
-                            sort.push(product)
-                            return
+                        if(product.genres.indexOf(e) !== -1){
+                            if(sort.indexOf(product) === -1){
+                                sort.push(product)
+                                return
+                            }
                         }
                     })
                 })
