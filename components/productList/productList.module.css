@@ -39,7 +39,6 @@
 }
 .item:hover {
     border: 1px solid rgb(250, 191, 81);
-    box-shadow: rgba(25, 25, 26, 0.18) 0px 7px 29px 0px;;
 }
 .image {
     --img-const: 0.7;
@@ -89,6 +88,13 @@
     background-color: rgb(250, 191, 81);
     border-radius: 5px;
     border: none;
+}
+
+.errorLabel {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding-top: 20px;
 }
 
 @media screen and (max-width: 1700px) {

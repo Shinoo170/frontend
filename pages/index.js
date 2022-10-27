@@ -12,7 +12,8 @@ export default function Home() {
   function getData(){
     var url = process.env.NEXT_PUBLIC_BACKEND + '/product/latestProduct'
     axios.get(url).then( result => {
-      setLatestProduct(result.data.data)
+      setLatestProduct(result.data)
+      console.log(window.history)
     }).catch( err => {
 
     })

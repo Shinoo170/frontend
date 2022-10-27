@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './productList.module.css'
@@ -7,17 +8,25 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
 
 export default function ProductList(prop){
+    const router = useRouter()
     const [ allProduct, setAllProduct ] = useState(prop.data)
     const [ listProduct, setListProduct ] = useState([])
     const [ currentPage, setCurrentPage ] = useState(parseInt(prop.currentPage))
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(parseInt(prop.maxPerPage))
     const [ maxPage, setMaxPage ] = useState(0)
+    const [ dataChange, setDataChange ] = useState(0)
+
+    useEffect(() => {
+        setAllProduct(prop.data)
+        setDataChange(dataChange + 1)
+    }, [prop])
 
     useEffect(() => {
         setMaxPage( Math.ceil(allProduct.length/Max_Product_Per_Page))
     },[allProduct])
     useEffect(() => {
         const arr = []
+        if(currentPage === 0 || currentPage > maxPage ) { setListProduct(arr); return }
         var start = currentPage*Max_Product_Per_Page - Max_Product_Per_Page
         var stop = currentPage*Max_Product_Per_Page
         if( stop > allProduct.length ){
@@ -27,13 +36,21 @@ export default function ProductList(prop){
             arr.push(allProduct[i])
         }
         setListProduct(arr)
-    }, [currentPage, maxPage])
+    }, [dataChange, currentPage, maxPage])
 
     const previousPage = () => {
-        if( currentPage > 1) setCurrentPage(currentPage-1)
+        if( currentPage > 1) {
+            router.query.page = currentPage - 1
+            router.push({pathname: '/products', query:{ ...router.query } }, undefined,{} )
+            setCurrentPage(currentPage-1)
+        }
     }
     const nextPage = () => {
-        if( currentPage < maxPage) setCurrentPage(currentPage+1)
+        if( currentPage < maxPage){ 
+            router.query.page = currentPage + 1
+            router.push({pathname: '/products', query:{ ...router.query } }, undefined,{} )
+            setCurrentPage(currentPage+1)
+        }
     }
 
     return (
@@ -53,9 +70,8 @@ export default function ProductList(prop){
                                     </a>
                                 </Link>
                             </div>
-                            
                         )
-                    } ) 
+                    }) 
                 }
             </div>
             <div className={styles.pageButtonGroup}>
