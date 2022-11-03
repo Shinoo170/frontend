@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import Router from 'next/router'
 
 import { BiMenu, BiSearch, BiBell, BiChevronLeft, BiPlus, BiGridAlt, BiUser } from 'react-icons/bi'
 import { BsBoxSeam, BsBookmarks, BsSuitHeart } from 'react-icons/bs'
@@ -18,9 +19,8 @@ export default function Header(){
     const [ mainToggle, setMainToggle ] = useState(false)
     const [ mobileProductDropdown, setMobileProductDropdown ] = useState(false)
     const [ userDropdownToggle, setUserDropdownToggle ] = useState(false)
-    const [ isSingIn, setIsSingIn ] = useState(false)
-    const [ userName, setUserName ] = useState('')
-    const [ profileImage, setProfileImage] = useState('')
+    const [ isSignIn, setIsSignIn ] = useState(false)
+    const search = useRef()
 
     const searchBarToggleHandle = () => {
         setSearchBarToggle( !searchBarToggle )
@@ -39,15 +39,22 @@ export default function Header(){
     const signOutHandle = () => {
         localStorage.removeItem('jwt')
         localStorage.removeItem('displayName')
-        setIsSingIn(false)
+    }
+    const searchHandle = (e) => {
+        if(e.keyCode === 13){
+            var searchText = search.current.value
+            if(search.current.value)
+                Router.push({pathname: '/products', query:{ searchText } }, undefined,{} )
+            else
+            Router.push({pathname: '/products', query:{} }, undefined,{} )
+        }
     }
 
-    useEffect( () => {
+    useEffect(() => {
         if(localStorage.getItem('jwt')){
-            setUserName( localStorage.getItem('displayName') )
-            setIsSingIn(true)
+            setIsSignIn(true)
         }
-    }, [])
+    },[])
 
     return (
         <nav className={styles.container}>
@@ -57,8 +64,8 @@ export default function Header(){
                 </div>
                 <Link href='/'>
                     <a className={styles.brandWrap}>
-                        <div className={styles.brandIcon}><img src='../logo_infinity.png'/></div>
-                        <div className={styles.brandName}>PT bookshop</div>
+                        <div className={styles.brandIcon}><img src='/logo_infinity.png'/></div>
+                        <div className={styles.brandName}>PT bookstore</div>
                     </a>
                 </Link>
             </div>
@@ -72,8 +79,8 @@ export default function Header(){
                         </div>
                         <div className={`${styles.dropdownList} ${mobileProductDropdown? styles.show:''}`}>
                             <div className={styles.item}><div className={styles.subTitle}><Link href='/products'>ทั้งหมด</Link></div></div>
-                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=novel'>นิยาย</Link></div></div>
-                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=manga'>มังงะ</Link></div></div>
+                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=010'>นิยาย</Link></div></div>
+                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=100'>มังงะ</Link></div></div>
                         </div>
                     </div>
                 </div>
@@ -89,8 +96,8 @@ export default function Header(){
                         <div className={`${styles.backIcon} ${searchBarToggle? styles.visible:'' }`} onClick={searchBarToggleHandle}>
                             <HiOutlineChevronLeft />
                         </div>
-                        <input placeholder='ค้นหา' />
-                        <div className={styles.searchIcon}>
+                        <input placeholder='ค้นหา' ref={search} onKeyUp={e => searchHandle(e)}/>
+                        <div className={styles.searchIcon} onClick={e => searchHandle(e)}>
                             <BiSearch />
                         </div>
                     </div>
@@ -99,11 +106,15 @@ export default function Header(){
                     <BiSearch />
                 </div>
                 <div className={styles.cart}>
-                    <MdOutlineShoppingCart />
+                    <Link href='/cart'>
+                        <a>
+                            <MdOutlineShoppingCart />
+                        </a>
+                    </Link>
                 </div>
-                { !isSingIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link></div> }
+                { !isSignIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link></div> }
                 {
-                    isSingIn && ( <div className={styles.userInfo}>
+                    isSignIn && ( <div className={styles.userInfo}>
                             <div className={styles.profileImage} onClick={e => userDropdownToggleHandle(e)}>
                                 <BiUser />
                             </div>
@@ -111,7 +122,7 @@ export default function Header(){
                                 <div className={styles.mobile}>
                                     <div className={styles.closeIcon} onClick={e => userDropdownToggleHandle(e)}><CgClose/></div>
                                 </div>
-                                <div className={styles.info}>{userName || 'tester'}</div>
+                                <div className={styles.info}>{localStorage.getItem('displayName')}</div>
                                 <hr />
                                 <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BiUser/>บัญชีของฉัน</div></Link></div>
                                 <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BsBoxSeam/>รายการสั่งซื้อ</div></Link></div>

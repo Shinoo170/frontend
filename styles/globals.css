@@ -26,16 +26,18 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif, Poppins, sans-serif,
     Sarabun;
 
   --dashboard-background: rgba(238, 238, 238, 0.5);
   --background: #f2f2f2;
-  --dashboard-shadow: rgba(100, 100, 111, 0.15) 0px 7px 29px 0px;
+  --dashboard-shadow: rgba(100, 100, 111, 0.10) 0px 7px 29px 0px;
   --shadow: rgba(100, 100, 111, 0.15) 0px 7px 29px 0px;
+  --book-shadow: rgba(100, 100, 111, 0.10) 0px 7px 35px 0px;
   /* --red-background: rgba(226, 23, 23, 0.6); */
   background-color: var(--background);
+  background: var(--background)
 }
 
 a {
@@ -47,12 +49,3 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
-}

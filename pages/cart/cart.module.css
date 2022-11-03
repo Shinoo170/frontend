@@ -1,0 +1,147 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 56px;
+}
+  
+.main {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	column-gap: 20px;
+    width: 100%;
+    width: 80vw;
+    margin: 20px;
+	padding: 20px;
+}
+
+/* ------------------------------------------------
+[ Cart Section ] */
+.cartSection {
+	background-color: #fff;
+	border-radius: 15px;
+	box-shadow: var(--shadow);
+	width: 100%;
+	padding: 20px 40px 20px 40px;
+}
+
+.cartSection .item {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	background-color: #3761ee;
+}
+
+/* ------------------------------------------------
+[ Check Out Section ] */
+.checkOutSection {
+	position: relative;
+	background-color: #fff;
+	border-radius: 15px;
+	box-shadow: var(--shadow);
+	min-width: 280px;
+	max-width: 280px;
+}
+
+.list {
+	width: 100%;
+}
+
+/* ------------------------------------------------
+[ Dropdown ] */
+.dropdownGroup {
+	position: relative;
+}
+.dropdownGroup .dropdownSelection{
+	background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    transition: all ease 0.5;
+    cursor: pointer;
+	width: 60px;
+	user-select: none;
+}
+
+.dropdownGroup .dropdownSelection svg{
+    font-size: 18px;
+}
+
+.dropdownGroup .dropdownList{
+    background-color: #fff;
+    position: absolute;
+    margin-top: 2px;
+    padding: 4px 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    width: 60px;
+    opacity: 0;
+    visibility: hidden;
+    overflow-y: hidden;
+	z-index: 2;
+}
+
+.dropdownGroup.showDropdown .dropdownSelection {
+    cursor: pointer;
+}
+
+.dropdownGroup.showDropdown .dropdownList {
+    opacity: 1;
+    visibility: visible;
+    border-top: none;
+}
+
+.dropdownGroup .dropdownList .dropdownItem {
+    cursor: pointer;
+    padding: 2px 8px;
+}
+.dropdownGroup .dropdownList .dropdownItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
+}
+
+@media screen and (max-width: 1700px) {
+    .main {
+      width: 80vw;
+    }
+}
+  
+@media screen and (max-width: 1376px) {
+    .main {
+      width: 90vw;
+    }
+}
+  
+@media screen and (max-width: 1200px) {
+    
+}
+  
+/* ------------------------------------------------
+[ Medium device (tablets) ] */
+@media screen and (max-width: 992px) {
+    .container {
+      padding-top: 95px;
+    }
+}
+  
+/* ------------------------------------------------
+[ Small device (phone) ] */
+@media screen and (max-width: 576px) {
+    .main {
+		width: 100vw;
+        margin: 20px 0px;
+    }
+}
+  
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+    .container {
+      padding-top: 56px;
+    }
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Router from 'next/router'
 import Head from 'next/head'
@@ -22,24 +22,25 @@ export default function Products(){
     const [ starSelect, setStarSelect] = useState(0)
     const star = [1,2,3,4,5]
     const [ filterGenres, setFilterGenres ] = useState([])
-    const [ filterMatch, setFilterMatch ] = useState('')
-    const [ filterType, setFilterType ] = useState('000')    // Structure 000 -> novel,manga,other
+    const [ filterMatch, setFilterMatch ] = useState('ค่าเริ่มต้น')
+    const [ filterCategory, setFilterCategory ] = useState('')   // -> Manga,Novel,Other
     const [ filterPrice, setFilterPrice ] = useState([])
     const [ filterScore, setFilterScore ] = useState(0)
     const [ filterCount, updateFilterCount] = useState(0)
     const [ filterOrderBy, setFilterOrderBy ] = useState('ค่าเริ่มต้น')
-    const [ filterSortUpDown, setFilterSortUpDown ] = useState(false)   // false = A->Z 0-100 , True = Z->A 100-0
-
+    const [ filterSortReverse, setFilterSortReverse ] = useState(false)   // false = A->Z 0-100 , True = Z->A 100-0
     // Product
     const [ allSeries, setAllSeries ] = useState([])
     const [ filterProduct, setFilterProduct ] = useState([])
-    const [ currentPage, setCurrentPage ] = useState(1)    
+    const [ currentPage, setCurrentPage ] = useState(1)
     const [ allProductId, setAllProductId ] = useState([])
     // open
     const [ showFilter, setShowFilter ] = useState(false)
     const [ showDropdown1, setShowDropdown1 ] = useState(false)
     const [ showDropdownOrderBy, setShowDropdownOrderBy ] = useState(false)
     const [ showDropdownDisplay, setShowDropdownDisplay ] = useState(false)
+
+    const [ debug, setDebug ] = useState('')
 
     const dropdown1Handle = (e) => {
         setFilterMatch(e)
@@ -49,16 +50,29 @@ export default function Products(){
         setFilterOrderBy(e)
         setShowDropdownOrderBy(false)
     }
+    const setCategoryHandle = (e) => {
+        // var category = ''
+        // if(e === '') category = '000'
+        // if(e === 'มังงะ') filterCategory[0] === '1'? category = '0' + filterCategory.substring(1,3) : category = '1' + filterCategory.substring(1,3)
+        // if(e === 'นิยาย') filterCategory[1] === '1'? category = filterCategory[0] + '0' + filterCategory[2] : category = filterCategory[0] + '1' + filterCategory[2]
+        // if(e === 'สินค้าอื่นๆ') filterCategory[2] === '1'? category = filterCategory.substring(0,2) + '0' : category = filterCategory.substring(0,2) + '1'
+        updateFilterCount(current => current+1)
+        if(filterCategory !== e) setFilterCategory(e)
+        else setFilterCategory('')
+    }
 
     const getProducts = () => {
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/latestSeries'
+        // const url = 'https://bookstore-back-end-1jz3.vercel.app/product/allSeries'
         axios.get(url)
         .then( result => {
             console.log(result.data)
             setAllSeries(result.data)
-            // setFilterProduct(result.data)
         }).catch( err => {
-            axios.get('/api/getAllSeries').then(result => setAllSeries(result.data))
+            console.log("Error to get data, using next API")
+            axios.get('/api/getAllSeries')
+            .then(result => setAllSeries(result.data))
+            .catch(err => { console.log("Also error"); console.log(err) })
         })
     }
     const getGenres = () => {
@@ -68,6 +82,9 @@ export default function Products(){
             setGenres(result.data)
         }).catch( err => {
             console.log(err)
+            axios.get('/api/getGenres')
+            .then(result => setGenres(result.data))
+            .catch(err => { console.log("Also error"); console.log(err) })
         })
     }
     const showStar = (score) => {
@@ -83,26 +100,80 @@ export default function Products(){
             </div>
         )
     }
+
+    let pos = { top: 0, left: 0, x: 0, y: 0 }
+    const mouseDownHandler = function (e) {
+        var scroll = document.getElementById('showCategory')
+        if(window.innerWidth <= 567){
+            pos = {
+                // The current scroll
+                left: scroll.scrollLeft,
+                top: scroll.scrollTop,
+                // Get the current mouse position
+                x: e.clientX,
+                y: e.clientY,
+            }
+            scroll.style.cursor = 'grabbing';
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        } else {
+            scroll.style.cursor = 'default';
+        }
+        
+    }
+    const mouseMoveHandler = function (e) {
+        var scroll = document.getElementById('showCategory')
+        // How far the mouse has been moved
+        const dx = e.clientX - pos.x;
+        const dy = e.clientY - pos.y;
+    
+        // Scroll the element
+        scroll.scrollTop = pos.top - dy;
+        scroll.scrollLeft = pos.left - dx;
+        
+    }
+    const mouseUpHandler = function () {
+        var scroll = document.getElementById('showCategory')
+        scroll.style.cursor = 'grab';
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+    }
+
     useEffect(() => {
         getProducts()
         getGenres()
     }, [])
 
     useEffect(() => {
-        if(router.isReady){
+        if(router.isReady && (filterCount < 2)){
             const query = router.query
             query.page? setCurrentPage(query.page) : setCurrentPage(1)
             Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
             // "query.genres?" mean "query.genres" is not unified?"
-            query.match? setFilterMatch(query.match) : setFilterMatch('ค่าเริ่มต้น')
-            query.type? setFilterType(query.type) : setFilterType('000')
+            // query.match? setFilterMatch(query.match) : setFilterMatch('ค่าเริ่มต้น')
+            if(query.match) setFilterMatch(query.match)
+            query.category? setFilterCategory(query.category) : setFilterCategory('')
             setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
+            console.log('pp')
         }
     },[router])
 
-    // [ Filter products && Update URL ]
+    
     useEffect(() => {
-        if(filterCount !== 0){
+        // * Initial sort
+        if( (allSeries.length > 0) && (filterCount < 2) ){
+            filterGenres.map( element => {
+                try{
+                    document.getElementById(element).checked = true
+                }catch(err){
+                    setFilterGenres([...filterGenres])
+                }
+            })
+            filterProcess()
+            updateFilterCount(c => c + 1)
+        }
+        // * Update router
+        if(filterCount > 1){
             router.query.page = 1
             router.query.genres = []
             filterGenres.forEach( element => {
@@ -113,16 +184,16 @@ export default function Products(){
             } else {
                 delete router.query.match
             }
-            router.push({pathname: '/products', query:{ ...router.query } }, undefined,{} )
+            if(filterCategory !== ''){
+                router.query.category = filterCategory
+            } else {
+                delete router.query.category
+            }
+            // router.query.page = 1
+            router.push({pathname: '/products', query:{ ...router.query } }, undefined,{ shallow: true } )
             filterProcess()
         }
-        
-    },[filterCount])
-
-    // ! Initial sort
-    useEffect(() => {
-        if( (allSeries.length > 0) && (filterCount === 0)){ filterProcess() }
-    }, [allSeries, filterMatch, filterGenres, filterType, filterPrice, filterScore])
+    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore])
 
     const filterProcess = () => {
         console.log('sorting')
@@ -130,11 +201,17 @@ export default function Products(){
         const tempSort = []
         const genresLength = filterGenres.length
         var counter
-        if(filterType !== '000') {
+        if(filterCategory !== '') {
             allSeries.forEach( element => {
-                console.log(element.products.totalNovel)
-                if(element.products.totalNovel >= parseInt(filterType[0]) && element.products.totalManga >= parseInt(filterType[1]) && element.products.totalOther >= parseInt(filterType[2])){
-                    tempSort.push(element)
+                var category = filterCategory
+                if(category === 'Novel'){
+                    if(element.products.totalNovel > 0) tempSort.push(element)
+                }
+                else if(category === 'Manga'){
+                    if(element.products.totalManga > 0) tempSort.push(element)
+                }
+                else if(category === 'Other'){
+                    if(element.products.totalOther > 0) tempSort.push(element)
                 }
             })
         } else {
@@ -143,57 +220,57 @@ export default function Products(){
         if(filterMatch === 'ค่าเริ่มต้น'){
             // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
             if(genresLength > 0){
-                tempSort.filter( product => {
+                for(let i=0; i<tempSort.length; i++){
                     counter = 0
-                    filterGenres.forEach( e => {
-                        if(product.genres.indexOf(e) != -1){
+                    for(let j=0; j<filterGenres.length; j++){
+                        if(tempSort[i].genres.indexOf(filterGenres[j]) !== -1){
                             counter++
                             if(counter === genresLength){
-                                sort.push(product)
-                                return
+                                sort.push(tempSort[i])
+                                break
                             }
                         }
-                    })
-                })
+                    }
+                }
             } else { sort.push(...tempSort) }
-            setFilterProduct(sort)
+            setFilterProduct(filterSortReverse? sort.reverse():sort)
         } else if(filterMatch === 'เฉพาะที่เลือก'){
              // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
             if(genresLength > 0){
-                tempSort.filter( product => {
+                for(let i=0; i<tempSort.length; i++){
                     counter = 0
-                    filterGenres.forEach( e => {
-                        if(product.genres.indexOf(e) === -1){
-                            return
+                    for(let j=0; j<filterGenres.length; j++){
+                        if(tempSort[i].genres.indexOf(filterGenres[j]) === -1){
+                            break
                         }
                         counter++
-                    })
-                    if(product.genres.length === counter) sort.push(product)
-                })
+                    }
+                    if(tempSort[i].genres.length === counter) sort.push(tempSort[i])
+                }
             } else { sort.push(...tempSort) }
-            setFilterProduct(sort)
+            setFilterProduct(filterSortReverse? sort.reverse():sort)
         } else if (filterMatch === 'อย่างใดอย่างหนึ่ง'){
              // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
             if(genresLength > 0){
-                tempSort.filter( product => {
-                    filterGenres.forEach( e => {
-                        if(product.genres.indexOf(e) !== -1){
-                            if(sort.indexOf(product) === -1){
-                                sort.push(product)
-                                return
+                for(let i=0; i<tempSort.length; i++){
+                    for(let j=0; j<filterGenres.length; j++){
+                        if(tempSort[i].genres.indexOf(filterGenres[j]) !== -1){
+                            if(sort.indexOf(tempSort[i]) === -1){
+                                sort.push(tempSort[i])
+                                break
                             }
                         }
-                    })
-                })
+                    }
+                }
             } else { sort.push(...tempSort) }
-            setFilterProduct(sort)
+            setFilterProduct(filterSortReverse? sort.reverse():sort)
         }
     }
 
     // [ Sort products ]
     useEffect(() => {
         setFilterProduct(filterProduct.reverse())
-    }, [filterSortUpDown])
+    }, [filterSortReverse])
 
     useEffect(() => {
         setStarHover(starSelect)
@@ -216,9 +293,9 @@ export default function Products(){
                             <div className={`${styles.dropdownGroup} ${showDropdown1? styles.showDropdown:''}`}>
                                 <div className={styles.dropdownSelection} onClick={e => {setShowDropdown1(!showDropdown1)}}>{filterMatch} <RiArrowDownSLine/></div>
                                 <div className={styles.dropdownList}>
-                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('ค่าเริ่มต้น'); updateFilterCount(filterCount+1)}}>ค่าเริ่มต้น</div>
-                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('เฉพาะที่เลือก'); updateFilterCount(filterCount+1)}}>เฉพาะที่เลือก</div>
-                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('อย่างใดอย่างหนึ่ง'); updateFilterCount(filterCount+1)}}>อย่างใดอย่างหนึ่ง</div>
+                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('ค่าเริ่มต้น'); updateFilterCount(current => current+1)}}>ค่าเริ่มต้น</div>
+                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('เฉพาะที่เลือก'); updateFilterCount(current => current+1)}}>เฉพาะที่เลือก</div>
+                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('อย่างใดอย่างหนึ่ง'); updateFilterCount(current => current+1)}}>อย่างใดอย่างหนึ่ง</div>
                                 </div>
                             </div>
                             <hr/>
@@ -227,15 +304,14 @@ export default function Products(){
                                 {
                                     genres.map((element, index) => {
                                         const handle = (e) => {
-                                            if(e.target.id === `id-genres-${index}`){ document.getElementById(element).checked = !document.getElementById(element).checked }
+                                            if(e.target.id === `id-genres-${index}` || e.target.id === `id-genres-label-${index}`){ document.getElementById(element).checked = !document.getElementById(element).checked }
                                             if(document.getElementById(element).checked){ setFilterGenres([...filterGenres, element]) }
                                             else{ setFilterGenres(filterGenres.filter(item => item != element)) }
                                         }
                                         return (
-                                            <div id={`id-genres-${index}`} className={styles.subItem} key={`genres-${index}`} onClick={e => {handle(e); updateFilterCount(filterCount+1)}} >
-                                                { filterGenres.indexOf(element) !== -1 && <input id={element} className={styles.checkmark} type='checkbox' defaultChecked /> }
-                                                { filterGenres.indexOf(element) === -1 && <input id={element} className={styles.checkmark} type='checkbox' /> }
-                                                <label htmlFor={element}>{element}</label>
+                                            <div id={`id-genres-${index}`} className={styles.subItem} key={`genres-${index}`} onClick={e => {handle(e); updateFilterCount(current => current+1)}} >
+                                                <input id={element} className={styles.checkmark} type='checkbox' />
+                                                <span id={`id-genres-label-${index}`}>{element}</span>
                                             </div>
                                         )
                                     })
@@ -244,10 +320,10 @@ export default function Products(){
                             <hr/>
                             <div className={styles.title}>ตัวเลือกการค้นหา</div>
                             <div className={styles.buttonGroup}>
-                                <button>ทั้งหมด</button>
-                                <button>นิยาย</button>
-                                <button>มังงะ</button>
-                                <button>สินค้าอื่นๆ</button>
+                                <div className={filterCategory === ''? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('')}>ทั้งหมด</div>
+                                <div className={filterCategory === 'Novel'? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('Novel')}>นิยาย</div>
+                                <div className={filterCategory === 'Manga'? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('Manga')}>มังงะ</div>
+                                <div className={filterCategory === 'Other'? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('Other')}>สินค้าอื่นๆ</div>
                             </div>
                         </div>
                         <div className={styles.item}>
@@ -268,8 +344,20 @@ export default function Products(){
                         <div className={styles.top}>
                             <div className={styles.title}>สินค้า</div>
                             <div className={styles.filterGroup}>
+                                <div className={styles.filterCategoryDetail}>
+                                    <div className={styles.label}>Filter&nbsp;:</div>
+                                    <div className={styles.category} id='showCategory' onMouseDown={mouseDownHandler}>
+                                        {
+                                            filterGenres.map( (element, index) => {
+                                                return(
+                                                    <div className={styles.item} key={`filterGenres-${index}`}>{element}</div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
                                 <div className={styles.orderBy}>
-                                    <div className={styles.label}>เรียงตาม : </div>
+                                    <div className={styles.label}>เรียงตาม&nbsp;:</div>
                                     <div className={`${styles.dropdownGroup} ${styles.dropdownSM} ${showDropdownOrderBy? styles.showDropdown:''}`}>
                                         <div className={styles.dropdownSelection} onClick={e => setShowDropdownOrderBy(!showDropdownOrderBy)}>{filterOrderBy} <RiArrowDownSLine/></div>
                                         <div className={styles.dropdownList}>
@@ -280,16 +368,16 @@ export default function Products(){
                                             <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ชื่อ')}>ชื่อ</div>
                                         </div>
                                     </div>
-                                    <div className={styles.sortButton} onClick={e => setFilterSortUpDown(!filterSortUpDown)}>
-                                        { !filterSortUpDown && <HiSortDescending /> }
-                                        { filterSortUpDown && <HiSortAscending /> }
+                                    <div className={styles.sortButton} onClick={e => setFilterSortReverse(!filterSortReverse)}>
+                                        { !filterSortReverse && <HiSortDescending /> }
+                                        { filterSortReverse && <HiSortAscending /> }
                                     </div>
+                                    <div className={styles.filterButton} onClick={e => setShowFilter(!showFilter)}><HiFilter/></div>
                                 </div>
-                                <div className={styles.filterButton} onClick={e => setShowFilter(!showFilter)}><HiFilter/></div>
                             </div>
                         </div>
                         <div className={styles.productContainer}>
-                            { (filterProduct[0] != undefined) && <ProductList data={filterProduct} currentPage={currentPage} maxPerPage='5'/> }
+                            { (filterProduct[0] != undefined) && <ProductList data={filterProduct} currentPage={currentPage} maxPerPage='5' href='/series/'/> }
                         </div>
                     </div>
                 </main>

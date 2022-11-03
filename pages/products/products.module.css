@@ -56,12 +56,14 @@
 
 /* dropdown */
 .dropdownGroup {
+    user-select: none;
     position: relative;
     z-index: 2;
 }
 
 .dropdownSM {
     width: 110px;
+    max-height: 35px;
 }
 
 .dropdownGroup.dropdownSM .dropdownSelection {
@@ -77,6 +79,7 @@
     border-radius: 8px;
     transition: all ease 0.5;
     cursor: pointer;
+    max-height: 35px;
 }
 
 .dropdownGroup .dropdownSelection svg{
@@ -140,6 +143,36 @@
 .item .selector .subItem input {
     cursor: pointer;
 }
+
+.item .buttonGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.buttonGroup .btn {
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+}
+.buttonGroup .btn:hover {
+    background-color: #efefef;
+    color: #272727;
+}
+.buttonGroup .btnActive {
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    background-color: #ebeffd;
+    color: #3761ee;
+}
+.buttonGroup .btnActive:hover {
+    background-color: #d1d9f8;
+    color: #3761ee;
+}
+
+
 .item .row {
     display: flex;
     flex-direction: row;
@@ -232,17 +265,59 @@
 /* Filter group */
 .filterGroup {
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap-reverse; */
+    flex-direction: row;
+    /* align-items: center; */
+    justify-content: space-between;
+    /* flex-direction: row-reverse; */
+    gap: 5px;
+}
+
+.filterGroup .filterCategoryDetail {
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    padding-top: 6px;
+}
+
+.filterGroup .filterCategoryDetail .label {
+    /* position: absolute; */
+    display: block;
+    width: 45px;
+    height: 35px;
+    
+    margin-top: 0;
+    margin-bottom: auto;
+}
+
+.filterGroup .filterCategoryDetail .category {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 5px;
     gap: 5px;
+    margin-top: 0;
+    margin-bottom: auto;
+    user-select: none;
+}
+
+.category .item {
+    background-color: #F3F4F6;
+    padding: 0px 10px;
+    border-radius: 20px;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .filterGroup .orderBy {
     display: flex;
+    /* flex-wrap: wrap; */
     align-items: center;
     gap: 5px;
+    justify-content: flex-end;
+    height: fit-content;
+    /* margin: 0 0 0 auto; */
+    min-width: 220px;
 }
 
 .filterButton {
@@ -250,6 +325,8 @@
     justify-content: center;
     align-items: center;
     color: rgb(163, 168, 177);
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
     font-size: 20px;
     height: 35px;
     width: 35px;
@@ -264,7 +341,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #494949;
+    color: #1d1d1d;
     border: 1px solid #c9c9c9;
     border-radius: 8px;
     font-size: 20px;
@@ -288,7 +365,10 @@
 }
   
 @media screen and (max-width: 1200px) {
-    
+    .item .selector .subItem {
+        padding: 5px 5px;
+        border-radius: 15px;
+    }
 }
   
 /* ------------------------------------------------
@@ -334,6 +414,7 @@
     .sideBar .item:nth-child(2) .title {
         margin: 10px 0;
     } 
+
     .listProducts {
         width: 100%;
         min-height: 800px;
@@ -343,6 +424,9 @@
         background-color: #fff;
         width: 100%;
         height: 100%;
+    }
+    .filterGroup .orderBy {
+        min-width: 190px;
     }
     .filterGroup .orderBy .label {
         opacity: 0;
@@ -354,6 +438,7 @@
         visibility: visible;
         display: flex;
     }
+    
 }
   
 /* ------------------------------------------------
@@ -362,6 +447,52 @@
     .main {
         width: 100%;
         margin: 40px 15px;
+    }
+    .item .selector .subItem {
+        padding: 6px 5px;
+    }
+    .filterGroup {
+        flex-wrap: wrap-reverse;
+        align-items: center;
+        flex-direction: row-reverse;
+        justify-content: start;
+    }
+    .filterGroup .orderBy {
+        flex-wrap: wrap;
+        margin: 0 0 0 auto;
+        min-width: 0px;
+        width: auto;
+    }
+
+    .filterGroup .filterCategoryDetail {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-top: 6px;
+        width: 100%;
+    }
+    
+    .filterGroup .filterCategoryDetail .label {
+        display: block;
+        width: 50px;
+        height: auto;
+        
+        margin: 0;
+    }
+    .filterGroup .filterCategoryDetail .category {
+        flex-wrap: nowrap;
+        overflow: scroll;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: auto;
+        align-items: center;
+        cursor: grab;
+
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .filterGroup .filterCategoryDetail .category::-webkit-scrollbar {
+        display: none;
     }
 }
   

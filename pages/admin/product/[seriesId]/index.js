@@ -85,7 +85,7 @@ export default function SpecificSeries() {
                                 <div className={styles.detailText}> วันที่แก้ไขล่าสุด : { showData(productData.lastModify) } </div>
                             </div>
                         </div>
-                        <div className={styles.descriptionText}> รายละเอียด : {productData.description} </div>
+                        <div className={styles.descriptionText}> <p>เรื่องย่อ : </p> {productData.description} </div>
                         <div className={styles.listAllProduct}>
                             <div>ทั้งหมด { productData.products != undefined && productData.products.totalProducts} รายการ </div>
                             <Link href={addProductURl}><button> add product</button></Link>

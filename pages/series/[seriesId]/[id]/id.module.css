@@ -1,0 +1,441 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 56px;
+}
+  
+.main {
+    background-color: #fff;
+    width: 100%;
+    width: 70vw;
+    margin: 20px;
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.title {
+	font-size: 28px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+	text-align: center;
+}
+
+.buySection {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+.imageContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.imageContainer img{
+    box-shadow: var(--book-shadow);
+    border: 1px solid #f0f0f0;
+    height: 320px;
+}
+
+
+.listImages {
+	position: relative;
+    padding-top: 5px;
+    height: 100px;
+    width: 250px;
+}
+.listImages .image{
+    display: flex;
+    align-items: center;
+	justify-content: center;
+    width: 100%;
+    height: 100px;
+	border-radius: 5px;
+}
+.listImages .image img{
+	border-radius: 5px;
+    height: auto;
+    width: auto;
+    max-width: 100%;
+    max-height: 100px;
+    border: 1px solid rgba(0, 0, 0, 0.175);
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.subSection {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	gap: 12px;
+}
+
+.flexRow {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	width: 100%;
+	gap: 10px;
+}
+
+.price {
+	position: inherit;
+	background-color: #F3F4F6;
+	border-radius: 15px;
+	padding: 10px;
+	width: 350px;
+	height: 110px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.dummy{
+	width: 100%;
+	height: 21px;
+}
+
+.priceLabel {
+	font-size: 24px;
+}
+
+.amount {
+	background-color: #F3F4F6;
+	border-radius: 15px;
+	padding: 10px;
+	width: 180px;
+	height: 110px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.dropdownGroup {
+	position: relative;
+}
+.dropdownGroup .dropdownSelection{
+	background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    transition: all ease 0.5;
+    cursor: pointer;
+	width: 60px;
+	user-select: none;
+}
+
+.dropdownGroup .dropdownSelection svg{
+    font-size: 18px;
+}
+
+.dropdownGroup .dropdownList{
+    background-color: #fff;
+    position: absolute;
+    margin-top: 2px;
+    padding: 4px 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    width: 60px;
+    opacity: 0;
+    visibility: hidden;
+    overflow-y: hidden;
+}
+
+.dropdownGroup.showDropdown .dropdownSelection {
+    cursor: pointer;
+    /* box-shadow: var(--shadow); */
+}
+
+.dropdownGroup.showDropdown .dropdownList {
+    opacity: 1;
+    visibility: visible;
+    border-top: none;
+}
+
+.dropdownGroup .dropdownList .dropdownItem {
+    cursor: pointer;
+    padding: 2px 8px;
+}
+.dropdownGroup .dropdownList .dropdownItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
+}
+
+.btn {
+	background-color: rgb(250, 191, 81);
+	border-radius: 10px;
+	width: 200px;
+	padding: 8px;
+	text-align: center;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+.btn .cartIcon {
+	font-size: 20px;
+	color: #110f0f;
+	display: flex;
+	align-items: center;
+}
+
+
+.detailFlex {
+    display: flex;
+    flex-direction: row;
+}
+
+.image img{
+    box-shadow: var(--book-shadow);
+    border: 1px solid #f0f0f0;
+    height: 300px;
+}
+
+.detailsGroup {
+    min-width: 250px;
+    max-width: 300px;
+    padding-left: 20px;
+}
+
+.detailsGroup .subDetail {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.subDetail .detailTitle {
+    min-width: 120px;
+}
+
+.description {
+    white-space: pre-wrap;
+    padding: 0 10px 0 0px;
+    width: calc(100% - 200px);
+	max-width: 750px;
+    line-height: 22px;
+}
+
+.lineClamp8 {
+    display: -webkit-box;
+    -webkit-line-clamp: 8;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+.viewMore {
+    color: #3761ee;
+    cursor: pointer;
+}
+
+.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.genresGroup {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 5px;
+    row-gap: 5px;
+    width: 200px;
+}
+
+.genresGroup .item {
+    background-color: #F3F4F6;
+    padding: 0px 10px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+
+.listProduct {
+    padding: 10px 0;
+}
+
+.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.top .label {
+    font-size: 18px;
+}
+
+.top a {
+    display: flex;
+    align-items: center;
+}
+
+.noProduct {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100px;
+}
+
+@media screen and (max-width: 1700px) {
+    .main {
+      width: 80vw;
+    }
+}
+  
+@media screen and (max-width: 1376px) {
+    .main {
+      width: 90vw;
+    }
+}
+  
+@media screen and (max-width: 1200px) {
+    
+}
+  
+/* ------------------------------------------------
+[ Medium device (tablets) ] */
+@media screen and (max-width: 992px) {
+    .container {
+      padding-top: 95px;
+    }
+	.buySection {
+		flex-direction: column;
+		padding: 20px 0;
+	}
+	.subSection {
+		width: 100%;
+		/* background-color: #3761ee; */
+		padding: 20px 0;
+	}
+	.flexRow {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		width: 100%;
+		gap: 10px;
+	}
+	.price {
+		width: 65%;
+		max-width: 350px;
+		height: 110px;
+	}
+	.amount {
+		width: 35%;
+		max-width: 180px;
+		height: 110px;
+	}
+	.btn {
+		width: 100%;
+		max-width: 540px;
+	}
+	.detailFlex {
+		display: flex;
+		flex-direction: column;
+	}
+	.description {
+		width: 100%;
+		max-width: 100%;
+	}
+	.detailsGroup {
+		width: 100%;
+		max-width: 100%;
+	}
+	.genresGroup {
+        width: 100%;
+    }
+	.description {
+		padding: 0;
+	}
+	.detailsGroup {
+        padding: 0;
+    }
+	.dropdownGroup .dropdownList .dropdownItem {
+		padding: 4px 8px;
+	}
+}
+  
+/* ------------------------------------------------
+[ Small device (phone) ] */
+@media screen and (max-width: 576px) {
+    .main {
+        margin: 20px 0px;
+		padding: 30px;
+    }
+	.dropdownGroup .dropdownList .dropdownItem {
+		padding: 4px 8px;
+	}
+}
+  
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+    .container {
+      padding-top: 56px;
+    }
+	.main {
+        padding: 30px 10px;
+    }
+	.title {
+		font-size: 24px;
+	}
+	.image img{
+		width: 70vw;
+		height: auto;
+	}
+	.flexRow {
+		flex-wrap: wrap;
+	}
+	.price {
+		width: 100%;
+	}
+	.amount {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.imageContainer img{
+		height: auto;
+		width: 60vw;
+	}
+	.listImages {
+		height: auto;
+		width: 60vw;
+	}
+
+	.detailsGroup {
+		min-width: 0px;
+		max-width: 100%;
+	}
+	.detailsGroup .subDetail {
+        flex-wrap: wrap;
+        width: 75vw;
+    }
+    .subDetail .detailTitle {
+        min-width: 100px;
+        width: 50%;
+        max-width: 120px;
+    }
+    .subDetail .detailValue {
+        width: 50%;
+    }
+}

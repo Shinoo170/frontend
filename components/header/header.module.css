@@ -209,6 +209,11 @@
     cursor: pointer;
 }
 
+.cart a {
+    display: inline-flex;
+    align-items: center;
+}
+
 /* [ UserInfo ]  */
 .userInfo {
     display: inline-flex;

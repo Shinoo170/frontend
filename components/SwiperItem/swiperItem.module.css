@@ -1,17 +1,17 @@
 .productList {
     width: 100%;
-    height: 250px;
+    height: 290px;
     margin-top: 10px;
 }
 
 .mySwiperSlide {
-    width: 168px;
-    max-width: 168px;
+    min-width: 170px;
+    max-width: 170px;
 }
 
 .itemContainer{
     height: 100%;
-    width: 168px
+    width: 100%;
 }
 
 .item {
@@ -24,25 +24,22 @@
 
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    /* box-shadow: var(--dashboard-shadow); */
 
     padding: 5px 10px 10px 10px;
-    /* border-width: 1px; */
-    /* border-color: rgba(0, 0, 0, 0.281);
-    border-style: solid; */
-    border-radius: 20px;
+    border-radius: 15px;
 }
 .item:hover {
     border: 1px solid rgb(250, 191, 81);
-    /* box-shadow: rgba(25, 25, 26, 0.18) 0px 7px 29px 0px;; */
 }
 .item .image {
+    display: flex;
+    justify-content: center;
     --img-const: 0.7;
-    --img-height: 140px;
+    --img-height: 170px;
     position: relative;
     height: var(--img-height);
-    width: calc( var(--img-height) * var(--img-const));
-    /* box-shadow: rgba(105, 105, 105, 0.095) 0px 7px 29px 0px; */
+    min-width: calc( var(--img-height) * var(--img-const));
+    width: 100%;
 }
 
 .item .title {
@@ -52,7 +49,9 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    /* text-overflow: ellipsis; */
+    text-overflow: ellipsis;
+    text-align: center;
+    padding-top: 5px;
 }
 
 .item .btn {
@@ -67,4 +66,76 @@
     width: 100px;
     border-color: transparent;
     cursor: pointer;
+    overflow: hidden;
+}
+
+.item .btn .price,
+.item .btn .text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    transition: transform linear 0.15s;
+}
+
+.item .btn:hover .price,
+.item .btn:hover .text {
+    transform: translateY(-100%);
+}
+
+.quickBuy {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: aqua;
+    z-index: 9;
+}
+
+.quickAddToCart {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+
+    padding: 40px 20px;
+    overflow-y: auto;
+
+}
+
+
+/* ------------------------------------------------
+[ Medium device (tablets) ] */
+@media screen and (max-width: 992px) {
+    .mySwiperSlide {
+        min-width: 150px;
+        max-width: 150px;
+    }
+    .item {
+        padding: 5px 5px 10px 5px;
+    }
+    .item .title {
+        font-size: 14px;
+    }
+}
+
+/* ------------------------------------------------
+[ Small device (phone) ] */
+
+@media screen and (max-width: 576px) {
+    .mySwiperSlide {
+        min-width: 125px;
+        max-width: 125px;
+    }
+}
+  
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+
 }

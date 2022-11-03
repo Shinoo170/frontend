@@ -47,7 +47,8 @@
     position: relative;
     height: var(--img-height);
     width: calc( var(--img-height) * var(--img-const));
-    box-shadow: rgba(25, 25, 26, 0.18) 0px 7px 29px 0px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e7e7e7;
 }
 
 .detailsWrap .detailsGroup{
@@ -57,6 +58,7 @@
 
 .descriptionText {
     width: 400px;
+    white-space: pre-wrap;
 }
 
 /* Swiper */

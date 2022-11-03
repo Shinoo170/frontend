@@ -17,8 +17,11 @@ export default function ProductList(prop){
     const [ dataChange, setDataChange ] = useState(0)
 
     useEffect(() => {
-        setAllProduct(prop.data)
-        setDataChange(dataChange + 1)
+        if(prop.data !== allProduct){
+            setAllProduct(prop.data)
+            setCurrentPage(1)
+        }
+        setDataChange(current => current + 1)
     }, [prop])
 
     useEffect(() => {
@@ -58,12 +61,13 @@ export default function ProductList(prop){
             <div className={styles.listProductContainer}>
                 { 
                     listProduct.map( (element, index) => {
+                        const img = Array.isArray(element.img)? element.img[0]:element.img
                         return (
                             <div key={`item-${index}`} className={styles.itemContainer}>
-                                <Link href={`/admin/product/${element.seriesId}`}>
+                                <Link href={`${prop.href}${element.seriesId}`}>
                                     <a className={styles.item}>
                                         <div className={styles.image}>
-                                            <Image src={element.img} alt='img' layout='fill' objectFit='contain' />
+                                            <Image src={img} alt='img' layout='fill' objectFit='contain' />
                                         </div>
                                         <div className={styles.title}>{element.title}</div>
                                         <button className={styles.btn}>details</button>

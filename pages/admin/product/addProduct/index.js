@@ -75,12 +75,17 @@ export default function AddProduct() {
           await parallelUploads3.done()
         })
 
+        var thai_category = ''
+        if(category === 'manga') thai_category = 'มังงะ'
+        else if(category === 'novel') thai_category = 'นิยาย'
+        else if(category === 'product') thai_category = 'สินค้า'
         const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/addProduct'
         await axios.post( axiosURL , {
           seriesId: parseInt(seriesId),
           title: e.target.title.value,
           bookNum: e.target.bookNum.value,
           category: category,
+          thai_category,
           description: e.target.description.value,
           status: productStatus,
           price: e.target.price.value,
@@ -172,7 +177,7 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>Title</div>
-              <input id='title' disabled/>
+              <input id='title' />
             </div>
             
             <div className={styles.inputWrap}>
@@ -206,7 +211,7 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>ราคา</div>
-              <input id='price' />
+              <input id='price' type='number'/>
             </div>
 
             <div className={styles.inputWrap}>
