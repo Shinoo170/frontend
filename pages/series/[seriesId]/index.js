@@ -14,7 +14,7 @@ import { RiArrowRightSLine } from 'react-icons/ri'
 
 export default function Products(){
     const router = useRouter()
-    const [ seriesData, setSeriesData ] = useState({products:{}, score:{avg:0}, state:'init'})
+    const [ seriesData, setSeriesData ] = useState({products:{}, score:{ avg: 0 }, state:'init'})
     const [ productsData, setProductsData ] = useState({manga:[], novel:[], other:[]})
     const [ viewMore, setViewMore ] = useState('hide')
     const [ filter, setFilter ] = useState('overview')

@@ -78,9 +78,9 @@ export default function Header(){
                             <div className={styles.dropdownIcon}><RiArrowDownSLine/></div>
                         </div>
                         <div className={`${styles.dropdownList} ${mobileProductDropdown? styles.show:''}`}>
-                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products'>ทั้งหมด</Link></div></div>
-                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=010'>นิยาย</Link></div></div>
-                            <div className={styles.item}><div className={styles.subTitle}><Link href='/products?category=100'>มังงะ</Link></div></div>
+                            <div className={styles.item}><Link href='/products'><a><div className={styles.subTitle}>ทั้งหมด</div></a></Link></div>
+                            <div className={styles.item}><Link href='/products?category=Novel'><a><div className={styles.subTitle}>นิยาย</div></a></Link></div>
+                            <div className={styles.item}><Link href='/products?category=Manga'><a><div className={styles.subTitle}>มังงะ</div></a></Link></div>
                         </div>
                     </div>
                 </div>

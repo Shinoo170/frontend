@@ -6,6 +6,11 @@ import Header from '../components/header'
 import axios from 'axios'
 import SwiperItem from 'components/SwiperItem'
 
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Autoplay, Navigation } from "swiper"
+import "swiper/css"
+import "swiper/css/navigation"
+
 export default function Home() {
   const [ latestProduct, setLatestProduct ] = useState()
 
@@ -33,6 +38,23 @@ export default function Home() {
       <div className={styles.container}>
         
         <main className={styles.main}>
+          <div className={styles.bannerContainer}>
+            <Swiper 
+              navigation={true} 
+              modules={[Autoplay, Navigation]} 
+              centeredSlides={true}
+              spaceBetween={1}
+              slidesPerView={'auto'}
+              loop={true}
+              autoplay={{delay:5000, disableOnInteraction: false,}}
+              className={styles.banner}
+            >
+              <SwiperSlide><div className={styles.image}><img src='/banner/LN_1.png'/></div></SwiperSlide>
+              <SwiperSlide><div className={styles.image}><img src='/banner/LN_2.png'/></div></SwiperSlide>
+              <SwiperSlide><div className={styles.image}><img src='/banner/LN_3.png'/></div></SwiperSlide>
+              <SwiperSlide><div className={styles.image}><img src='/banner/LN_4.jpg'/></div></SwiperSlide>
+            </Swiper>
+          </div>
           <div className={styles.swiperContainer}>
             วางจำหน่ายล่าสุด
             { latestProduct && <SwiperItem data={latestProduct} href={'/product'}/> }

@@ -118,6 +118,7 @@
 .navItem .dropdown .dropdownList .item {
     padding: 4px 3px;
     cursor: pointer;
+    width: 100%;
 }
 
 .navItem:hover .dropdown .dropdownList {

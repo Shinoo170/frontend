@@ -62,9 +62,14 @@
     --img-const: 0.7;
     --img-height: 170px;
     position: relative;
-    height: var(--img-height);
-    width: calc( var(--img-height) * var(--img-const));
-    box-shadow: rgba(105, 105, 105, 0.095) 0px 7px 29px 0px;
+    min-height: var(--img-height);
+    max-height: var(--img-height);
+    min-width: calc( var(--img-height) * var(--img-const));
+    max-width: calc( var(--img-height) * var(--img-const));
+	box-shadow: var(--book-shadow);
+    border: 1px solid #f0f0f0;
+    border-radius: 7px;
+    overflow: hidden;
 }
 
 .title {

@@ -10,7 +10,7 @@ import { CgClose } from 'react-icons/cg'
 
 import { quickBuyContext } from "components/SwiperItem"
 
-export default function QuickBuy(prop) {
+export default function QuickBuy(props) {
     const [ product, setProduct ] = useState({img:[]})
     const [ showDropdown, setShowDropdown ] = useState(false)
     const [ selectAmount, setSelectAmount ] = useState(1)
@@ -26,7 +26,7 @@ export default function QuickBuy(prop) {
             productId: product.productId,
             amount: selectAmount,
         }).then(result => {
-            localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
+            // localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
         }).catch(err => console.log(err.message))
     }
 
@@ -37,8 +37,8 @@ export default function QuickBuy(prop) {
     }
 
     useEffect(() => {
-        setProduct(prop.data)
-    }, [prop])
+        setProduct(props.data)
+    }, [props])
 
     const close = () => {
         setShowQuickBuy(false)

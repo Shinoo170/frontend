@@ -28,11 +28,10 @@ export default function Products(){
     const [ filterScore, setFilterScore ] = useState(0)
     const [ filterCount, updateFilterCount] = useState(0)
     const [ filterOrderBy, setFilterOrderBy ] = useState('ค่าเริ่มต้น')
-    const [ filterSortReverse, setFilterSortReverse ] = useState(false)   // false = A->Z 0-100 , True = Z->A 100-0
+    const [ filterSortReverse, setFilterSortReverse ] = useState()   // false (down) = A->Z 0-100 , True (up) = Z->A 100-0
     // Product
     const [ allSeries, setAllSeries ] = useState([])
     const [ filterProduct, setFilterProduct ] = useState([])
-    const [ currentPage, setCurrentPage ] = useState(1)
     const [ allProductId, setAllProductId ] = useState([])
     // open
     const [ showFilter, setShowFilter ] = useState(false)
@@ -147,14 +146,15 @@ export default function Products(){
     useEffect(() => {
         if(router.isReady && (filterCount < 2)){
             const query = router.query
-            query.page? setCurrentPage(query.page) : setCurrentPage(1)
             Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
             // "query.genres?" mean "query.genres" is not unified?"
-            // query.match? setFilterMatch(query.match) : setFilterMatch('ค่าเริ่มต้น')
             if(query.match) setFilterMatch(query.match)
             query.category? setFilterCategory(query.category) : setFilterCategory('')
+            query.sort === 'Up'? setFilterSortReverse(true) : setFilterSortReverse(false)
             setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
-            console.log('pp')
+        } else if(router.isReady){
+            const query = router.query
+            query.category? setFilterCategory(query.category) : setFilterCategory('')
         }
     },[router])
 
@@ -175,25 +175,31 @@ export default function Products(){
         // * Update router
         if(filterCount > 1){
             router.query.page = 1
+            // [ filter genres ]
             router.query.genres = []
             filterGenres.forEach( element => {
                 router.query.genres.push(element)
             })
+            // [ match ]
             if(filterMatch != 'ค่าเริ่มต้น'){
                 router.query.match = filterMatch
             } else {
                 delete router.query.match
             }
+            // [ filter Category ]
             if(filterCategory !== ''){
                 router.query.category = filterCategory
             } else {
                 delete router.query.category
             }
-            // router.query.page = 1
+            // [ Sort products ]
+            if(filterSortReverse !== undefined){
+                filterSortReverse? router.query.sort = "Up" : delete router.query.sort
+            } 
             router.push({pathname: '/products', query:{ ...router.query } }, undefined,{ shallow: true } )
             filterProcess()
         }
-    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore])
+    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore, filterSortReverse])
 
     const filterProcess = () => {
         console.log('sorting')
@@ -266,11 +272,6 @@ export default function Products(){
             setFilterProduct(filterSortReverse? sort.reverse():sort)
         }
     }
-
-    // [ Sort products ]
-    useEffect(() => {
-        setFilterProduct(filterProduct.reverse())
-    }, [filterSortReverse])
 
     useEffect(() => {
         setStarHover(starSelect)
@@ -368,7 +369,7 @@ export default function Products(){
                                             <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ชื่อ')}>ชื่อ</div>
                                         </div>
                                     </div>
-                                    <div className={styles.sortButton} onClick={e => setFilterSortReverse(!filterSortReverse)}>
+                                    <div className={styles.sortButton} onClick={e => setFilterSortReverse(c => !c)}>
                                         { !filterSortReverse && <HiSortDescending /> }
                                         { filterSortReverse && <HiSortAscending /> }
                                     </div>
@@ -377,7 +378,7 @@ export default function Products(){
                             </div>
                         </div>
                         <div className={styles.productContainer}>
-                            { (filterProduct[0] != undefined) && <ProductList data={filterProduct} currentPage={currentPage} maxPerPage='5' href='/series/'/> }
+                            { (filterProduct[0] != undefined) && <ProductList data={filterProduct} revert={filterSortReverse} maxPerPage='5' href='/series/'/> }
                         </div>
                     </div>
                 </main>

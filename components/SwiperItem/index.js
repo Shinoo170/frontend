@@ -13,7 +13,7 @@ import QuickBuy from "components/quickBuy"
 
 export const quickBuyContext = createContext()
 
-export default function SwiperItem(prop){
+export default function SwiperItem(props){
     const [ quickBuyData, setQuickBuyData ] = useState({})
     const [ showQuickBuy , setShowQuickBuy ] = useState(false)
 
@@ -40,7 +40,7 @@ export default function SwiperItem(prop){
                 className={styles.productList}
             >
                 {
-                    prop.data.map( (element, index) => {
+                    props.data.map( (element, index) => {
                         const quickBuy = () => {
                             setQuickBuyData(element)
                             setShowQuickBuy(true)
@@ -51,8 +51,10 @@ export default function SwiperItem(prop){
                                         <div className={styles.item}>
                                             <Link href={`/series/${element.seriesId}/${element.url}`}>
                                                 <a>
-                                                    <div className={styles.image}>
-                                                        <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' />
+                                                    <div className={styles.imageContainer}>
+                                                        <div className={styles.image}>
+                                                            <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
+                                                        </div>
                                                     </div>
                                                     <div className={styles.title}>{element.title} {element.bookNum}</div>
                                                 </a>

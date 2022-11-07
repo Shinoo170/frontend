@@ -63,7 +63,7 @@ export default function ProductListMD(prop){
                             <Link href={`/series/${element.seriesId}/${element.url}`}>
                                 <div className={styles.item}>
                                     <div className={styles.image}>
-                                        <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' />
+                                        <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
                                     </div>
                                     <div className={styles.title}>{element.title} เล่ม {element.bookNum}</div>
                                     <button className={styles.btn}>

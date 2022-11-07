@@ -53,7 +53,7 @@ const SignIn = () => {
                         </Link>
                     </div>
                     <div className={styles.loginPic}>
-                        <Image  src='/logo_infinity.png' alt='img' layout='fill' objectFit='contain'/>
+                        <Image src='/logo_infinity.png' alt='img' layout='fill' objectFit='contain'/>
                     </div>
 
                     <form className={styles.loginForm} onSubmit={signInRequest}>

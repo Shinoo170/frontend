@@ -11,22 +11,31 @@ export default function ProductList(prop){
     const router = useRouter()
     const [ allProduct, setAllProduct ] = useState(prop.data)
     const [ listProduct, setListProduct ] = useState([])
-    const [ currentPage, setCurrentPage ] = useState(parseInt(prop.currentPage))
+    const [ currentPage, setCurrentPage ] = useState(0)
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(parseInt(prop.maxPerPage))
     const [ maxPage, setMaxPage ] = useState(0)
     const [ dataChange, setDataChange ] = useState(0)
+    const [ filterSortReverse, setFilterSortReverse ] = useState()
 
     useEffect(() => {
-        if(prop.data !== allProduct){
-            setAllProduct(prop.data)
-            setCurrentPage(1)
-        }
+    //     if(prop.data !== allProduct){
+    //         setAllProduct(prop.data)
+    //         setDataChange(current => current + 1)
+    //     }
+        setAllProduct(prop.data)
         setDataChange(current => current + 1)
-    }, [prop])
+    }, [prop.data])
+
+    useEffect(() => {
+        if(router.isReady){
+            router.query.page? setCurrentPage(parseInt(router.query.page)) : setCurrentPage(1)
+        }
+    }, [router])
 
     useEffect(() => {
         setMaxPage( Math.ceil(allProduct.length/Max_Product_Per_Page))
     },[allProduct])
+
     useEffect(() => {
         const arr = []
         if(currentPage === 0 || currentPage > maxPage ) { setListProduct(arr); return }
@@ -45,14 +54,14 @@ export default function ProductList(prop){
         if( currentPage > 1) {
             router.query.page = currentPage - 1
             router.push({pathname: '/products', query:{ ...router.query } }, undefined,{} )
-            setCurrentPage(currentPage-1)
+            // setCurrentPage(current => current - 1)
         }
     }
     const nextPage = () => {
         if( currentPage < maxPage){ 
             router.query.page = currentPage + 1
             router.push({pathname: '/products', query:{ ...router.query } }, undefined,{} )
-            setCurrentPage(currentPage+1)
+            // setCurrentPage(current => current + 1)
         }
     }
 
@@ -67,7 +76,7 @@ export default function ProductList(prop){
                                 <Link href={`${prop.href}${element.seriesId}`}>
                                     <a className={styles.item}>
                                         <div className={styles.image}>
-                                            <Image src={img} alt='img' layout='fill' objectFit='contain' />
+                                            <Image src={img} alt='img' layout='fill' objectFit='cover' />
                                         </div>
                                         <div className={styles.title}>{element.title}</div>
                                         <button className={styles.btn}>details</button>

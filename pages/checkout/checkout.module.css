@@ -2,6 +2,8 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     padding-top: 56px;
 }
@@ -17,8 +19,29 @@
 }
 
 /* ------------------------------------------------
-[ Cart Section ] */
-.cartSection {
+[ Checkout State ] */
+.checkoutState {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.checkoutState .item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.checkoutState .item .title {
+    padding: 0 10px;
+}
+
+/* ------------------------------------------------
+[ Checkout Section ] */
+.checkoutSection {
 	background-color: #fff;
 	border-radius: 15px;
 	box-shadow: var(--shadow);
@@ -28,81 +51,6 @@
 
 .label {
 	font-size: 24px;
-}
-
-.list {
-	position: relative;
-    width: 100%;
-	/* height: 500px;
-	overflow: auto; */
-}
-
-.cartSection .item {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	padding: 10px;
-    border-bottom: 1px solid #0e0e0e;
-    border-color: rgba(209,213,219,0.8);
-}
-
-.cartSection .item .imageContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.cartSection .item .imageContainer .image {
-	position: relative;
-	--img-const: 0.7;
-    --img-height: 150px;
-    min-height: var(--img-height);
-    max-height: var(--img-height);
-    min-width: calc( var(--img-height) * var(--img-const));
-    max-width: calc( var(--img-height) * var(--img-const));
-	box-shadow: var(--book-shadow);
-    border: 1px solid #f0f0f0;
-    border-radius: 7px;
-    overflow: hidden;
-}
-
-.cartSection .item .detailGroup {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.cartSection .item .details {
-	width: 100%;
-	padding: 10px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	row-gap: 4px;
-}
-
-.cartSection .item .details .title {
-	font-size: 16px;
-	font-weight: 500;
-    text-decoration: underline;
-    color: #3761ee;
-    width: fit-content;
-}
-
-.cartSection .item .right {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	column-gap: 10px;
-	/* min-width: 120px; */
-}
-
-.cartSection .item .right .remove {
-    display: flex;
-    align-items: center;
-    padding: 5px;
-    cursor: pointer;
 }
 
 .btn {
@@ -120,9 +68,9 @@
 }
 
 /* ------------------------------------------------
-[ Check Out Section ] */
+[ Summary Section ] */
 
-.checkOutSection .subSection{
+.summarySection {
 	position: relative;
 	background-color: #fff;
 	border-radius: 15px;
@@ -134,7 +82,8 @@
     height: fit-content;
 }
 
-.checkOutSection .subSection .row{
+
+.summarySection .row{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -142,29 +91,6 @@
     line-height: 25px;
 }
 
-.checkOutSection .optionGroup {
-    display: flex;
-    gap: 10px;
-    padding: 5px 0;
-}
-
-.checkOutSection .optionGroup .option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    max-width: 115px;
-    height: 40px;
-    box-shadow: var(--book-shadow);
-    border: 1px solid #D1D5D8;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.checkOutSection .optionGroup .option.select {
-    border: #3761ee 2px solid;
-    background-color: #ebeffd;
-}
 
 /* ------------------------------------------------
 [ Dropdown ] */
@@ -258,10 +184,10 @@
         flex-direction: column;
         gap: 15px;
     }
-    .cartSection {
+    .checkoutSection {
         padding: 20px;
     }
-    .checkOutSection .subSection{
+    .summarySection {
         min-width: 100%;
         max-width: 100%;
     }
@@ -274,13 +200,6 @@
 		width: 100vw;
         margin: 20px 0px;
     }
-    .cartSection .item .detailGroup {
-        flex-direction: column;
-    }
-    .cartSection .item .right {
-        justify-content: start;
-        padding-left: 10px;
-    }
 }
   
 /* ------------------------------------------------
@@ -288,10 +207,5 @@
 @media screen and (max-width: 356px) {
     .container {
       padding-top: 56px;
-    }
-    .cartSection .item {
-        flex-direction: column;
-        border-bottom: 1px solid #0e0e0e;
-        border-color: rgba(209,213,219,0.8);
     }
 }
