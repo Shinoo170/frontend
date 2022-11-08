@@ -37,7 +37,7 @@ const SignUp = () => {
           axios
             .post(url, {
               email: event.target.Email.value,
-              password: event.target.Password.value,
+              password: event.target.user_Password.value,
             })
             .then((response) => {
               console.log(response);
@@ -85,14 +85,6 @@ const SignUp = () => {
                                 <span className={styles.tooltip}>Back</span>
                             </span>
                         </Link>
-                    </div>
-                    <div className={styles.SignUpPic}>
-                        <Image
-                            src="/logo_infinity.png"
-                            alt="img"
-                            layout="fill"
-                            objectFit="contain"
-                        />
                     </div>
 
                     <form className={styles.SignUpForm} onSubmit={signUpRequest}>

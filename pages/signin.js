@@ -4,18 +4,15 @@ import Link from 'next/link'
 import axios from 'axios'
 import Image from 'next/image'
 import styles from '../styles/Signin.module.css'
-import { DataContext } from './_app';
-
 
 import { FaRegEnvelope, FaLock, FaLongArrowAltRight, FaChevronLeft } from 'react-icons/fa'
 
 const SignIn = () => {
-    const { setUserID, setUserName } = useContext(DataContext)
     const [ login, setLogin] = useState(false)
 
     const signInRequest = async(event) => {
         event.preventDefault()
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/auth/signin';
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/auth/signIn';
 
         axios.post(url, {
             user: event.target.User.value,
@@ -24,8 +21,7 @@ const SignIn = () => {
             console.log(response.data)
             localStorage.setItem('jwt', response.data.token)
             localStorage.setItem('displayName', response.data.name)
-            setUserID(response.data.userId)
-            setUserName(response.data.name)
+            localStorage.setItem('userImg', response.data.img)
             setLogin(true)
         }).catch((error) => {
             // password not match
@@ -51,9 +47,6 @@ const SignIn = () => {
                                 <span className={styles.tooltip}>Back</span>
                             </span>
                         </Link>
-                    </div>
-                    <div className={styles.loginPic}>
-                        <Image src='/logo_infinity.png' alt='img' layout='fill' objectFit='contain'/>
                     </div>
 
                     <form className={styles.loginForm} onSubmit={signInRequest}>

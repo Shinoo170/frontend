@@ -18,6 +18,7 @@ import "swiper/css/free-mode"
 import "swiper/css/pagination"
 
 import { RiArrowRightSLine } from 'react-icons/ri'
+import { TiStar } from 'react-icons/ti'
 
 export default function ProductDetails(){
     const router = useRouter()
@@ -29,9 +30,18 @@ export default function ProductDetails(){
     const [ viewMore, setViewMore ] = useState('hide')
     const [ selectAmount, setSelectAmount ] = useState(1)
     const amount = [1,2,3,4,5,6,7,8,9,10]
+    const [ userData, setUserData ] = useState({name: 'Guest', img: undefined})
+    const [ starHover, setStarHover] = useState(0)
+    const [ starSelect, setStarSelect] = useState(0)
 
     useEffect(() => {
         if(router.isReady){
+            if(localStorage.getItem('jwt')){
+                setUserData({
+                    name: localStorage.getItem('displayName'),
+                    img: localStorage.getItem('userImg'),
+                })
+            }
             setSelectAmount(1)
             console.log(router.query)
             var split_query = router.query.id.split('-')
@@ -49,10 +59,10 @@ export default function ProductDetails(){
                 setShowImage(result.data.productDetails.img[0])
                 setOtherProduct(result.data.otherProducts)
             }).catch( err => {
-                if(err.response.status === 404){
-                    setProductsData({ title: 'Not found', img:[], status: 404})
+                if(err.response.status === 400){
+                    setProductsData({ title: 'Not found', img:[], status: 404, score:{avg: 0} })
                 }
-                console.log("Error to get data, using next API")
+                console.log("Error to get data")
             })
         }
     },[router])
@@ -212,7 +222,21 @@ export default function ProductDetails(){
                             สินค้าที่คุณอาจสนใจ
                         </div>
                         <div className={styles.comment}>
-                            แสดงความคิดเห็น
+                            <div className={styles.label}>แสดงความคิดเห็น</div>
+                            <div className={styles.commentInput}>
+                                {userData.name}
+                                <div className={styles.starGroup}>
+                                    <TiStar className={`${styles.star} ${starHover>=1? styles.starHover:''}`} onClick={e => setStarSelect(1)} onMouseEnter={e => setStarHover(1)} onMouseLeave={e => setStarHover(starSelect)}/>
+                                    <TiStar className={`${styles.star} ${starHover>=2? styles.starHover:''}`} onClick={e => setStarSelect(2)} onMouseEnter={e => setStarHover(2)} onMouseLeave={e => setStarHover(starSelect)}/>
+                                    <TiStar className={`${styles.star} ${starHover>=3? styles.starHover:''}`} onClick={e => setStarSelect(3)} onMouseEnter={e => setStarHover(3)} onMouseLeave={e => setStarHover(starSelect)}/>
+                                    <TiStar className={`${styles.star} ${starHover>=4? styles.starHover:''}`} onClick={e => setStarSelect(4)} onMouseEnter={e => setStarHover(4)} onMouseLeave={e => setStarHover(starSelect)}/>
+                                    <TiStar className={`${styles.star} ${starHover>=5? styles.starHover:''}`} onClick={e => setStarSelect(5)} onMouseEnter={e => setStarHover(5)} onMouseLeave={e => setStarHover(starSelect)}/>
+                                </div>
+                                <div className={styles.textArea}>
+                                    <textarea ></textarea>
+                                </div>
+                                <div className={styles.btn}>รีวิว</div>
+                            </div>
                         </div>
                     </div>
                 </main>

@@ -39,6 +39,8 @@ export default function Header(){
     const signOutHandle = () => {
         localStorage.removeItem('jwt')
         localStorage.removeItem('displayName')
+        localStorage.removeItem('userImg')
+        Router.reload()
     }
     const searchHandle = (e) => {
         if(e.keyCode === 13){

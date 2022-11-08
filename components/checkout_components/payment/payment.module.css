@@ -1,7 +1,33 @@
-.container {
+.section {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    padding: 20px 40px;
+    margin-top: 20px;
+    transition: 0.25s;
+}
+
+.section:nth-child(1) {
+    margin: 0px;
+}
+
+.hide {
+    height: 0;
+    padding: 0 40px;
+    margin: 0;
+    opacity: 0;
+}
+
+.paymentContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+}
+
+.label {
+    padding: 10px 0;
+    font-size: 20px;
 }
 
 .method {
@@ -116,14 +142,22 @@
     }
 }
 
-@media screen and (max-width: 250px) {
+@media screen and (max-width: 356px) {
     .checkbox {
         visibility: hidden;
         opacity: 0;
         display: none;
     }
+    .dummy {
+        visibility: hidden;
+        opacity: 0;
+        display: none;
+    }
+}
+
+@media screen and (max-width: 250px) {
     .image {
-        width: 25vw;
+        width: 20vw;
         height: 50px;
     }
 }

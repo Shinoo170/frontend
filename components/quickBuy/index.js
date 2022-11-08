@@ -50,7 +50,7 @@ export default function QuickBuy(props) {
             <div className={styles.buySection}>
                 <div className={styles.imageContainer}>
                     <img src={product.img[0]}/>
-                    <div>ดูรายละเอียด</div>
+                    <Link href={`/series/${product.seriesId}/${product.url}`}><a className={styles.link}>ดูรายละเอียด</a></Link>
                 </div>
                 <div className={styles.subSection}>
                     <div className={styles.title}>{product.title} {product.bookNum}</div>

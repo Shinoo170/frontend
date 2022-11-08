@@ -33,7 +33,7 @@
     display: -ms-flexbox;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     padding: 150px 130px 33px 95px;
 }
 
