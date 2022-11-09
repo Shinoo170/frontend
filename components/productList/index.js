@@ -88,11 +88,11 @@ export default function ProductList(prop){
                 }
             </div>
             <div className={styles.pageButtonGroup}>
-                <button onClick={previousPage}><IoIosArrowBack /></button>
+                <button onClick={previousPage} className={currentPage===1? styles.disableBtn:''}><IoIosArrowBack /></button>
                 <div className={styles.currentPageText}>
                     {currentPage}
                 </div>
-                <button onClick={nextPage}><IoIosArrowForward /></button>
+                <button onClick={nextPage} className={currentPage===maxPage? styles.disableBtn:''}><IoIosArrowForward /></button>
             </div>
         </>
     )

@@ -31,8 +31,10 @@ export default function ProductDetails(){
     const [ selectAmount, setSelectAmount ] = useState(1)
     const amount = [1,2,3,4,5,6,7,8,9,10]
     const [ userData, setUserData ] = useState({name: 'Guest', img: undefined})
-    const [ starHover, setStarHover] = useState(0)
-    const [ starSelect, setStarSelect] = useState(0)
+    const [ starHover, setStarHover] = useState(5)
+    const [ starSelect, setStarSelect] = useState(5)
+    const reviewTextarea = useRef()
+    const [ otherReview, setOtherReview ] = useState([])
 
     useEffect(() => {
         if(router.isReady){
@@ -58,6 +60,13 @@ export default function ProductDetails(){
                 setSeriesDetails(result.data.seriesDetails)
                 setShowImage(result.data.productDetails.img[0])
                 setOtherProduct(result.data.otherProducts)
+
+                const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + result.data.productDetails.productId
+                axios.get(reviewUrl)
+                .then( result => {
+                    console.log(result.data)
+                    setOtherReview(result.data)
+                })
             }).catch( err => {
                 if(err.response.status === 400){
                     setProductsData({ title: 'Not found', img:[], status: 404, score:{avg: 0} })
@@ -95,6 +104,22 @@ export default function ProductDetails(){
         }).then(result => {
             localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
         }).catch(err => console.log(err.message))
+    }
+
+    const reviewHandle = () => {
+        const jwt = localStorage.getItem('jwt')
+        if(jwt){
+            const reviewInput = reviewTextarea.current.value
+            const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review'
+            axios.post(url, {
+                jwt,
+                productId: productsData.productId,
+                review: reviewInput,
+                score: starSelect,
+            }).then(result => {
+                
+            }).catch(err => console.log(err.message))
+        }
     }
 
     return (
@@ -170,6 +195,10 @@ export default function ProductDetails(){
                             <div className={styles.detailsGroup}>
                                 <p style={{fontSize: '17px'}}><b>ข้อมูลซีรี่ย์ : </b></p>
                                 <div className={styles.subDetail}>
+                                    <div className={styles.detailTitle}>Series :</div>
+                                    <div className={styles.detailValue}><Link href={`/series/${router.query.seriesId}`}><a>{productsData.title}</a></Link></div>
+                                </div>
+                                <div className={styles.subDetail}>
                                     <div className={styles.detailTitle}>Author :</div>
                                     <div className={styles.detailValue}>{seriesDetails.author}</div>
                                 </div>
@@ -219,11 +248,11 @@ export default function ProductDetails(){
                             </div>
                         }
                         <div className={styles.otherProduct}>
-                            สินค้าที่คุณอาจสนใจ
+                            <div className={styles.label}>สินค้าที่คุณอาจสนใจ</div>
                         </div>
-                        <div className={styles.comment}>
-                            <div className={styles.label}>แสดงความคิดเห็น</div>
-                            <div className={styles.commentInput}>
+                        <div className={styles.review}>
+                            <div className={styles.label}>รีวิว</div>
+                            <div className={styles.reviewArea}>
                                 {userData.name}
                                 <div className={styles.starGroup}>
                                     <TiStar className={`${styles.star} ${starHover>=1? styles.starHover:''}`} onClick={e => setStarSelect(1)} onMouseEnter={e => setStarHover(1)} onMouseLeave={e => setStarHover(starSelect)}/>
@@ -233,9 +262,37 @@ export default function ProductDetails(){
                                     <TiStar className={`${styles.star} ${starHover>=5? styles.starHover:''}`} onClick={e => setStarSelect(5)} onMouseEnter={e => setStarHover(5)} onMouseLeave={e => setStarHover(starSelect)}/>
                                 </div>
                                 <div className={styles.textArea}>
-                                    <textarea ></textarea>
+                                    <textarea ref={reviewTextarea}></textarea>
                                 </div>
-                                <div className={styles.btn}>รีวิว</div>
+                                <div className={styles.btn} onClick={e => reviewHandle()}>รีวิว</div>
+                            </div>
+                            <div className={styles.otherReview}>
+                                <div className={styles.label}>รีวิวทั้งหมด</div>
+                                {
+                                    otherReview.map((element, index) => {
+                                        var score = element.score
+                                        return (
+                                            <div key={`review-${index}`} className={styles.reviewContainer}>
+                                                <div className={styles.userInfo}>
+                                                    <div className={styles.image}>
+                                                        {element.user[0].userData.img}
+                                                    </div>
+                                                    <div className={styles.user}>
+                                                        {element.user[0].userData.displayName}
+                                                        <div className={styles.starGroup}>
+                                                            <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
+                                                            <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>
+                                                            <TiStar className={`${styles.star} ${score>=3? styles.starHover:''}`}/>
+                                                            <TiStar className={`${styles.star} ${score>=4? styles.starHover:''}`}/>
+                                                            <TiStar className={`${styles.star} ${score>=5? styles.starHover:''}`}/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {element.review}
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
                         </div>
                     </div>

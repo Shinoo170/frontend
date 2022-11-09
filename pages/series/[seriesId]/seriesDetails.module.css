@@ -24,14 +24,15 @@
 }
 
 .flex {
+    position: relative;
     display: flex;
     flex-direction: row;
     padding: 20px 0;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 .detailFlex {
+    position: relative;
     display: flex;
     flex-direction: row;
 }
@@ -50,6 +51,7 @@
     box-shadow: var(--book-shadow);
     border: 1px solid #f0f0f0;
     height: 300px;
+    width: fit-content;
 }
 
 .detailsGroup {
@@ -126,6 +128,33 @@
     display: flex;
     align-items: center;
 }
+
+.iconContainer {
+    display: flex;
+    gap: 15px;
+    padding-top: 5px;
+}
+
+.iconContainer .item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.iconContainer .item .icon{
+    font-size: 20px;
+}
+
+.iconContainer .item .iconYellow {
+    font-size: 20px;
+    color: rgb(250, 191, 81);
+}
+
+.iconContainer .item .label{
+    font-size: 14px;
+}
   
 @media screen and (max-width: 1700px) {
     .main {
@@ -136,6 +165,9 @@
 @media screen and (max-width: 1376px) {
     .main {
       width: 90vw;
+    }
+    .flex {
+        flex-wrap: wrap;
     }
 }
   
@@ -152,11 +184,7 @@
     .flex {
         flex-wrap: wrap;
         justify-content: start;
-    }
-    .image {
-        display: flex;
         justify-content: center;
-        width: 100%;
     }
     .detailFlex {
         width: 100%;

@@ -11,6 +11,7 @@ import SwiperItem from 'components/SwiperItem'
 import ProductListMD from 'components/productListMD'
 
 import { RiArrowRightSLine } from 'react-icons/ri'
+import { IoBookmarkOutline, IoBookmark, IoShareOutline } from 'react-icons/io5'
 
 export default function Products(){
     const router = useRouter()
@@ -21,6 +22,7 @@ export default function Products(){
     const [ allManga, setAllManga ] = useState()
     const [ allNovel, setAllNovel ] = useState()
     const [ allOther, setAllOther ] = useState()
+    const [ isBookmark, setIsBookmark ] = useState(false)
 
     useEffect(() => {
         if(router.isReady){
@@ -39,6 +41,7 @@ export default function Products(){
                         setProductsData(result.data.productData)
                     })
                 })
+                getBookmark()
             }
             if(category){
                 setFilter(category)
@@ -107,6 +110,43 @@ export default function Products(){
         )
     }
 
+    const getBookmark = () => {
+        const jwt = localStorage.getItem('jwt')
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        axios.get(url, {
+            headers: {
+                jwt
+            }
+        })
+        .then(result => {
+            setIsBookmark(result.data)
+        })
+    }
+
+    const addNewBookmark = () => {
+        const jwt = localStorage.getItem('jwt')
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        axios.put(url, {
+            jwt
+        })
+        .then(result => {
+            setIsBookmark(result.data)
+        })
+    }
+
+    const deleteBookmark = () => {
+        const jwt = localStorage.getItem('jwt')
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        axios.delete(url, {
+            headers: {
+                jwt
+            }
+        })
+        .then(result => {
+            setIsBookmark(result.data)
+        })
+    }
+
     return (
         <div>
             <Head>
@@ -122,6 +162,28 @@ export default function Products(){
                         <div className={styles.flex}>
                             <div className={styles.image}>
                                 <img src={seriesData.img} />
+                                <div className={styles.iconContainer}>
+                                    {
+                                        !isBookmark && (
+                                            <div className={styles.item} onClick={e => addNewBookmark()}>
+                                                <div className={styles.icon}><IoBookmarkOutline /></div>
+                                                <div className={styles.label}>ติดตาม</div>
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        isBookmark && (
+                                            <div className={styles.item} onClick={e => deleteBookmark()}>
+                                                <div className={styles.iconYellow}><IoBookmark /></div>
+                                                <div className={styles.label}>ติดตาม</div>
+                                            </div>
+                                        )
+                                    }
+                                    <div className={styles.item}>
+                                        <div className={styles.icon}><IoShareOutline /></div>
+                                        <div className={styles.label}>แชร์</div>
+                                    </div>
+                                </div>
                             </div>
                             <div className={styles.detailFlex}>
                                 <div className={styles.description}>
@@ -172,7 +234,6 @@ export default function Products(){
                                 </div>
                             </div>
                         </div>
-                        
                         <hr/>
                         {
                             // seriesData.products && <div>สินค้าทั้งหมด {seriesData.products.totalProducts}</div>
