@@ -12,12 +12,19 @@ import "swiper/css"
 import "swiper/css/navigation"
 
 export default function Home() {
-  const [ latestProduct, setLatestProduct ] = useState()
+  const [ latestProduct, setLatestProduct ] = useState([])
+  const [ mostSoldProduct, setMostSoldProduct ] = useState([])
 
   function getData(){
     var url = process.env.NEXT_PUBLIC_BACKEND + '/product/latestProduct'
+    var url2 = process.env.NEXT_PUBLIC_BACKEND + '/product/mostSoldProduct'
     axios.get(url).then( result => {
       setLatestProduct(result.data)
+    }).catch( err => {
+
+    })
+    axios.get(url2).then( result => {
+      setMostSoldProduct(result.data)
     }).catch( err => {
 
     })
@@ -61,7 +68,7 @@ export default function Home() {
           </div>
           <div className={styles.swiperContainer}>
             ขายดี
-            { latestProduct && <SwiperItem data={latestProduct} href={'/product'}/> }
+            { latestProduct && <SwiperItem data={mostSoldProduct} href={'/product'}/> }
           </div>
         </main>
 

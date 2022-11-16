@@ -20,24 +20,80 @@
 
 /* ------------------------------------------------
 [ Checkout State ] */
-.checkoutState {
+.stepperWrapper {
+    padding: 20px 0;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
+    width: 500px;
+    max-width: 100%;
 }
-
-.checkoutState .item {
+.stepperItem {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
+    flex: 1;
+}
+  
+.stepperItem::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #d3d3d3;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
+}
+  
+.stepperItem::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #d3d3d3;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
+}
+  
+.stepperItem .stepCounter {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #d3d3d3;
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+.stepperItem.active .stepCounter {
+    border: #3aac5d 3px solid;
 }
 
-.checkoutState .item .title {
-    padding: 0 10px;
+.stepperItem.completed .stepCounter {
+    background-color: #3aac5d;
 }
+
+.stepperItem.completed::after {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #3aac5d;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 3;
+}
+
+.stepperItem:first-child::before {
+    content: none;
+}
+
+.stepperItem:last-child::after {
+    content: none;
+}
+  
 
 /* ------------------------------------------------
 [ Checkout Section ] */

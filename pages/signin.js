@@ -22,6 +22,7 @@ const SignIn = () => {
             localStorage.setItem('jwt', response.data.token)
             localStorage.setItem('displayName', response.data.name)
             localStorage.setItem('userImg', response.data.img)
+            localStorage.setItem('userId', response.data.userId)
             setLogin(true)
         }).catch((error) => {
             // password not match

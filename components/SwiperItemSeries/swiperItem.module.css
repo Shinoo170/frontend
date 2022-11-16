@@ -100,40 +100,9 @@
     transition: transform linear 0.15s;
 }
 
-.item .btn:hover .price,
-.item .btn:hover .text {
-    transform: translateY(-100%);
-}
-
 .item .btnDisable:hover {
     color: #3761ee;
 }
-
-.quickBuy {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: aqua;
-    z-index: 9;
-}
-
-.quickAddToCart {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    z-index: 999;
-
-    padding: 40px 20px;
-    overflow-y: auto;
-
-}
-
 
 /* ------------------------------------------------
 [ Medium device (tablets) ] */

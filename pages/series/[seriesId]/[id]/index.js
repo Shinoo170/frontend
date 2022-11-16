@@ -7,9 +7,16 @@ import Link from 'next/link'
 import Header from 'components/header'
 import styles from './id.module.css'
 import SwiperItem from 'components/SwiperItem'
+import SwiperItemSeries from 'components/SwiperItemSeries'
 
-import { RiArrowDownSLine } from 'react-icons/ri'
+import { BsThreeDotsVertical } from 'react-icons/bs'
+import { RiArrowDownSLine, RiArrowRightSLine } from 'react-icons/ri'
 import { MdShoppingCart } from 'react-icons/md'
+import { HiOutlineMenu } from 'react-icons/hi'
+import { TiStar } from 'react-icons/ti'
+
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import { Swiper, SwiperSlide } from "swiper/react"
 import { FreeMode, Mousewheel, Pagination } from "swiper"
@@ -17,14 +24,12 @@ import "swiper/css"
 import "swiper/css/free-mode"
 import "swiper/css/pagination"
 
-import { RiArrowRightSLine } from 'react-icons/ri'
-import { TiStar } from 'react-icons/ti'
-
 export default function ProductDetails(){
     const router = useRouter()
     const [ productsData, setProductsData ] = useState( {img:[], score:{avg: 0}} )
     const [ seriesDetails, setSeriesDetails ] = useState( {score: {avg: 0}} )
     const [ otherProduct, setOtherProduct ] = useState( [] )
+    const [ simProduct, setSimProduct ] = useState([])
     const [ showImage, setShowImage ] = useState()
     const [ showDropdown, setShowDropdown ] = useState(false)
     const [ viewMore, setViewMore ] = useState('hide')
@@ -60,12 +65,16 @@ export default function ProductDetails(){
                 setSeriesDetails(result.data.seriesDetails)
                 setShowImage(result.data.productDetails.img[0])
                 setOtherProduct(result.data.otherProducts)
+                setSimProduct(result.data.similarProducts)
 
                 const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + result.data.productDetails.productId
                 axios.get(reviewUrl)
                 .then( result => {
                     console.log(result.data)
-                    setOtherReview(result.data)
+                    const id = localStorage.getItem('userId')
+                    const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
+                    console.log(reviewTemp)
+                    setOtherReview(reviewTemp)
                 })
             }).catch( err => {
                 if(err.response.status === 400){
@@ -85,6 +94,7 @@ export default function ProductDetails(){
     useEffect(() => {
         var lines = document.getElementById('description').offsetHeight / 22
         if(lines > 7) setViewMore('More')
+        else setViewMore('hide')
     }, [productsData])
 
     const viewMoreHandle = () => {
@@ -102,8 +112,12 @@ export default function ProductDetails(){
             productId: productsData.productId,
             amount: selectAmount,
         }).then(result => {
-            localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
-        }).catch(err => console.log(err.message))
+            // localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
+            fireToast('success','เพิ่มสินค้าสำเร็จ')
+        }).catch(err => {
+            console.log(err.message)
+            fireToast('error','เพิ่มสินค้าไม่สำเร็จ')
+        })
     }
 
     const reviewHandle = () => {
@@ -117,9 +131,41 @@ export default function ProductDetails(){
                 review: reviewInput,
                 score: starSelect,
             }).then(result => {
-                
+                const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + productsData.productId
+                axios.get(reviewUrl)
+                .then( result => {
+                    const id = localStorage.getItem('userId')
+                    const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
+                    setOtherReview(reviewTemp)
+                    reviewTextarea.current.value = ''
+                })
             }).catch(err => console.log(err.message))
         }
+    }
+
+    const fireToast = (status, text) => {
+        if(status === 'success'){
+            toast.success(text, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            })
+        } else if(status === 'error'){
+            toast.error(text, {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            })
+        }
+        
     }
 
     return (
@@ -130,6 +176,7 @@ export default function ProductDetails(){
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
+            <ToastContainer /> 
             <div className={styles.container}>
                 <main className={styles.main}>
                     <div className={styles.detailContainer}>
@@ -166,7 +213,7 @@ export default function ProductDetails(){
                             <div className={styles.subSection}>
                                 <div className={styles.flexRow}>
                                     <div className={styles.price}>
-                                        <div>{productsData.category}</div>
+                                        <div>{productsData.thai_category}</div>
                                         <div className={styles.priceLabel}>{productsData.price} บาท</div>
                                         <div className={styles.dummy}></div>
                                     </div>
@@ -178,10 +225,15 @@ export default function ProductDetails(){
                                                 { amount.map((element, index) => <div key={`amount-${index}`} className={styles.dropdownItem} data-value={element}>{element}</div> ) }
                                             </div>
                                         </div>
-                                        <div className={styles.dummy}></div>
+                                        <div className={styles.dummy}>{(productsData.amount === 0 || productsData.status === 'out') && <>* สินค้าหมด</>}</div>
                                     </div>
                                 </div>
-                                <div className={styles.btn} onClick={addToCartHandle}> <div className={styles.cartIcon}><MdShoppingCart/></div> Add to cart</div>
+                                {
+                                    productsData.amount > 0 && productsData.status !== 'out' && <div className={styles.btn} onClick={addToCartHandle}> <div className={styles.cartIcon}><MdShoppingCart/></div> Add to cart</div>
+                                }
+                                {
+                                    (productsData.amount === 0 || productsData.status === 'out') && <div className={styles.btnDisable}> <div className={styles.cartIcon}><MdShoppingCart/></div> Out of stock</div>
+                                }
                             </div>
                         </div>
                         <div className={styles.detailFlex}>
@@ -247,9 +299,17 @@ export default function ProductDetails(){
                                 </div>
                             </div>
                         }
-                        <div className={styles.otherProduct}>
-                            <div className={styles.label}>สินค้าที่คุณอาจสนใจ</div>
-                        </div>
+                        {
+                            simProduct.length > 0 && <div className={styles.listProduct}>
+                                <div className={styles.top}>
+                                    <div className={styles.label}>สินค้าที่คุณอาจสนใจ</div>
+                                </div>
+                                <div className={styles.swiperContainer}>
+                                    <SwiperItemSeries data={simProduct} href={`/series/`} seriesId={router.query.seriesId}/>
+                                </div>
+                            </div>
+                        }
+                        <hr/>
                         <div className={styles.review}>
                             <div className={styles.label}>รีวิว</div>
                             <div className={styles.reviewArea}>
@@ -271,22 +331,31 @@ export default function ProductDetails(){
                                 {
                                     otherReview.map((element, index) => {
                                         var score = element.score
+                                        const userId = localStorage.getItem('userId')
                                         return (
                                             <div key={`review-${index}`} className={styles.reviewContainer}>
-                                                <div className={styles.userInfo}>
-                                                    <div className={styles.image}>
-                                                        {element.user[0].userData.img}
-                                                    </div>
-                                                    <div className={styles.user}>
-                                                        {element.user[0].userData.displayName}
-                                                        <div className={styles.starGroup}>
-                                                            <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
-                                                            <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>
-                                                            <TiStar className={`${styles.star} ${score>=3? styles.starHover:''}`}/>
-                                                            <TiStar className={`${styles.star} ${score>=4? styles.starHover:''}`}/>
-                                                            <TiStar className={`${styles.star} ${score>=5? styles.starHover:''}`}/>
+                                                <div className={styles.row}>
+                                                    <div className={styles.userInfo}>
+                                                        <div className={styles.image}>
+                                                            {element.detail[0].userData.img}
+                                                        </div>
+                                                        <div className={styles.user}>
+                                                            {element.detail[0].userData.displayName}
+                                                            <div className={styles.starGroup}>
+                                                                <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
+                                                                <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>
+                                                                <TiStar className={`${styles.star} ${score>=3? styles.starHover:''}`}/>
+                                                                <TiStar className={`${styles.star} ${score>=4? styles.starHover:''}`}/>
+                                                                <TiStar className={`${styles.star} ${score>=5? styles.starHover:''}`}/>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    {
+                                                        userId === element.user_id && <div className={styles.reviewMenu}>
+                                                            <BsThreeDotsVertical />
+                                                        </div>
+                                                    }
+                                                    
                                                 </div>
                                                 {element.review}
                                             </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, createContext } from "react"
 import { useRouter } from 'next/router'
 import Link from "next/link"
 import Image from 'next/image'
@@ -9,6 +9,10 @@ import styles from './productListMD.module.css'
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { FiChevronLeft,FiChevronRight } from 'react-icons/fi'
 
+import QuickBuy from "components/quickBuy"
+
+export const quickBuyContext = createContext()
+
 export default function ProductListMD(prop){
     const router = useRouter()
     const [ listProduct, setListProduct ] = useState([])
@@ -16,6 +20,22 @@ export default function ProductListMD(prop){
     const [ currentPage, setCurrentPage ] = useState(1)
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(9)
     const [ maxPage, setMaxPage ] = useState(0)
+    const [ quickBuyData, setQuickBuyData ] = useState({})
+    const [ showQuickBuy , setShowQuickBuy ] = useState(false)
+
+    useEffect(() => {
+        if(showQuickBuy) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'scroll';
+        }
+    },[showQuickBuy])
+
+    const quickBuyHandle = (e) => {
+        if(e.target.id === 'quickAddToCart'){
+            setShowQuickBuy(false)
+        }
+    }
 
     const goBack = () => {
         const target = '/series/' + allProduct[0].seriesId
@@ -59,6 +79,11 @@ export default function ProductListMD(prop){
             <div className={styles.productList}>
                 {
                     listProduct.map( (element, index) => {
+                        const quickBuy = (e) => {
+                            e.preventDefault()
+                            setQuickBuyData(element)
+                            setShowQuickBuy(true)
+                        }
                         return <div key={`item-${index}`} className={styles.itemContainer}>
                             <Link href={`/series/${element.seriesId}/${element.url}`}>
                                 <div className={styles.item}>
@@ -66,10 +91,19 @@ export default function ProductListMD(prop){
                                         <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
                                     </div>
                                     <div className={styles.title}>{element.title} เล่ม {element.bookNum}</div>
-                                    <button className={styles.btn}>
-                                        <div className={styles.price}>{element.price} ฿</div>
-                                        <div className={styles.text}>Add to cart</div>
-                                    </button>
+                                    {
+                                        element.amount > 0 && element.status !== 'out' && 
+                                        <button className={styles.btn} onClick={quickBuy}>
+                                            <div className={styles.price}>{element.price} ฿</div>
+                                            <div className={styles.text}>Add to cart</div>
+                                        </button>
+                                    }
+                                    {
+                                        ( element.amount <= 0 || element.status === 'out') && 
+                                        <button className={styles.btnDisable} onClick={quickBuy}>
+                                            <div className={styles.price}>Out of stock</div>
+                                        </button>
+                                    }
                                 </div>
                             </Link>
                         </div>
@@ -80,12 +114,18 @@ export default function ProductListMD(prop){
                 maxPage > 1 && <div className={`${styles.pageButtonGroup}`}>
                     <button className={currentPage===1? styles.disable:''}onClick={e => changePageHandle(-1) }><FiChevronLeft /></button>
                     <div className={styles.currentPageText}>
-                        {currentPage}
+                        {currentPage} / {maxPage}
                     </div>
                     <button className={currentPage===maxPage? styles.disable:''} onClick={e => changePageHandle(1) }><FiChevronRight /></button>
                 </div>
             }
-            
+            { showQuickBuy && 
+                <div id='quickAddToCart' className={styles.quickAddToCart} onClick={e => quickBuyHandle(e)}>
+                    <quickBuyContext.Provider value={setShowQuickBuy}>
+                        <QuickBuy data={quickBuyData}/>
+                    </quickBuyContext.Provider>
+                </div>
+            }
         </div>
     )
 }

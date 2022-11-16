@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import Router from 'next/router'
+import { useState, useEffect, useRef } from 'react'
+import Router, { useRouter } from 'next/router'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,17 +10,19 @@ import styles from './product.module.css'
 import { FiChevronLeft,FiChevronRight } from 'react-icons/fi'
 
 export default function ProductPage(){
+    const router = useRouter()
     const [ listProduct, setListProduct ] = useState([])
+    const [ search, setSearch ] = useState([])
     const [ allProduct, setAllProduct ] = useState([])
     const [ currentPage, setCurrentPage ] = useState(1)
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(10)
     const [ maxPage, setMaxPage ] = useState(0)
+    const searchBar = useRef()
     
     // get data
-    const getListProduct = async () => {
+    const getListProduct = async (cancelToken) => {
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/allSeries'
-        axios.get(url).then( (result) => {
-            // setListProduct(result.data)
+        axios.get(url, {cancelToken: cancelToken.token,}).then( (result) => {
             setAllProduct(result.data)
         }).catch( (err)=> {
             // ! Localhost ios issus
@@ -43,52 +45,84 @@ export default function ProductPage(){
             setCurrentPage(currentPage+1)
         }
     }
-    // [ First,1 get data ]
+
     useEffect( () => {
-        getListProduct()
+        const cancelToken = axios.CancelToken.source()
+        getListProduct(cancelToken)
+        return () => {
+            cancelToken.cancel()
+        }
     }, [])
-    // [ Then,2 calculate max page ]
+
     useEffect(()=>{
         setMaxPage( Math.ceil(allProduct.length/Max_Product_Per_Page))
         setCurrentPage(1)
     },[allProduct])
-    // [ Last,3 show product when page change ]
+
     useEffect( ()=> {
         const arr = []
+        setMaxPage(Math.ceil(allProduct.length/Max_Product_Per_Page))
         var start = currentPage*Max_Product_Per_Page - Max_Product_Per_Page
         var stop = currentPage*Max_Product_Per_Page
         if( stop > allProduct.length ){
             stop = allProduct.length
         }
-        for(let i = start; i<stop; i++){
-            arr.push(allProduct[i])
+        if(search){
+            const searchProduct = []
+            let index = 0
+            while(index < allProduct.length){
+                if(allProduct[index].title.match(search)){
+                    searchProduct.push(allProduct[index])
+                }
+                index++
+            }
+            setMaxPage(Math.ceil(searchProduct.length/Max_Product_Per_Page))
+            if( stop > searchProduct.length ){
+                stop = searchProduct.length
+            }
+            for(let i = start; i<stop; i++){
+                arr.push(searchProduct[i])
+            }
+        } else {
+            for(let i = start; i<stop; i++){
+                arr.push(allProduct[i])
+            }
         }
         setListProduct(arr)
-        Router.push({
-            pathname: '/admin/product',
-            query: { page: currentPage },
-        })
-    }, [currentPage, maxPage])
+        router.query.page = currentPage
+        router.push({pathname: '/admin/series', query:{ ...router.query } }, undefined,{ shallow: true } )
+    }, [currentPage, maxPage, search])
+
+    useEffect(() => {
+        if(router.isReady){
+            setSearch(router.query.search)
+        }
+    }, [router])
     
+    const searchHandle = () => {
+        if(searchBar.current.value === '') delete router.query.search
+        else router.query.search = searchBar.current.value
+        router.push({pathname: '/admin/series', query:{ ...router.query } }, undefined,{ shallow: true } )
+    }
 
     return (
         <div className={styles.container}>
             <SideNav />
             <div className={styles.contentContainer}>
                 <div className={styles.productWrap}>
-                    <div className={styles.pageTitle}>Product</div>
+                    <div className={styles.pageTitle}>Series</div>
                     <div className={styles.topMenu}>
-                        <button className={styles.addButton}><Link href='/admin/product/addSeries'>Add Series</Link></button>
-                        <input placeholder='Search...'/>
+                        <button className={styles.addButton}><Link href='/admin/series/addSeries'>Add Series</Link></button>
+                        <input ref={searchBar} placeholder='Search...' onChange={searchHandle} onMouseLeave={searchHandle}/>
                     </div>
                     
                     <div className={styles.listProductContainer} id='listContainer'>
-                        { (listProduct[0] === undefined) && <div>No product</div> }
+                        { (listProduct[0] === undefined) && <div>No series</div> }
                         {
                             (listProduct[0] != undefined) && listProduct.map( (element, index) => {
                                 return (
                                     <div key={`item-${index}`} className={styles.itemContainer}>
-                                        <Link href={`/admin/product/${element.seriesId}`}>
+                                        <Link href={`/admin/series/${element.seriesId}`}>
                                             <a className={styles.item}>
                                                 <div className={styles.image}>
                                                     <Image src={element.img} alt='img' layout='fill' objectFit='contain' />

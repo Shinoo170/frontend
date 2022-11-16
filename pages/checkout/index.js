@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Header from 'components/header'
 import styles from './checkout.module.css'
 import Script from "react-load-script"
+import { ethers } from "ethers"
 
 import SelectAddress from 'components/checkout_components/address'
 import PaymentMethod from 'components/checkout_components/payment'
@@ -50,12 +51,27 @@ export default function CheckOut(){
     }, [paymentMethod])
 
     useEffect(() => {
-        let priceSum = 0
-        cart.forEach((element, index) => {
-            priceSum += Math.round((element.amount * element.price / exchange_rate )* 100)/100
+        calPriceSummary()
+    }, [cart, exchange_rate])
+
+    const calPriceSummary = () => {
+        var priceSum = 0
+        var itemPrice = 0
+        var itemAmount
+        cart.forEach( (element, index) => {
+            if(element.status === 'out' ){
+                return
+            }
+            if( element.amount < element.stockAmount ){
+                itemAmount = element.amount
+            } else {
+                itemAmount = element.stockAmount
+            }
+            itemPrice = itemAmount * element.price / exchange_rate
+            priceSum += Math.round(itemPrice*100)/100
         })
         setPriceSummary(Math.round(priceSum*100)/100)
-    }, [exchange_rate])
+    }
 
     const getCart = () => {
         const jwt = localStorage.getItem('jwt')
@@ -76,6 +92,7 @@ export default function CheckOut(){
                         if(element.productId === product[i].productId){
                             const result = Object.assign({}, element, product[i])
                             result.amount = element.amount
+                            result.stockAmount = product[i].amount
                             cartList.push(result)
                             priceSum += Math.round(element.amount * product[i].price * 100)/100
                             break
@@ -97,7 +114,7 @@ export default function CheckOut(){
     }
 
     let OmiseCard
-    const handleLoadScript = () => {
+    const creditCardConfigure = () => {
         OmiseCard = window.OmiseCard
         OmiseCard.configure({
             publicKey: process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY,
@@ -106,9 +123,6 @@ export default function CheckOut(){
             submitLabel: 'Pay NOW',
             buttonLabel: 'Pay with Omise'
         })
-    }
-    const creditCardConfigure = () => {
-        handleLoadScript()
         OmiseCard.configure({
             defaultPaymentMethod: 'credit_card',
             otherPaymentMethods: []
@@ -117,7 +131,7 @@ export default function CheckOut(){
         OmiseCard.attach()
 
         OmiseCard.open({
-            amount: (priceSummary + 40)*100,
+            amount: (priceSummary + shippingFee)*100,
             onCreateTokenSuccess: (token) => {
                 console.log(token)
                 const jwt = localStorage.getItem('jwt')
@@ -126,21 +140,116 @@ export default function CheckOut(){
                     jwt,
                     token: token,
                     method: 'credit_card',
-                    amount: priceSummary,
+                    amount: priceSummary + shippingFee,
                     shippingFee,
                     exchange_rate,
-                    method: 'credit_card',
                     cart,
                 }).then(result => {
                     console.log(result.data)
+                }).catch(error => {
+                    console.log(error.response.data.message)
                 })
             },
             onFormClosed: () => { },
         })
     }
-    const handleClick = (e) => {
+    const omisePayHandle = (e) => {
         e.preventDefault()
         creditCardConfigure()
+
+        // const jwt = localStorage.getItem('jwt')
+        // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+        // axios.post( url , {
+        //     jwt,
+        //     token: undefined,
+        //     method: 'credit_card',
+        //     amount: priceSummary + shippingFee,
+        //     shippingFee,
+        //     exchange_rate,
+        //     cart,
+        // }).then(result => {
+        //     console.log(result.data)
+        // }).catch(err => {
+        //     console.log(err.response.data.message)
+        // })
+    }
+
+    const metamaskPayHandle = async () => {
+        if (!window.ethereum) return console.log('No matamask')
+        try {
+            await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: `0x${Number(97).toString(16)}`,
+                    chainName: "BSC Testnet",
+                    nativeCurrency: {
+                    name: "BSC Testnet",
+                    symbol: "BUSD",
+                    decimals: 18
+                    },
+                    rpcUrls: [process.env.NEXT_PUBLIC_BSC_RPC_URLS],
+                    blockExplorerUrls: ["https://testnet.bscscan.com/"]
+                  }
+                ]
+            })
+            await window.ethereum.send("eth_requestAccounts")
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signer = provider.getSigner()
+            const abi = [
+                "function name() public view returns (string)",
+                "function symbol() public view returns (string)",
+                "function decimals() public view returns (uint8)",
+                "function totalSupply() public view returns (uint256)",
+                "function transfer(address to, uint amount) returns (bool)",
+                "function approve(address _spender, uint256 _value) public returns (bool success)"
+            ]
+            let contract = new ethers.Contract(
+                process.env.NEXT_PUBLIC_BUSD_CONTRACT,
+                abi,
+                signer
+            )
+            const price = String(Math.round((priceSummary + shippingFee/exchange_rate) *100)/100)
+            const shippingFeeConvert = Math.round(shippingFee/exchange_rate *100)/100
+            let numberOfTokens = ethers.utils.parseUnits(price, 18)
+            const tx = await contract.transfer(
+                process.env.NEXT_PUBLIC_METAMASK_SHOP_ADDRESS,
+                numberOfTokens
+            )
+            const jwt = localStorage.getItem('jwt')
+            const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+            axios.post( url , {
+                jwt,
+                method: 'metamask',
+                amount: priceSummary + shippingFeeConvert,
+                shippingFee: shippingFeeConvert,
+                exchange_rate,
+                cart,
+                hash: tx.hash,
+            }).then(result => {
+                console.log(result.data)
+            }).catch(error => {
+                console.log(error.response.data.message)
+            })
+
+            // const jwt = localStorage.getItem('jwt')
+            // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+            // axios.post( url , {
+            //     jwt,
+            //     method: 'metamask',
+            //     amount: priceSummary,
+            //     shippingFee,
+            //     exchange_rate,
+            //     cart,
+            //     hash: '0x01',
+            // }).then(result => {
+            //     console.log(result.data)
+            // }).catch(error => {
+            //     console.log(error.response.data.message)
+            // })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const animationLoader = () => {
@@ -175,18 +284,18 @@ export default function CheckOut(){
             </Head>
             <Header />
             <div className={styles.container}>
-                <div className={styles.checkoutState}>
-                    <div className={styles.item}>
-                        <div className={styles.step}>1</div>
-                        <div className={styles.title}>ที่อยู่จัดส่ง</div>
+                <div className={styles.stepperWrapper}>
+                    <div className={`${styles.stepperItem} ${state==='address'? styles.active:''} ${state!=='address'? styles.completed:''}`} onClick={e => setState('address')}>
+                        <div className={styles.stepCounter}>1</div>
+                        <div className={styles.stepName}>ที่อยู่จัดส่ง</div>
                     </div>
-                    <div className={styles.item}>
-                        <div className={styles.step}>2</div>
-                        <div className={styles.title}>ช่องทางชำระเงิน</div>
+                    <div className={`${styles.stepperItem} ${state==='payment'? styles.active:''} ${state==='success'? styles.completed:''}`}>
+                        <div className={styles.stepCounter}>2</div>
+                        <div className={styles.stepName}>ช่องทางชำระเงิน</div>
                     </div>
-                    <div className={styles.item}>
-                        <div className={styles.step}>3</div>
-                        <div className={styles.title}>สั้งซื้อสำเร็จ</div>
+                    <div className={`${styles.stepperItem} ${state==='success'? styles.completed:''}`}>
+                        <div className={styles.stepCounter}>3</div>
+                        <div className={styles.stepName}>สั่งซื้อสำเร็จ</div>
                     </div>
                 </div>
                 <main className={styles.main}>
@@ -202,32 +311,36 @@ export default function CheckOut(){
                             <div className={styles.label}>รายการสินค้า</div>
                             {
                                 cart.map( (element, index) => {
-                                    var itemPrice = element.amount * element.price / exchange_rate
+                                    var itemAmount = element.amount
+                                    if( element.amount > element.stockAmount ) itemAmount = element.stockAmount
+                                    var itemPrice = itemAmount * element.price / exchange_rate
                                     var priceSum = Math.round(itemPrice*100)/100
-                                    return (
-                                        <div key={`cart-item-${index}`} className={styles.item}>
-                                            <div className={styles.imageContainer}>
-                                                <div className={styles.image}>
-                                                    <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
+                                    if(itemAmount != 0){
+                                        return (
+                                            <div key={`cart-item-${index}`} className={styles.item}>
+                                                <div className={styles.imageContainer}>
+                                                    <div className={styles.image}>
+                                                        <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
+                                                    </div>
+                                                </div>
+                                                <div className={styles.detailGroup}>
+                                                    <div className={styles.details}>
+                                                        {/* <Link href={`/series/${element.seriesId}/${element.url}`}>
+                                                            <a className={styles.title}>{element.title} {element.bookNum}</a>
+                                                        </Link> */}
+                                                        <div className={styles.title}>{element.title} {element.bookNum}</div>
+                                                        <div className={styles.category}>{element.category}</div>
+                                                        <div className={styles.price}>จำนวน : {itemAmount}</div>
+                                                    </div>
+                                                    <div className={styles.right}>
+                                                        รวม : 
+                                                        <span className={`${styles.priceLabel} text`}>{priceSum}</span>
+                                                        {currency}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className={styles.detailGroup}>
-                                                <div className={styles.details}>
-                                                    {/* <Link href={`/series/${element.seriesId}/${element.url}`}>
-                                                        <a className={styles.title}>{element.title} {element.bookNum}</a>
-                                                    </Link> */}
-                                                    <div className={styles.title}>{element.title} {element.bookNum}</div>
-                                                    <div className={styles.category}>{element.category}</div>
-                                                    <div className={styles.price}>จำนวน : {element.amount}</div>
-                                                </div>
-                                                <div className={styles.right}>
-                                                    รวม : 
-                                                    <span className={`${styles.priceLabel} text`}>{priceSum}</span>
-                                                    {currency}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
+                                        )
+                                    }
                                 })
                             }
                         </div>
@@ -244,7 +357,7 @@ export default function CheckOut(){
                             </div>
                             <div className={styles.row}>
                                 <div>ราคารวม</div>
-                                <div>{ Math.round(((priceSummary + shippingFee)/exchange_rate) *100)/100 } {currency}</div>
+                                <div>{ Math.round((priceSummary + shippingFee/exchange_rate) *100)/100 } {currency}</div>
                             </div>
                         </div>
                         <div className={`${styles.summaryContainer} ${styles.hide} loader-container`}>
@@ -253,12 +366,15 @@ export default function CheckOut(){
                         <div className={styles.row}>
                             { (state === 'address') && <div className={styles.btn} onClick={e => changePageHandle()}>ถัดไป</div> }
                             { 
-                                (state === 'payment' && paymentMethod === 'credit_card') && <div className={styles.btn} onClick={handleClick}>
+                                (state === 'payment' && paymentMethod === 'credit_card') && <div className={styles.btn} onClick={omisePayHandle}>
                                     <Script url="https://cdn.omise.co/omise.js"/>
                                     <form>
                                         <div id="credit-card">ชำระเงิน</div>
                                     </form>
                                 </div> 
+                            }
+                            { 
+                                (state === 'payment' && paymentMethod === 'metamask') && <div className={styles.btn} onClick={metamaskPayHandle}>ชำระเงิน</div> 
                             }
                         </div>
                     </div>

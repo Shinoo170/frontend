@@ -7,9 +7,8 @@ import styles from './quickBuy.module.css'
 import { RiArrowDownSLine } from 'react-icons/ri'
 import { MdShoppingCart } from 'react-icons/md'
 import { CgClose } from 'react-icons/cg'
-import { VscLoading } from 'react-icons/vsc'
 
-import { quickBuyContext } from "components/SwiperItem"
+import { quickBuyContext } from "./index"
 
 export default function QuickBuy(props) {
     const [ product, setProduct ] = useState({img:[]})
@@ -17,7 +16,7 @@ export default function QuickBuy(props) {
     const [ selectAmount, setSelectAmount ] = useState(1)
     const amount = [1,2,3,4,5,6,7,8,9,10]
 
-    const [setShowQuickBuy, setFireToast] = useContext(quickBuyContext)
+    const setShowQuickBuy = useContext(quickBuyContext)
 
     const addToCartHandle = () => {
         const jwt = localStorage.getItem('jwt')
@@ -28,8 +27,6 @@ export default function QuickBuy(props) {
             amount: selectAmount,
         }).then(result => {
             // localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
-            setShowQuickBuy(false)
-            setFireToast('success')
         }).catch(err => console.log(err.message))
     }
 

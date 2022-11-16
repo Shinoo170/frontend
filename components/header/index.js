@@ -48,7 +48,8 @@ export default function Header(){
             if(search.current.value)
                 Router.push({pathname: '/products', query:{ searchText } }, undefined,{} )
             else
-            Router.push({pathname: '/products', query:{} }, undefined,{} )
+                Router.push({pathname: '/products', query:{} }, undefined,{} )
+                search.current.value = ''
         }
     }
 
@@ -83,6 +84,7 @@ export default function Header(){
                             <div className={styles.item}><Link href='/products'><a><div className={styles.subTitle}>ทั้งหมด</div></a></Link></div>
                             <div className={styles.item}><Link href='/products?category=Novel'><a><div className={styles.subTitle}>นิยาย</div></a></Link></div>
                             <div className={styles.item}><Link href='/products?category=Manga'><a><div className={styles.subTitle}>มังงะ</div></a></Link></div>
+                            <div className={styles.item}><Link href='/products?category=Other'><a><div className={styles.subTitle}>สินค้าอื่นๆ</div></a></Link></div>
                         </div>
                     </div>
                 </div>

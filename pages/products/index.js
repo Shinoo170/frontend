@@ -21,6 +21,7 @@ export default function Products(){
     const [ starHover, setStarHover] = useState(0)
     const [ starSelect, setStarSelect] = useState(0)
     const star = [1,2,3,4,5]
+    const [ searchText, setSearchText ] = useState('')
     const [ filterGenres, setFilterGenres ] = useState([])
     const [ filterMatch, setFilterMatch ] = useState('ค่าเริ่มต้น')
     const [ filterCategory, setFilterCategory ] = useState('')   // -> Manga,Novel,Other
@@ -29,6 +30,8 @@ export default function Products(){
     const [ filterCount, updateFilterCount] = useState(0)
     const [ filterOrderBy, setFilterOrderBy ] = useState('ค่าเริ่มต้น')
     const [ filterSortReverse, setFilterSortReverse ] = useState()   // false (down) = A->Z 0-100 , True (up) = Z->A 100-0
+
+    const [ search, setSearch ] = useState('')
     // Product
     const [ allSeries, setAllSeries ] = useState([])
     const [ filterProduct, setFilterProduct ] = useState([])
@@ -45,7 +48,7 @@ export default function Products(){
         setFilterMatch(e)
         setShowDropdown1(false)
     }
-    const showDropdownOrderByHandle = (e) => {
+    const orderByHandle = (e) => {
         setFilterOrderBy(e)
         setShowDropdownOrderBy(false)
     }
@@ -144,17 +147,17 @@ export default function Products(){
     }, [])
 
     useEffect(() => {
-        if(router.isReady && (filterCount < 2)){
+        if(router.isReady){
             const query = router.query
-            Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
-            // "query.genres?" mean "query.genres" is not unified?"
-            if(query.match) setFilterMatch(query.match)
+            if(filterCount < 2){
+                Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
+                // "query.genres?" mean "query.genres" is not unified?"
+                if(query.match) setFilterMatch(query.match)
+                query.sort === 'Up'? setFilterSortReverse(true) : setFilterSortReverse(false)
+                setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
+            }
             query.category? setFilterCategory(query.category) : setFilterCategory('')
-            query.sort === 'Up'? setFilterSortReverse(true) : setFilterSortReverse(false)
-            setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
-        } else if(router.isReady){
-            const query = router.query
-            query.category? setFilterCategory(query.category) : setFilterCategory('')
+            query.searchText? setSearchText(query.searchText) : setSearchText('')
         }
     },[router])
 
@@ -166,14 +169,14 @@ export default function Products(){
                 try{
                     document.getElementById(element).checked = true
                 }catch(err){
-                    setFilterGenres([...filterGenres])
+                    // setFilterGenres([...filterGenres])
                 }
             })
             filterProcess()
             updateFilterCount(c => c + 1)
         }
         // * Update router
-        if(filterCount > 1){
+        if( (allSeries.length > 0) && filterCount > 1){
             router.query.page = 1
             // [ filter genres ]
             router.query.genres = []
@@ -181,95 +184,118 @@ export default function Products(){
                 router.query.genres.push(element)
             })
             // [ match ]
-            if(filterMatch != 'ค่าเริ่มต้น'){
-                router.query.match = filterMatch
-            } else {
-                delete router.query.match
-            }
+            filterMatch != 'ค่าเริ่มต้น'? router.query.match = filterMatch : delete router.query.match
             // [ filter Category ]
-            if(filterCategory !== ''){
-                router.query.category = filterCategory
-            } else {
-                delete router.query.category
-            }
+            filterCategory !== ''? router.query.category = filterCategory : delete router.query.category
             // [ Sort products ]
-            if(filterSortReverse !== undefined){
-                filterSortReverse? router.query.sort = "Up" : delete router.query.sort
-            } 
+            filterOrderBy !== 'ค่าเริ่มต้น'? router.query.orderBy = filterOrderBy: delete router.query.orderBy
+            filterSortReverse? router.query.sort = "Up" : delete router.query.sort
+
+            // if(searchText !== '') delete router.query.searchText
+            delete router.query.searchText
+            // if(search !== router.query.searchText) delete router.query.searchText
             router.push({pathname: '/products', query:{ ...router.query } }, undefined,{ shallow: true } )
             filterProcess()
         }
-    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore, filterSortReverse])
+    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore, filterOrderBy, filterSortReverse])
 
     const filterProcess = () => {
+        if(searchText !== ''){
+            if(filterCount > 0) setSearchText('')
+            return
+        }
         console.log('sorting')
-        const sort = []
+        setSearch('')
         const tempSort = []
         const genresLength = filterGenres.length
         var counter
         if(filterCategory !== '') {
             allSeries.forEach( element => {
-                var category = filterCategory
-                if(category === 'Novel'){
-                    if(element.products.totalNovel > 0) tempSort.push(element)
+                if(filterCategory === 'Novel') {
+                    if(element.products.totalNovel > 0) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
                 }
-                else if(category === 'Manga'){
-                    if(element.products.totalManga > 0) tempSort.push(element)
+                else if(filterCategory === 'Manga'){
+                    if(element.products.totalManga > 0) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
                 }
-                else if(category === 'Other'){
-                    if(element.products.totalOther > 0) tempSort.push(element)
+                else if(filterCategory === 'Other'){
+                    if(element.products.totalOther > 0) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
                 }
             })
         } else {
-            tempSort = allSeries
+            if(genresLength === 0){
+                tempSort = allSeries
+            } else {
+                allSeries.forEach( element => {
+                    if(isGenresFilterMatch(element)) tempSort.push(element)
+                })
+            }
         }
-        if(filterMatch === 'ค่าเริ่มต้น'){
-            // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
-            if(genresLength > 0){
-                for(let i=0; i<tempSort.length; i++){
-                    counter = 0
-                    for(let j=0; j<filterGenres.length; j++){
-                        if(tempSort[i].genres.indexOf(filterGenres[j]) !== -1){
-                            counter++
-                            if(counter === genresLength){
-                                sort.push(tempSort[i])
-                                break
-                            }
-                        }
-                    }
-                }
-            } else { sort.push(...tempSort) }
-            setFilterProduct(filterSortReverse? sort.reverse():sort)
-        } else if(filterMatch === 'เฉพาะที่เลือก'){
-             // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
-            if(genresLength > 0){
-                for(let i=0; i<tempSort.length; i++){
-                    counter = 0
-                    for(let j=0; j<filterGenres.length; j++){
-                        if(tempSort[i].genres.indexOf(filterGenres[j]) === -1){
-                            break
-                        }
+
+        const finalSort = tempSort.map(e => e)
+        if(filterOrderBy !== 'ค่าเริ่มต้น'){
+            if(filterOrderBy === 'เพิ่มล่าสุด'){
+                finalSort.sort((a,b) => (a.lastModify > b.lastModify)? -1 : ((b.lastModify > a.lastModify)? 1 : 0))
+            }else if(filterOrderBy === 'ชื่อ'){
+                finalSort.sort((a,b) => (a.title > b.title)? 1 : ((b.title > a.title)? -1 : 0))
+            }
+        }
+        setFilterProduct(filterSortReverse? finalSort.reverse() : finalSort)
+
+        function isGenresFilterMatch(e) {
+            if(genresLength === 0) return true
+            if(filterMatch === 'ค่าเริ่มต้น'){
+                counter = 0
+                for(let j=0; j<filterGenres.length; j++){
+                    if(e.genres.indexOf(filterGenres[j]) !== -1){
                         counter++
-                    }
-                    if(tempSort[i].genres.length === counter) sort.push(tempSort[i])
-                }
-            } else { sort.push(...tempSort) }
-            setFilterProduct(filterSortReverse? sort.reverse():sort)
-        } else if (filterMatch === 'อย่างใดอย่างหนึ่ง'){
-             // คัดประเภท ถ้า genresLength == 0 แสดงว่าไม่ได้เลือก ให้แสดงทั้งหมด
-            if(genresLength > 0){
-                for(let i=0; i<tempSort.length; i++){
-                    for(let j=0; j<filterGenres.length; j++){
-                        if(tempSort[i].genres.indexOf(filterGenres[j]) !== -1){
-                            if(sort.indexOf(tempSort[i]) === -1){
-                                sort.push(tempSort[i])
-                                break
-                            }
-                        }
+                        if(counter === genresLength) return true
                     }
                 }
-            } else { sort.push(...tempSort) }
-            setFilterProduct(filterSortReverse? sort.reverse():sort)
+                return false
+            }
+            else if(filterMatch === 'เฉพาะที่เลือก'){
+                counter = 0
+                for(let j=0; j<filterGenres.length; j++){
+                    if(e.genres.indexOf(filterGenres[j]) === -1) return false
+                    counter++
+                }
+                if(e.genres.length === counter) return true
+            }
+            else if(filterMatch === 'อย่างใดอย่างหนึ่ง'){
+                for(let j=0; j<filterGenres.length; j++){
+                    if(e.genres.indexOf(filterGenres[j]) !== -1) return true
+                }
+                return false
+            }
+        }
+
+    }
+
+    useEffect(() => {
+        if(allSeries.length > 0 && searchText !== ''){
+            filterGenres.map( element => {
+                document.getElementById(element).checked = false
+            })
+            searchSeries()
+            setFilterGenres([])
+        }
+    }, [allSeries, searchText])
+
+    const searchSeries = () => {
+        if(searchText !== ''){
+            var regExp = new RegExp(searchText, 'gi' );
+            const p = allSeries.filter(e => {
+                // if(e.title.match(regExp) || e.publisher.match(regExp) || e.author.match(regExp)) return true
+                if(e.title.match(regExp) || e.publisher.toLowerCase() === searchText.toLowerCase() || e.author.toLowerCase() === searchText.toLowerCase()) return true
+            })
+            setFilterProduct(p)
+            setSearch(searchText)
         }
     }
 
@@ -280,7 +306,7 @@ export default function Products(){
     return (
         <div>
             <Head>
-                <title>PT Bookshop</title>
+                <title>PT Bookstore</title>
                 <meta name="description" content="Generated by create next app" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
@@ -348,6 +374,7 @@ export default function Products(){
                                 <div className={styles.filterCategoryDetail}>
                                     <div className={styles.label}>Filter&nbsp;:</div>
                                     <div className={styles.category} id='showCategory' onMouseDown={mouseDownHandler}>
+                                        { search!=='' && <div className={styles.item} >ค้นหา: {search}</div> }
                                         {
                                             filterGenres.map( (element, index) => {
                                                 return(
@@ -362,11 +389,11 @@ export default function Products(){
                                     <div className={`${styles.dropdownGroup} ${styles.dropdownSM} ${showDropdownOrderBy? styles.showDropdown:''}`}>
                                         <div className={styles.dropdownSelection} onClick={e => setShowDropdownOrderBy(!showDropdownOrderBy)}>{filterOrderBy} <RiArrowDownSLine/></div>
                                         <div className={styles.dropdownList}>
-                                            <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ค่าเริ่มต้น')}>ค่าเริ่มต้น</div>
-                                            <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ความนิยม')}>ความนิยม</div>
-                                            <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('เพิ่มล่าสุด')}>เพิ่มล่าสุด</div>
-                                            <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ราคา')}>ราคา</div>
-                                            <div className={styles.dropdownItem} onClick={e => showDropdownOrderByHandle('ชื่อ')}>ชื่อ</div>
+                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('ค่าเริ่มต้น')}>ค่าเริ่มต้น</div>
+                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('ความนิยม')}>ความนิยม</div>
+                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('เพิ่มล่าสุด')}>เพิ่มล่าสุด</div>
+                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('ราคา')}>ราคา</div>
+                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('ชื่อ')}>ชื่อ</div>
                                         </div>
                                     </div>
                                     <div className={styles.sortButton} onClick={e => setFilterSortReverse(c => !c)}>

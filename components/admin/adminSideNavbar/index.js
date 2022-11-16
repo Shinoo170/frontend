@@ -6,6 +6,7 @@ import {
     BiBarChartAlt2, BiCart, BiDetail, BiGridAlt, BiHistory, BiLayout, BiLogOut, BiMenu, BiMenuAltRight, BiMessageSquareDetail, 
 } from 'react-icons/bi'
 import { VscGithubInverted } from 'react-icons/vsc'
+import { MdOutlineWeb } from 'react-icons/md'
 
 
 export default function SideNavbar(){
@@ -16,7 +17,7 @@ export default function SideNavbar(){
             <div className={`${styles.sidebar} ${expand? styles.sidebarExpand : ''}`}>
                 <div className={styles.logoDetails} onClick={ ()=>{ setExpand(!expand) }}>
                     <i className={styles.icon}><VscGithubInverted /></i>
-                    <div className={styles.logoName}>Bookstore</div>
+                    <div className={styles.logoName}>PTBookstore</div>
                     <div className={styles.navMenuIcon}>
                         {expand? <BiMenuAltRight />:<BiMenu/>}
                     </div>
@@ -51,13 +52,13 @@ export default function SideNavbar(){
                             <span className={styles.tooltip}>Pages</span>
                         </li>
                         <li>
-                            <Link href='/admin/product'> 
+                            <Link href='/admin/series'> 
                                 <a>
                                     <i><BiDetail /></i>
-                                    <span className={styles.linkName}>Product</span>
+                                    <span className={styles.linkName}>Series</span>
                                 </a>
                             </Link>
-                            <span className={styles.tooltip}>Product</span>
+                            <span className={styles.tooltip}>Series</span>
                         </li>
                         <li>
                             <Link href='#'> 
@@ -86,13 +87,22 @@ export default function SideNavbar(){
                             </Link>
                             <span className={styles.tooltip}>Review</span>
                         </li>
+                        <li>
+                            <Link href='/'> 
+                                <a>
+                                    <i><MdOutlineWeb /></i>
+                                    <span className={styles.linkName}>Back to website</span>
+                                </a>
+                            </Link>
+                            <span className={styles.tooltip}>Back to website</span>
+                        </li>
                     </div>
 
                     <li className={styles.profile}>
                         <div className={styles.profileDetails}>
                         <div className={styles.nameJob}>
-                            <div className={styles.name}>Shinoo</div>
-                            <div className={styles.job}>Full stack dev</div>
+                            <div className={styles.name}>Admin</div>
+                            <div className={styles.job}>Admin</div>
                         </div>
                         </div>
                         <i className={styles.logout}><BiLogOut /></i>

@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Upload } from "@aws-sdk/lib-storage";
 import { S3Client, S3 } from "@aws-sdk/client-s3";
 
-import { RiCloseCircleLine } from 'react-icons/ri'
+import { RiCloseCircleLine, RiArrowDownSLine } from 'react-icons/ri'
 
 export default function AddSeries() {
   const [ file, setFile ] = useState('')
@@ -17,6 +17,20 @@ export default function AddSeries() {
   const [ genres, setGenres ] = useState([])
   const [ keywords, setKeywords] = useState([])
   const [ author, setAuthor ] = useState('')
+  const [ allGenres, setAllGenres ] = useState(['Loading'])
+
+  useEffect(() => {
+    const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/product/genres'
+    axios.get(axiosURL)
+    .then( result => {
+      setAllGenres(result.data)
+    }).catch( err => {
+        console.log(err)
+        axios.get('/api/getGenres')
+        .then(result => setAllGenres(result.data))
+        .catch(err => { console.log("Also error"); console.log(err) })
+    })
+  }, [])
 
   const saveFile = (e) => {
     setFile(e.target.files[0])
@@ -28,23 +42,6 @@ export default function AddSeries() {
       const myPromise = new Promise( async (resolve, reject) => {
         // [ Upload image ]
         const imgName = Date.now() + '-' + file.name.replaceAll(' ','-')
-        const parallelUploads3 = new Upload({
-          client: new S3Client({
-            region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
-            credentials: {
-              accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
-              secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
-            }
-          }),
-          params: { 
-            Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
-            Key: 'Series/' + imgName,
-            Body: file
-          },
-          partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-          leavePartsOnError: false, // optional manually handle dropped parts
-        })
-        await parallelUploads3.done()
 
         const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/addSeries'
         const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Series/' + imgName
@@ -59,7 +56,24 @@ export default function AddSeries() {
           genres,
           keywords: ky,
           img: imgURL,
-        }).then( res => {
+        }).then( async res => {
+          const parallelUploads3 = new Upload({
+            client: new S3Client({
+              region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+              credentials: {
+                accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+                secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+              }
+            }),
+            params: { 
+              Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+              Key: 'Series/' + imgName,
+              Body: file
+            },
+            partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+            leavePartsOnError: false, // optional manually handle dropped parts
+          })
+          await parallelUploads3.done()
           resolve( res.data.message )
         }).catch( err => {
           console.log(err)
@@ -87,40 +101,6 @@ export default function AddSeries() {
     })
   }
 
-  // Get Genres && Keywords and display in dropdown
-  // var globalGenres = []
-  // const getGenresKeywords = async () => {
-  //   const url = process.env.BACKEND + '/product/genres'
-  //   await axios.get(url).then( (result) => {
-  //     const array = result.data
-  //     array.forEach( e => {
-  //       globalGenres.push(e.keyword)
-  //     })
-  //     console.log(globalGenres)
-
-  //     setKeyword(result.data)
-  //   })
-  // }
-
-  // function showGenres() {
-  //   return keywords.map( (element, index) => {
-  //     return ( 
-  //       <div id={`genres-${index}`} key={`genres-${index}`} className={styles.dropdownItem}>{element.keyword}</div>
-  //     )
-  //   })
-  // }
-  // function showKeywords() {
-  //   return keywords.map( (element, index) => {
-  //     return ( 
-  //       <div id={`keyword-${index}`} key={`keyword-${index}`} className={styles.dropdownItem}>{element.keyword}</div>
-  //     )
-  //   })
-  // }
-
-  // useEffect( () => {
-  //   getGenresKeywords()
-  // }, [])
-
   function addGenres(event){
     if(event.key === 'Enter'){
       const newGenres = event.target.value
@@ -129,7 +109,6 @@ export default function AddSeries() {
         setGenres([...genres, newGenres])
         event.target.value = ''
       }
-
     }
   }
   function removeGenres(target){
@@ -144,7 +123,7 @@ export default function AddSeries() {
     if(event.key === 'Enter'){
       const newKeyword = event.target.value
       // new keyword not exist in array
-      if(keywords.indexOf(newKeyword) === -1){
+      if(keywords.indexOf(newKeyword) === -1 && newKeyword!==author && genres.indexOf(newKeyword) === -1){
         setKeywords([...keywords, newKeyword])
         event.target.value = ''
       }
@@ -156,6 +135,29 @@ export default function AddSeries() {
     const index = array.indexOf(removeTarget)
     array.splice(index, 1)
     setKeywords([...array])
+  }
+
+  const mouseUpHandle = (e) => {
+    const container = document.getElementById('genres-dropdown')
+    if (!container.contains(e.target)) {
+        container.classList.remove(styles.showDropdown)
+        document.removeEventListener('mouseup', mouseUpHandle)
+    }
+  }
+  const showDropdownHandle = () => {
+    const container = document.getElementById('genres-dropdown')
+    if(container.classList.length === 1){
+        container.classList.add(styles.showDropdown)
+        document.addEventListener('mouseup', mouseUpHandle)
+    } else {
+        container.classList.remove(styles.showDropdown)
+    }
+  }
+
+  const hideDropdownHandle = (e) => {
+    const container = document.getElementById('genres-dropdown')
+    container.classList.remove(styles.showDropdown)
+    document.removeEventListener('mouseup', mouseUpHandle)
   }
 
   return (
@@ -230,16 +232,32 @@ export default function AddSeries() {
                 }
               </div>
               
-              <input id='genres' name='genres' onKeyUp={e => addGenres(e)} autoComplete="off" />
-
-              {/* <div className={styles.groupDropdown}>
-                <input id='genres' name='genres' onChange={(e) => onChangeHandler(e.target)} autoComplete="off" />
-                <div className={styles.dropdown}>
-                  <div className={styles.dropdownList}>
-
+              {/* <input id='genres' name='genres' onKeyUp={e => addGenres(e)} autoComplete="off" /> */}
+              <div id='genres-dropdown' className={`${styles.dropdownGroup}`}>
+                  <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}><div>Select Genres</div> <RiArrowDownSLine/></div>
+                  <div className={styles.dropdownList} onClick={e => hideDropdownHandle(e)}>
+                    {
+                      allGenres.map((element, index) => {
+                        const handle = (newGenres) => {
+                          if(genres.indexOf(newGenres) === -1){
+                            setGenres([...genres, newGenres])
+                          }
+                          const array = keywords
+                          const keywordIndex = array.indexOf(newGenres)
+                          if(keywordIndex !== -1){
+                            array.splice(keywordIndex, 1)
+                            setKeywords([...array])
+                          }
+                        }
+                        return (
+                            <div id={`id-genres-${index}`} className={styles.dropdownItem} key={`genres-${index}`} onClick={e => handle(element)} >
+                                <span id={`id-genres-label-${index}`}>{element}</span>
+                            </div>
+                        )
+                      })
+                    }
                   </div>
-                </div>
-              </div> */}
+              </div>
             </div>
 
             <div className={styles.inputWarp}>
@@ -248,7 +266,7 @@ export default function AddSeries() {
                 {
                   author && (
                   <div  className={styles.details} style={{paddingRight: '9px'}}>
-                    { author } <div className={styles.removeIcon}></div>
+                    author : { author } <div className={styles.removeIcon}></div>
                   </div>)
                 }
                 {
@@ -275,15 +293,6 @@ export default function AddSeries() {
               </div>
 
               <input id='keyword' name='keyword' onKeyUp={e => addKeywords(e)} autoComplete="off" />
-              {/* <div className={styles.groupDropdown}>
-                <input id='keyword' name='keyword' onChange={(e) => onChangeHandler(e.target)} autoComplete="off" />
-                <div className={styles.dropdown}>
-                  <div className={styles.dropdownList}>
-
-                  </div>
-                </div>
-              </div> */}
-              
             </div>
 
             <button className={styles.button4} onClick={e => uploadSeries(e)}>Add Product</button>

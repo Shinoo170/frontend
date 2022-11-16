@@ -50,29 +50,14 @@ export default function AddProduct() {
     e.preventDefault()
     try{
       const myPromise = new Promise( async (resolve, reject) => {
+        const listImageName = []
         const listImgURL = []
         // [ Upload image ]
         file.forEach( async element => {
           const imgName = Date.now() + '-' + element.name.replaceAll(' ','-')
           const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Products/' + seriesId + '/' + imgName
+          listImageName.push(imgName)
           listImgURL.push(imgURL)
-          const parallelUploads3 = new Upload({
-            client: new S3Client({
-              region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
-              credentials: {
-                accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
-                secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
-              }
-            }),
-            params: { 
-              Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
-              Key: 'Products/' + seriesId + '/' + imgName,
-              Body: element
-            },
-            partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-            leavePartsOnError: false, // optional manually handle dropped parts
-          })
-          await parallelUploads3.done()
         })
 
         var thai_category = ''
@@ -92,6 +77,26 @@ export default function AddProduct() {
           amount: e.target.amount.value,
           img: listImgURL,
         }).then( res => {
+          // [ Upload image ]
+          file.forEach( async (element, index) => {
+            const parallelUploads3 = new Upload({
+              client: new S3Client({
+                region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+                credentials: {
+                  accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+                  secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+                }
+              }),
+              params: { 
+                Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+                Key: 'Products/' + seriesId + '/' + listImageName[index],
+                Body: element
+              },
+              partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+              leavePartsOnError: false, // optional manually handle dropped parts
+            })
+            await parallelUploads3.done()
+          })
           resolve( res.data.message )
         }).catch( err => {
           console.log(err)
@@ -187,7 +192,7 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>เล่มที่</div>
-              <input id='bookNum' type='number'/>
+              <input id='bookNum'/>
             </div>
 
             <div className={styles.labelRadio}>ประเภท</div> 

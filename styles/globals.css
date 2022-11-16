@@ -37,7 +37,7 @@ body {
   --book-shadow: rgba(100, 100, 111, 0.10) 0px 7px 35px 0px;
   /* --red-background: rgba(226, 23, 23, 0.6); */
   background-color: var(--background);
-  background: var(--background)
+  background: var(--background);
 }
 
 a {

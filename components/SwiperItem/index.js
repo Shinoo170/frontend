@@ -7,6 +7,8 @@ import "swiper/css"
 import "swiper/css/free-mode"
 import "swiper/css/pagination"
 
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import styles from './swiperItem.module.css'
 
 import QuickBuy from "components/quickBuy"
@@ -16,14 +18,41 @@ export const quickBuyContext = createContext()
 export default function SwiperItem(props){
     const [ quickBuyData, setQuickBuyData ] = useState({})
     const [ showQuickBuy , setShowQuickBuy ] = useState(false)
+    const [ fireToast, setFireToast ] = useState('')
 
     useEffect(() => {
         if(showQuickBuy) {
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden'
         } else {
-            document.body.style.overflow = 'scroll';
+            document.body.style.overflow = 'auto'
         }
     },[showQuickBuy])
+
+    useEffect(() => {
+        if(fireToast === 'success'){
+            toast.success('เพิ่มสินค้าสำเร็จ', {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            })
+            setFireToast('')
+        } else if(fireToast === 'error'){
+            toast.error('เพิ่มสินค้าไม่สำเร็จ', {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+            })
+            setFireToast('')
+        }
+    }, [fireToast])
 
     const quickBuyHandle = (e) => {
         if(e.target.id === 'quickAddToCart'){
@@ -39,6 +68,8 @@ export default function SwiperItem(props){
                 modules={[FreeMode]}
                 className={styles.productList}
             >
+            <ToastContainer /> 
+              
                 {
                     props.data.map( (element, index) => {
                         const quickBuy = () => {
@@ -59,10 +90,19 @@ export default function SwiperItem(props){
                                                     <div className={styles.title}>{element.title} {element.bookNum}</div>
                                                 </a>
                                             </Link>
-                                            <button className={styles.btn} onClick={quickBuy}>
-                                                <div className={styles.price}>{element.price} ฿</div>
-                                                <div className={styles.text}>Add to cart</div>
-                                            </button>
+                                            {
+                                                element.amount > 0 && element.status !== 'out' && 
+                                                <button className={styles.btn} onClick={quickBuy}>
+                                                    <div className={styles.price}>{element.price} ฿</div>
+                                                    <div className={styles.text}>Add to cart</div>
+                                                </button>
+                                            }
+                                            {
+                                                ( element.amount <= 0 || element.status === 'out') && 
+                                                <button className={styles.btnDisable} onClick={quickBuy}>
+                                                    <div className={styles.price}>Out of stock</div>
+                                                </button>
+                                            }
                                         </div>
                                 </div>
                             </SwiperSlide>
@@ -72,7 +112,7 @@ export default function SwiperItem(props){
             </Swiper>
             { showQuickBuy && 
                 <div id='quickAddToCart' className={styles.quickAddToCart} onClick={e => quickBuyHandle(e)}>
-                    <quickBuyContext.Provider value={setShowQuickBuy}>
+                    <quickBuyContext.Provider value={[setShowQuickBuy, setFireToast]}>
                         <QuickBuy data={quickBuyData}/>
                     </quickBuyContext.Provider>
                 </div>

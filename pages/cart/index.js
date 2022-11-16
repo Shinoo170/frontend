@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import axios from 'axios'
+import Router from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from 'components/header'
 import styles from './cart.module.css'
+import Swal from 'sweetalert2'
 
 import { RiArrowDownSLine } from 'react-icons/ri'
 import { CgClose } from 'react-icons/cg'
@@ -15,6 +17,7 @@ export default function Cart(){
     const [ priceSummary, setPriceSummary ] = useState(0)
     const [ currency, setCurrency ] = useState('บาท')
     const [ exchange_rate, set_exchange_rate] = useState(1)
+    const [ alert, setAlert ] = useState(false) 
     const amount = [1,2,3,4,5,6,7,8,9,10]
     const url = process.env.NEXT_PUBLIC_BACKEND + '/user/cart'
 
@@ -79,6 +82,10 @@ export default function Cart(){
         }).catch(err => console.log(err.message))
     }
 
+    useEffect(()=> {
+        getCart()
+    },[])
+
     useEffect(() => {
         calPriceSummary()
     },[cart])
@@ -88,13 +95,14 @@ export default function Cart(){
         if(currency === 'BUSD' ){
             const local_exchange_rate = JSON.parse(localStorage.getItem('exchange-rate'))
             if(!local_exchange_rate || local_exchange_rate.lastUpdate + 20*60*1000 < Date.now()){
+                setPriceSummary(e => 'Loading')
                 const USD_rate_url = process.env.NEXT_PUBLIC_BACKEND + '/util/exchangeRate/USDTHB'
                 axios.get(USD_rate_url)
                 .then( result => {
-                    set_exchange_rate(result.data.rate)
+                    set_exchange_rate(e => result.data.rate)
                     localStorage.setItem('exchange-rate', JSON.stringify(result.data) )
                 })
-            }else {
+            } else {
                 set_exchange_rate(local_exchange_rate.rate)
             }
         } else {
@@ -109,8 +117,18 @@ export default function Cart(){
     const calPriceSummary = () => {
         var priceSum = 0
         var itemPrice = 0
+        setAlert(false)
         cart.forEach( (element, index) => {
-            itemPrice = element.amount * element.price / exchange_rate
+            var itemAmount = element.amount
+            if(element.status === 'out' ){
+                setAlert(true)
+                return
+            }
+            if( element.amount > element.stockAmount ){
+                setAlert(true)
+                // itemAmount = element.stockAmount
+            }
+            itemPrice = itemAmount * element.price / exchange_rate
             priceSum += Math.round(itemPrice*100)/100
         })
         setPriceSummary(Math.round(priceSum*100)/100)
@@ -122,9 +140,31 @@ export default function Cart(){
         }
     }
 
-    useEffect(()=> {
-        getCart()
-    },[])
+    const checkoutHandle = () => {
+        if(alert){
+            // Swal.fire({
+            //     title: 'ดำเนินการต่อหรือไม่?',
+            //     text: "สินค้าในคลังไม่เพียงพอ",
+            //     icon: 'warning',
+            //     showCancelButton: true,
+            //     confirmButtonColor: '#28A745',
+            //     cancelButtonColor: '#d33',
+            //     confirmButtonText: 'checkout'
+            // }).then((result) => {
+            //     if (result.isConfirmed) {
+            //         Router.push({pathname: '/checkout', query:{} }, undefined,{ shallow: true } )
+            //     }
+            // })
+            Swal.fire({
+                icon: 'error',
+                title: 'ไม่สามารถสั่งซื้อสินค้าได้',
+                text: 'คุณเพิ่มสินค้าเกินจำนวนที่กำหนด',
+                confirmButtonColor: '#d33',
+              })
+        } else {
+            Router.push({pathname: '/checkout', query:{} }, undefined,{ shallow: true } )
+        }
+    }
     
     return (
         <div>
@@ -142,7 +182,9 @@ export default function Cart(){
                         <div className={styles.list}>
                             {
                                 cart.map( (element, index) => {
-                                    var itemPrice = element.amount * element.price / exchange_rate
+                                    var itemAmount = element.amount
+                                    // if( element.amount > element.stockAmount ) itemAmount = element.stockAmount
+                                    var itemPrice = itemAmount * element.price / exchange_rate
                                     var priceSum = Math.round(itemPrice*100)/100
                                     const mouseUpHandle = (e) => {
                                         const container = document.getElementById(`cart-item-dropdown-${index}`)
@@ -165,6 +207,7 @@ export default function Cart(){
                                         container.classList.remove(styles.showDropdown)
                                         document.removeEventListener('mouseup', mouseUpHandle)
                                         var newValue = e.target.getAttribute('data-value')
+                                        // if(newValue <= element.stockAmount)
                                         editCartHandle(element.productId, newValue)
                                     }
                                     return (
@@ -181,12 +224,19 @@ export default function Cart(){
                                                     </Link>
                                                     <div className={styles.category}>{element.category}</div>
                                                     <div className={styles.price}>{priceSum} {currency}</div>
+                                                    { element.status !== 'out' && element.amount > element.stockAmount && element.stockAmount > 0 && 
+                                                        <div className={styles.warningLabel}>! มีสินค้าเพียง {element.stockAmount} ชิ้นในคลัง</div>
+                                                    }
+                                                    { (element.status === 'out' || element.stockAmount === 0) && 
+                                                        <div className={styles.warningRedLabel}>! สินค้าหมด</div>
+                                                    }
                                                 </div>
                                                 <div className={styles.right}>
                                                     <div id={`cart-item-dropdown-${index}`} className={`${styles.dropdownGroup}`}>
                                                         <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}><div id={`select-amount-${index}`}>{cart[index].amount}</div> <RiArrowDownSLine/></div>
                                                         <div className={styles.dropdownList} onClick={e => changeAmountHandle(e)}>
-                                                            { amount.map((element, index) => <div key={`amount-${index}`} className={styles.dropdownItem} data-value={element}>{element}</div> ) }
+                                                            {/* { amount.map((e, index) => <div key={`amount-${index}`} className={element.stockAmount > index? styles.dropdownItem:styles.dropdownItemDisable} data-value={e}>{e}</div> ) } */}
+                                                            { amount.map((e, index) => <div key={`amount-${index}`} className={styles.dropdownItem} data-value={e}>{e}</div> ) }
                                                         </div>
                                                     </div>
                                                     <div className={styles.remove} onClick={e => removeItemInCart(element.productId)}><CgClose /></div>
@@ -222,7 +272,8 @@ export default function Cart(){
                                 <div>{ Math.round((priceSummary + 40/exchange_rate) *100)/100 } {currency}</div>
                             </div>
                             <div className={styles.row}>
-                                <Link href='/checkout'><div className={styles.btn}>Checkout</div></Link>
+                                {/* <Link href='/checkout'><div className={styles.btn} >Checkout</div></Link> */}
+                                <div className={styles.btn} onClick={checkoutHandle}>Checkout</div>
                             </div>
                         </div>
                     </div>

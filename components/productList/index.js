@@ -90,7 +90,7 @@ export default function ProductList(prop){
             <div className={styles.pageButtonGroup}>
                 <button onClick={previousPage} className={currentPage===1? styles.disableBtn:''}><IoIosArrowBack /></button>
                 <div className={styles.currentPageText}>
-                    {currentPage}
+                    {currentPage} / {maxPage}
                 </div>
                 <button onClick={nextPage} className={currentPage===maxPage? styles.disableBtn:''}><IoIosArrowForward /></button>
             </div>

@@ -83,7 +83,7 @@ export default function Products(){
         })
     }
 
-    const SwiperProduct = (category, title) => {
+    const SwiperProduct = (category, title, total) => {
         var data = {}
         if(category === 'Novel') {
             data = productsData.novel
@@ -100,7 +100,7 @@ export default function Products(){
         return (
             <div className={styles.listProduct}>
                 <div className={styles.top}>
-                    <div className={styles.label}>{title}</div>
+                    <div><span className={styles.label}>{title}</span> ( {total} รายการ)</div>
                     <Link href={`/series/${router.query.seriesId}?category=${category}`}><a>ดูเพิ่มเติม <RiArrowRightSLine /></a></Link>
                 </div>
                 <div className={styles.swiperContainer}>
@@ -112,7 +112,7 @@ export default function Products(){
 
     const getBookmark = () => {
         const jwt = localStorage.getItem('jwt')
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.get(url, {
             headers: {
                 jwt
@@ -125,7 +125,7 @@ export default function Products(){
 
     const addNewBookmark = () => {
         const jwt = localStorage.getItem('jwt')
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.put(url, {
             jwt
         })
@@ -136,7 +136,7 @@ export default function Products(){
 
     const deleteBookmark = () => {
         const jwt = localStorage.getItem('jwt')
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/bookmark?seriesId=' + router.query.seriesId
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.delete(url, {
             headers: {
                 jwt
@@ -238,9 +238,9 @@ export default function Products(){
                         {
                             // seriesData.products && <div>สินค้าทั้งหมด {seriesData.products.totalProducts}</div>
                         }
-                        { filter==='overview' && productsData.novel.length !== 0 && SwiperProduct('Novel','นิยาย') }
-                        { filter==='overview' && productsData.manga.length !== 0 && SwiperProduct('Manga','มังงะ') }
-                        { filter==='overview' && productsData.other.length !== 0 && SwiperProduct('Other','สินค้าอื่นๆ') }
+                        { filter==='overview' && productsData.novel.length !== 0 && SwiperProduct('Novel','นิยาย', seriesData.products.totalNovel) }
+                        { filter==='overview' && productsData.manga.length !== 0 && SwiperProduct('Manga','มังงะ', seriesData.products.totalManga) }
+                        { filter==='overview' && productsData.other.length !== 0 && SwiperProduct('Other','สินค้าอื่นๆ', seriesData.products.totalOther) }
                         { (seriesData.products.totalProducts === 0) && <div>No Product</div> }
                         { filter==='Novel' && allNovel!==undefined && <ProductListMD data={allNovel} title={'นิยาย'}></ProductListMD>}
                         { filter==='Manga' && allManga!==undefined && <ProductListMD data={allManga} title={'มังงะ'}></ProductListMD>}

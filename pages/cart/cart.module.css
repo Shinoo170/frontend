@@ -91,6 +91,17 @@
     width: fit-content;
 }
 
+.cartSection .item .details .warningLabel {
+    /* color: #FFC107; */
+    color: #ec9a00;
+    /* background-color: #FFC107; */
+    width: fit-content;
+}
+
+.cartSection .item .details .warningRedLabel {
+    color: #DC3545;
+}
+
 .cartSection .item .right {
 	display: flex;
 	justify-content: center;
@@ -223,6 +234,12 @@
 .dropdownGroup .dropdownList .dropdownItem:hover {
     color: #3761ee;
     background-color: #ebeffd;
+}
+.dropdownItemDisable {
+    padding: 2px 8px;
+}
+.dropdownItemDisable:hover {
+    background-color: #cecece;
 }
 
 @media screen and (max-width: 1700px) {

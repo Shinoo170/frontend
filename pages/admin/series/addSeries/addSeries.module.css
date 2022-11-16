@@ -16,7 +16,6 @@
     height: fit-content;
     display: flex;
     justify-content: center;
-    
 }
 
 .addProductWrap {
@@ -108,6 +107,7 @@
 
 .inputWarp {
     margin: 5px;
+    width: 100%;
 }
 
 .inputWarp .label {
@@ -144,8 +144,8 @@
     box-shadow: var(--dashboard-shadow)
 }
 
-  /* ------------------------------------------------
-  [ show genres & keywords ] */
+/* ------------------------------------------------
+[ show genres & keywords ] */
 .groupLabel {
     display: flex;
     flex-wrap: wrap;
@@ -155,7 +155,7 @@
 .groupLabel .details {
     display: flex;
     flex-direction: row;
-    background-color: #D4D4D4;
+    background-color: rgb(228, 228, 228);
     border-radius: 10px;
     padding: 0 6px 0 10px;
     margin: 3px;
@@ -175,34 +175,62 @@
     color: #D92626;
 }
 
-  /* ------------------------------------------------
-  [ dropdown ] */
-.groupDropdown .dropdown{
-    position: absolute;
-    max-height: 100px;
-    width: 400px;
+/* ------------------------------------------------
+[ Dropdown ] */
+.dropdownGroup {
+    position: relative;
+}
+.dropdownGroup .dropdownSelection{
+	background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    transition: all ease 0.5;
+    cursor: pointer;
+	width: 150px;
+	user-select: none;
+    position: relative;
+}
+
+.dropdownGroup .dropdownSelection svg{
+    font-size: 18px;
+}
+
+.dropdownGroup .dropdownList{
     background-color: #fff;
-    border: 1px solid #BBC1C9;
-    border-top: none;
-    border-radius: 0 0 5px 5px;
-    overflow-y: scroll;
-    z-index: 2;
+    position: absolute;
+    padding: 4px 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    width: 100%;
+    height: 180px;
+    opacity: 0;
     visibility: hidden;
+    display: none;
+	z-index: 2;
+    overflow: auto;
 }
 
-.groupDropdown input:focus ~ .dropdown{
-    visibility: visible;
-}
-
-
-.dropdown .dropdownList .dropdownItem{
-    padding: 3px;
-    padding-left: 10px;
+.dropdownGroup.showDropdown .dropdownSelection {
     cursor: pointer;
 }
 
-.dropdown .dropdownList .dropdownItem:hover{
-    background-color: #D4D4D4;
+.dropdownGroup.showDropdown .dropdownList {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+
+.dropdownGroup .dropdownList .dropdownItem {
+    cursor: pointer;
+    padding: 2px 8px;
+}
+.dropdownGroup .dropdownList .dropdownItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
 }
 
 
@@ -300,6 +328,10 @@
     .groupLabel {
         max-width: 300px;
     }
+
+    .dropdownGroup .dropdownList .dropdownItem {
+		padding: 4px 8px;
+	}
 }
 
 @media screen and (max-width: 786px) {
