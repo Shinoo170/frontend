@@ -135,7 +135,8 @@ export default function CheckOut(){
             onCreateTokenSuccess: (token) => {
                 console.log(token)
                 const jwt = localStorage.getItem('jwt')
-                const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+                // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+                const url = '/api/placeOrder'
                 axios.post( url , {
                     jwt,
                     token: token,
@@ -158,7 +159,8 @@ export default function CheckOut(){
         creditCardConfigure()
 
         // const jwt = localStorage.getItem('jwt')
-        // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+        // // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+        // const url = '/api/placeOrder'
         // axios.post( url , {
         //     jwt,
         //     token: undefined,
