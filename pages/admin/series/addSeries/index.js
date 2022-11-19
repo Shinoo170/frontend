@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import SideNav from 'components/admin/adminSideNavbar'
 import styles from './addSeries.module.css'
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-import { Upload } from "@aws-sdk/lib-storage";
-import { S3Client, S3 } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage"
+import { S3Client, S3 } from "@aws-sdk/client-s3"
 
 import { RiCloseCircleLine, RiArrowDownSLine } from 'react-icons/ri'
 

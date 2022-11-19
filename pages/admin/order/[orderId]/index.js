@@ -1,0 +1,296 @@
+import axios from "axios"
+import Image from 'next/image'
+import { useState, useEffect, useRef } from "react"
+import { useRouter } from 'next/router'
+import SideNav from 'components/admin/adminSideNavbar'
+import styles from './orderId.module.css'
+import Link from "next/link"
+import Swal from 'sweetalert2'
+
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+import { RiArrowDownSLine } from 'react-icons/ri'
+import { VscTriangleRight } from 'react-icons/vsc'
+
+export default function Order() {
+    const [ orderId, setOrderId ] = useState('')
+    const [ orderData, setOrderData ] = useState({})
+    const [ productDetails, setProductDetails ] = useState([])
+    const [ currency, setCurrency ] = useState('บาท')
+    const [ dateTime, setDateTime ] = useState({})
+    const [ showPaymentDetails, setShowPaymentDetails ] = useState(false)
+    const [ editStatus, setEditStatus ] = useState({})
+    const router = useRouter()
+    const statusIcon = useRef()
+    const paymentDetails = useRef()
+    const DetailsContent = useRef()
+
+    useEffect(() => {
+        if(router.isReady){
+            setOrderId(router.query.orderId)
+            getOrder()
+        }
+    }, [router])
+
+    const getOrder = () => {
+        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/getOrderDetails?orderId=' + router.query.orderId
+        axios.get(axiosURL)
+        .then( result => {
+            console.log(result.data)
+            // setOrderData(result.data.order)
+            setProductDetails(result.data.productDetails)
+            statusIconChange(result.data.order.status)
+            setNConvertStatus(result.data.order.status)
+            if(result.data.order.method === 'metamask') {
+                metamaskDetail(result.data.order)
+            }
+            else {
+                setOrderData(result.data.order)
+            }
+        }).catch( err => {
+            toast.error(`can't get orders`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        })
+    }
+
+    const statusIconChange = (status) => {
+        if(status === 'paid'){
+            statusIcon.current.className = styles.status_orange
+        } else if(status === 'delivered'){
+            statusIcon.current.className = styles.status_green
+        } else if(status === 'cancel'){
+            statusIcon.current.className = styles.status_red
+        }
+    }
+
+    const setNConvertStatus = (status) => {
+        if(status === 'paid'){
+            setEditStatus({status, thai: 'ชำระเงินแล้ว'})
+        } else if(status === 'delivered'){
+            setEditStatus({status, thai: 'จัดส่งแล้ว'})
+        } else if(status === 'cancel'){
+            setEditStatus({status, thai: 'ยกเลิก'})
+        }
+    }
+
+    const metamaskDetail = (data) => {
+        setCurrency('BUSD')
+        var fullDate = data.paymentDetails.date
+        var fp = fullDate.split('T')
+        var d = fp[0].split('-')
+        var d2 = d[2] + ' / ' + d[1] + ' / ' + d[0]
+        var t = fp[1].replaceAll(':',' : ').split('.')
+        setDateTime({date: d2, time: t[0] })
+        if(data.paymentDetails.refund){
+            data.total = data.paymentDetails.net
+        }
+        setOrderData(data)
+    }
+
+    let pos = { top: 0, left: 0, x: 0, y: 0 }
+    const mouseDownHandler = function (e) {
+        var scroll = document.getElementById('listProduct')
+        if(window.innerWidth <= 992){
+            pos = {
+                // The current scroll
+                left: scroll.scrollLeft,
+                top: scroll.scrollTop,
+                // Get the current mouse position
+                x: e.clientX,
+                y: e.clientY,
+            }
+            scroll.style.cursor = 'grabbing'
+            document.addEventListener('mousemove', mouseMoveHandler)
+            document.addEventListener('mouseup', mouseUpHandler)
+        } else {
+            scroll.style.cursor = 'default'
+        }
+        
+    }
+    const mouseMoveHandler = function (e) {
+        var scroll = document.getElementById('listProduct')
+        // How far the mouse has been moved
+        const dx = e.clientX - pos.x
+        const dy = e.clientY - pos.y
+    
+        // Scroll the element
+        scroll.scrollTop = pos.top - dy
+        scroll.scrollLeft = pos.left - dx
+        
+    }
+    const mouseUpHandler = function () {
+        var scroll = document.getElementById('listProduct')
+        scroll.style.cursor = 'grab'
+        document.removeEventListener('mousemove', mouseMoveHandler)
+        document.removeEventListener('mouseup', mouseUpHandler)
+    }
+
+    const showDropdownHandle = () => {
+        const container = document.getElementById('status-dropdown')
+        if(container.classList.length === 1){
+            container.classList.add(styles.showDropdown)
+            document.addEventListener('mouseup', mouseUpHandle)
+        } else {
+            container.classList.remove(styles.showDropdown)
+        }
+    }
+    const mouseUpHandle = (e) => {
+        const container = document.getElementById('status-dropdown')
+        if (!container.contains(e.target)) {
+            container.classList.remove(styles.showDropdown)
+            document.removeEventListener('mouseup', mouseUpHandle)
+        }
+    }
+    const changeStatusHandle = (e) => {
+        const container = document.getElementById('status-dropdown')
+        container.classList.remove(styles.showDropdown)
+        document.removeEventListener('mouseup', mouseUpHandle)
+        var newValue = e.target.getAttribute('data-value')
+        // if(newValue <= element.stockAmount)
+        setNConvertStatus(newValue)
+    }
+
+    const saveChange = () => {
+        if(orderData.status !== editStatus.status){
+            if(editStatus.status === 'delivered'){
+                var trackingNumber = document.getElementById('tracking-number').value
+                if(trackingNumber.trim() === ''){
+                    Swal.fire({
+                        title: 'กรุณากรอกข้อมูลให้ครบ',
+                        icon: 'error',
+                        confirmButtonColor: '#DC3545',
+                    })
+                }
+            }else if(editStatus.status === 'cancel'){
+                var trackingNumber = document.getElementById('cancel-message').value
+                if(trackingNumber.trim() === ''){
+                    Swal.fire({
+                        title: 'กรุณากรอกข้อมูลให้ครบ',
+                        icon: 'error',
+                        confirmButtonColor: '#DC3545',
+                    })
+                }
+            }
+        }
+    }
+
+    useEffect(() => {
+        if(showPaymentDetails){
+            paymentDetails.current.style.height = 25 + DetailsContent.current.clientHeight + 5 + 'px'
+        } else {
+            paymentDetails.current.style.height = '25px'
+        }
+    }, [showPaymentDetails])
+
+    return (
+        <div className={styles.container}>
+            <SideNav />
+            <ToastContainer />
+            <div className={styles.contentContainer}>
+                <div className={styles.orderWrap}>
+                    <div className={styles.header}>
+                        <div className={styles.title}>Order ID {orderId}</div>
+                        <div className={styles.status}>
+                            Status : 
+                            <div ref={statusIcon} className={styles.status_gray}></div>
+                            {orderData.status}
+                        </div>
+                    </div>
+                    {/* <div>List</div> */}
+                    <div id='listProduct' className={styles.listProduct} onMouseDown={mouseDownHandler}>
+                        <div className={styles.listHeader}>
+                            <div className={styles.productColumn}>Product</div>
+                            <div className={styles.priceColumn}>
+                                <div className={styles.unitPriceColumn}>Unit price</div>
+                                <div className={styles.amountColumn}>Amount</div>
+                                <div className={styles.totalColumn}>Total</div>
+                            </div>
+                        </div>
+                        {
+                            productDetails.map((element, index) => {
+                                return (
+                                    <div key={`product-${index}`} className={styles.item}>
+                                        <div className={styles.productColumn}>
+                                            <div className={styles.imgControl}>
+                                                <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
+                                            </div>
+                                            <div>{element.title} {element.bookNum}</div>
+                                        </div>
+                                        <div className={styles.priceColumn}>
+                                            <div className={styles.unitPriceColumn}>{element.price}</div>
+                                            <div className={styles.amountColumn}>{element.amount}</div>
+                                            <div className={styles.totalColumn}>{element.price * element.amount}</div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                    <div className={styles.orderDetails}>
+                        <div>ข้อมูลคำสั่งซื้อ</div>
+                        <div>ช่องทางชำระเงิน : {orderData.method}</div>
+                        <div>ราคาทั้งหมด : {orderData.total} {currency}</div>
+                        {
+                            orderData.status !== 'ordered' && <div ref={paymentDetails} className={`${styles.paymentDetails} ${showPaymentDetails? styles.show:''}`}>
+                                <div className={styles.label} onClick={() => setShowPaymentDetails(!showPaymentDetails)}><div className={styles.triangleIcon}><VscTriangleRight /></div>ดูรายละเอียดการชำระเงิน</div>
+                                <div ref={DetailsContent} className={styles.detail}> 
+                                    {
+                                        orderData.method === 'metamask' && (<div>
+                                                <div>Exchange rate : {orderData.exchange_rate} Baht/USD</div>
+                                                <div>Transaction Hash : 
+                                                    <Link href={`https://testnet.bscscan.com/tx/${orderData.paymentDetails.hash}`}>
+                                                        <a target="_blank" > {orderData.paymentDetails.hash}</a>
+                                                    </Link>
+                                                </div>
+                                                <div>Total : {orderData.paymentDetails.total} BUSD</div>
+                                                <div>Net : {orderData.paymentDetails.net} BUSD</div>
+                                                {
+                                                    orderData.paymentDetails.refund && (<>
+                                                        <div>Refund : {orderData.paymentDetails.refundDetails.refundTotal} BUSD</div>
+                                                        <div>Refund Hash : <Link href={`https://testnet.bscscan.com/tx/${orderData.paymentDetails.refundDetails.hash}`}>
+                                                            <a target="_blank" >{orderData.paymentDetails.refundDetails.hash}</a>
+                                                        </Link></div>
+                                                    </>)
+                                                }
+                                                <div>วันที่โอน : {dateTime.date}</div>
+                                                <div>เวลา : {dateTime.time} น.  </div>
+                                            </div>
+                                        )
+                                    }
+                                </div>  
+                            </div>
+                        }
+                        <div>ชื่อ : นายภัทรพงศ์ ภาคมฤค</div>
+                        <div>ที่อยู่ : 22/59 ต.บ้านใหม่ อ.ปากเกร็ด จ.นนทบุรี 11120</div>
+                        <div>เบอร์โทร : 082-188-6593</div>
+                        <div>อีเมล : patrapong17@gmail.com</div>
+                    </div>
+                    <div className={styles.orderStatusSelect}>สถานะ order : 
+                        <div id='status-dropdown' className={`${styles.dropdownGroup}`} >
+                            <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}><div>{editStatus.thai}</div> <RiArrowDownSLine/></div>
+                            <div className={styles.dropdownList} onClick={e => changeStatusHandle(e)}>
+                                <div className={styles.dropdownItem} data-value={'delivered'}>จัดส่งแล้ว</div>
+                                <div className={styles.dropdownItem} data-value={'paid'}>ชำระเงินแล้ว</div>
+                                <div className={styles.dropdownItem} data-value={'cancel'}>ยกเลิก</div>
+                            </div>
+                        </div>
+                    </div>
+                    { editStatus.status === 'delivered' && <div className={styles.inputField}>หมายเลขพัสดุ : <input id='tracking-number' className={styles.input} autoComplete="off"/></div> }
+                    { editStatus.status === 'cancel' && <div className={styles.inputField}>สาเหตุ : <input id='cancel-message' className={styles.input} autoComplete="off"/></div> }
+                    <div>
+                        <div className={`${orderData.status !== editStatus.status? styles.btn : styles.btnDisable}`} onClick={saveChange}>บันทึก</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}

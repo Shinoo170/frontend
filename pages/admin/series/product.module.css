@@ -124,13 +124,17 @@
     display: block;
     position: relative;
     margin: auto auto 0 auto;
-    background-color: rgb(250, 191, 81);
+    background-color: rgb(255, 205, 112);
     color: #000;
     border-radius: 10px;
     min-height: 30px;
     width: 100px;
     border-color: transparent;
     cursor: pointer;
+}
+
+.btn:hover {
+    background-color: rgb(250, 191, 81);
 }
 
 .pageButtonGroup{

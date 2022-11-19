@@ -1,0 +1,342 @@
+/* ------------------------------------------------
+[ Container ] */
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.contentContainer {
+    width: calc(100% - 250px);
+    height: 100%;
+    min-height: 100vh;
+    background-color: var(--dashboard-background);
+}
+
+.orderWrap {
+    margin: 80px 100px;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; */
+    border-radius: 15px;
+}
+
+/* ------------------------------------------------
+[ Header ] */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 18px;
+    border-bottom: 1px solid #A1A3A5;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    height: fit-content;
+}
+
+.title {
+    font-size: 24px;
+}
+
+/* ------------------------------------------------
+[ List cart product ] */
+.listProduct {
+    overflow: auto;
+}
+
+.listHeader {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    padding-top: 10px;
+}
+
+.priceColumn {
+    display: flex;
+}
+
+.priceColumn .listColumn {
+    min-width: 100px;
+}
+
+.unitPriceColumn,
+.amountColumn {
+    min-width: 100px;
+}
+.totalColumn {
+    min-width: 70px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #A1A3A5;
+    padding: 10px 0;
+    min-width: 560px;
+}
+
+.productColumn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-right: 10px;
+    min-width: 290px;
+}
+
+.imgControl {
+    position: relative;
+	--img-const: 0.7;
+    --img-height: 150px;
+    min-height: var(--img-height);
+    max-height: var(--img-height);
+    min-width: calc( var(--img-height) * var(--img-const));
+    max-width: calc( var(--img-height) * var(--img-const));
+	box-shadow: var(--book-shadow);
+    border: 1px solid #f0f0f0;
+    border-radius: 7px;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ------------------------------------------------
+[ Order details ] */
+.orderDetails {
+    padding: 10px 0;
+    line-height: 25px;
+}
+
+.paymentDetails {
+    overflow: hidden;
+    transition: height 0.3s;
+    height: 25px;
+}
+
+.paymentDetails .label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.paymentDetails .triangleIcon {
+    display: inline-flex;
+    font-size: 13px;
+    padding: 0 2px;
+    transition: all 0.3s;
+    /* transform: rotate(90deg); */
+}
+
+.paymentDetails .detail {
+    padding: 0px 10px;
+    line-break: anywhere;
+    transition: height 0.3s;
+}
+
+.paymentDetails.show {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    padding-bottom: 5px;
+}
+
+.paymentDetails.show .triangleIcon {
+    transform: rotate(90deg);
+}
+
+.paymentDetails .detail a{
+    color: #3761ee;
+}
+
+.orderStatusSelect {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.inputField {
+    display: flex;
+    align-items: center;
+    line-height: 25px;
+    gap: 5px;
+    padding: 5px 0;
+}
+
+.inputField .input {
+    border: 1px solid #BBC1C9;
+    border-radius: 7px;
+    padding-left: 10px;
+    font-size: 14px;
+    height: 30px;
+    width: 200px;
+}
+
+.inputField .input:focus{
+    outline: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.btn, .btnDisable {
+	background-color: rgb(255, 205, 112);
+	border-radius: 15px;
+	width: fit-content;
+	padding: 4px 20px;
+    margin-top: 10px;
+	text-align: center;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+
+.btnDisable {
+    background-color: rgba(0, 0, 0, 0.07);
+    cursor: default;
+}
+
+.btn:hover {
+    background-color: rgb(250, 191, 81);
+}
+
+.btnDisable:hover {
+    background-color: #cecece;
+}
+
+/* ------------------------------------------------
+[ Order status ] */
+.status_gray, .status_red, .status_orange, .status_green {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    margin: auto 5px;
+}
+
+.status_gray {
+    background-color: #D3D4D5;
+}
+
+.status_red {
+    background-color: #DC3545;
+}
+
+.status_orange {
+    background-color: #FFC107;
+}
+
+.status_green {
+    background-color: green;
+}
+
+
+/* ------------------------------------------------
+[ Dropdown ] */
+.dropdownGroup {
+    position: relative;
+}
+.dropdownGroup .dropdownSelection{
+	background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    transition: all ease 0.5;
+    cursor: pointer;
+	width: 130px;
+	user-select: none;
+    position: relative;
+}
+
+.dropdownGroup .dropdownSelection svg{
+    font-size: 18px;
+}
+
+.dropdownGroup .dropdownList{
+    background-color: #fff;
+    position: absolute;
+    margin-top: 0px;
+    padding: 4px 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    width: 130px;
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+	z-index: 2;
+}
+
+.dropdownGroup.showDropdown .dropdownSelection {
+    cursor: pointer;
+}
+
+.dropdownGroup.showDropdown .dropdownList {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+
+.dropdownGroup .dropdownList .dropdownItem {
+    cursor: pointer;
+    padding: 4px 8px;
+}
+.dropdownGroup .dropdownList .dropdownItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
+}
+.dropdownItemDisable {
+    padding: 2px 8px;
+}
+.dropdownItemDisable:hover {
+    background-color: #cecece;
+}
+
+
+@media screen and (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+    }
+    .contentContainer {
+        width: 100%;
+    }
+    .orderWrap {
+        margin: 60px 40px 60px calc(40px + 78px);
+    }
+}
+
+@media screen and (max-width: 992px) {
+
+}
+
+
+@media screen and (max-width: 786px) {
+
+}
+
+@media screen and (max-width: 576px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .orderWrap {
+        margin: 1rem;
+        margin-top: calc(2rem + 10px);
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 356px) {
+    .orderWrap {
+        margin: 1rem 5px;
+        margin-top: 50px;
+        padding: 10px;
+    }
+}
+

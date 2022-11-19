@@ -2,10 +2,11 @@ import { useEffect, useState, createContext, useContext } from "react"
 import Link from "next/link"
 import Image from 'next/image'
 import { Swiper, SwiperSlide } from "swiper/react"
-import { FreeMode, Mousewheel, Pagination } from "swiper"
+import { FreeMode, Mousewheel, Pagination, Navigation } from "swiper"
 import "swiper/css"
 import "swiper/css/free-mode"
 import "swiper/css/pagination"
+import "swiper/css/navigation"
 
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'

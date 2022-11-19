@@ -36,10 +36,10 @@ export default async function handle(req, res){
             res.status(401).send({ message: err.message })
         }
 
-        MongoClient.connect( process.env.MONGODB_URI,  { useNewUrlParser: true }, async function( err, client ) {
-            if(err) res.send('error')
-
-            var db = client.db(process.env.DB_NAME)
+        const client = new MongoClient(process.env.MONGODB_URI)
+        try{
+            await client.connect()
+            const db = client.db(process.env.DB_NAME)
             const { amount, method, exchange_rate, shippingFee, cart } = req.body
             const date = Date.now()
             const _id = new ObjectId(user_id)
@@ -99,7 +99,7 @@ export default async function handle(req, res){
                 date: new Date(date).toISOString(),
                 paymentDetails: {},
                 address: {},
-                status: 'place_order',
+                status: 'ordered',
             }
             await db.collection('orders').insertOne(orderDetail)
             await db.collection('users').updateOne({ _id }, {
@@ -130,7 +130,7 @@ export default async function handle(req, res){
                             $inc : { amount: element.amount, sold: -element.amount }
                         })
                     })
-                    db.collection('orders').updateOne({orderId}, {
+                    await db.collection('orders').updateOne({orderId}, {
                         $set: {
                             status: 'cancel',
                             cancel_message: 'Payment refuse',
@@ -147,7 +147,7 @@ export default async function handle(req, res){
                             $inc : { amount: element.amount ,sold: -element.amount}
                         })
                     })
-                    db.collection('orders').updateOne({orderId}, {
+                    await db.collection('orders').updateOne({orderId}, {
                         $set: {
                             status: 'cancel',
                             cancel_message: 'Payment refuse',
@@ -180,7 +180,13 @@ export default async function handle(req, res){
                     return
                 }
             }
-        })
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({message: 'This service not available', err})
+        } finally {
+            await client.close()
+        }
+
     } else {
         const message = req.method + ' method not allow'
         res.status(400).send({message})

@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Router from 'next/router'
+import axios from "axios"
 
-import { BiMenu, BiSearch, BiBell, BiChevronLeft, BiPlus, BiGridAlt, BiUser } from 'react-icons/bi'
+import { BiSearch, BiGridAlt, BiUser } from 'react-icons/bi'
 import { BsBoxSeam, BsBookmarks, BsSuitHeart } from 'react-icons/bs'
-import { MdOutlineShoppingCart } from 'react-icons/md'
-import { RiArrowRightSLine, RiArrowDownSLine } from 'react-icons/ri'
-import { HiOutlineChevronLeft } from 'react-icons/hi'
-import { HiOutlineMenu } from 'react-icons/hi'
+import { MdOutlineShoppingCart, MdOutlineSpaceDashboard } from 'react-icons/md'
+import { RiArrowDownSLine } from 'react-icons/ri'
+import { HiOutlineChevronLeft, HiOutlineMenu } from 'react-icons/hi'
 import { CgClose } from 'react-icons/cg'
 import { VscSignOut } from 'react-icons/vsc'
 
@@ -20,6 +20,7 @@ export default function Header(){
     const [ mobileProductDropdown, setMobileProductDropdown ] = useState(false)
     const [ userDropdownToggle, setUserDropdownToggle ] = useState(false)
     const [ isSignIn, setIsSignIn ] = useState(false)
+    const [ isAdmin, setIsAdmin ] = useState(false)
     const search = useRef()
 
     const searchBarToggleHandle = () => {
@@ -56,6 +57,11 @@ export default function Header(){
     useEffect(() => {
         if(localStorage.getItem('jwt')){
             setIsSignIn(true)
+            axios.get('/api/getJwtRole',{ headers: {jwt:localStorage.getItem('jwt')}})
+            .then(result => {
+                if(result.data.role === 'admin') setIsAdmin(true)
+                console.log(result.data.role)
+            })
         }
     },[])
 
@@ -128,10 +134,10 @@ export default function Header(){
                                 </div>
                                 <div className={styles.info}>{localStorage.getItem('displayName')}</div>
                                 <hr />
-                                <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BiUser/>บัญชีของฉัน</div></Link></div>
-                                <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BsBoxSeam/>รายการสั่งซื้อ</div></Link></div>
-                                <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BsBookmarks/>รายการที่ติดตาม</div></Link></div>
-                                <div className={styles.subItem}><Link href='#'><div className={styles.subTitle}><BsSuitHeart/>รายการที่อยากได้</div></Link></div>
+                                { isAdmin && <div className={styles.subItem}><Link href='/admin'><a className={styles.subTitle}><MdOutlineSpaceDashboard/>Dashboard</a></Link></div> }
+                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BiUser/>บัญชีของฉัน</a></Link></div>
+                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BsBoxSeam/>รายการสั่งซื้อ</a></Link></div>
+                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BsBookmarks/>รายการที่ติดตาม</a></Link></div>
                                 <hr />
                                 <div className={styles.subItem} onClick={signOutHandle}><div className={styles.subTitle}><VscSignOut/>ออกจากระบบ</div></div>
                             </div>

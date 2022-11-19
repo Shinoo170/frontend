@@ -1,12 +1,17 @@
 import axios from "axios"
 import Image from 'next/image'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from 'next/router'
 import SideNav from 'components/admin/adminSideNavbar'
 import styles from './series.module.css'
 import Link from "next/link"
-
+import Swal from 'sweetalert2'
 import ProductListSM from "components/productListSM"
+
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Upload } from "@aws-sdk/lib-storage"
+import { S3Client, S3 } from "@aws-sdk/client-s3"
 
 import { AiOutlineEdit } from 'react-icons/ai'
 import { MdOutlineAddToPhotos, MdOutlineCancel } from 'react-icons/md'
@@ -26,8 +31,10 @@ export default function SpecificSeries() {
     const [ viewMore, setViewMore ] = useState('hide')
     const [ editGenres, setEditGenres ] = useState([])
     const [ editKeywords, setEditKeywords ] = useState([])
+    const [ editImg, setEditImg ] = useState()
     const router = useRouter()
 
+    const inputImage = useRef()
     async function getSeriesDetails(){
         const seriesId = router.query.seriesId
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/series/' + seriesId
@@ -88,14 +95,22 @@ export default function SpecificSeries() {
                     .catch(err => { console.log("Also error"); console.log(err) })
                 })
             }
+        } else {
+            addViewMoreBtn()
         }
 
     }, [edit])
 
     useEffect(() => {
-        var lines = document.getElementById('description').offsetHeight / 22
-        if(lines > 7) setViewMore('More')
+        addViewMoreBtn()
     }, [productData])
+
+    const addViewMoreBtn = () => {
+        var lines = document.getElementById('description')
+        if(lines){
+            if(lines.offsetHeight / 22 > 7) setViewMore('More')
+        }
+    }
 
     const viewMoreHandle = () => {
         setViewMore(current => {
@@ -104,8 +119,59 @@ export default function SpecificSeries() {
         })
     }
 
-    const editHandle = () => {
-        setEdit(!edit)
+    const updateSeriesData = () => {
+        const updatePromise = new Promise( async (resolve, reject) => {
+            var imgName = ''
+            var imgURL = productData.img
+            if(editImg){
+                imgName = Date.now() + '-' + editImg.name.replaceAll(' ','-')
+                imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Series/' + imgName
+            }
+            const jwt = localStorage.getItem('jwt')
+            const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series'
+            axios.put(axiosURL, {
+                jwt,
+                seriesId: productData.seriesId,
+                title: document.getElementById('edit-title').value,
+                author: document.getElementById('edit-author').value,
+                illustrator: document.getElementById('edit-illustrator').value,
+                publisher: document.getElementById('edit-publisher').value,
+                genres: editGenres,
+                keywords: editKeywords,
+                img: imgURL,
+                description: document.getElementById('edit-description').value,
+            }).then( async result => {
+                if(editImg){
+                    const parallelUploads3 = new Upload({
+                        client: new S3Client({
+                        region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+                        credentials: {
+                            accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+                            secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+                        }
+                        }),
+                        params: { 
+                        Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+                        Key: 'Series/' + imgName,
+                        Body: editImg
+                        },
+                        partSize: 1024 * 1024 * 5,
+                        leavePartsOnError: false,
+                    })
+                    await parallelUploads3.done()
+                }
+                getSeriesDetails()
+                resolve()
+            }).catch( err => {
+                reject()
+                addViewMoreBtn()
+            })
+        })
+        toast.promise(updatePromise, {
+            pending: "กำลังอัพเดต",
+            success: 'อัพเดตสำเร็จ',
+            error: 'อัพเดตไม่สำเร็จ'
+        },{ autoClose: 2000 })
     }
 
     const mouseUpHandle = (e) => {
@@ -129,12 +195,48 @@ export default function SpecificSeries() {
         container.classList.remove(styles.showDropdown)
         document.removeEventListener('mouseup', mouseUpHandle)
     }
+
+    const editHandle = (command) => {
+        if(command === 'edit') { setEdit(!edit) }
+        else if(command === 'save') {
+            Swal.fire({
+                title: 'ต้องการบันทึกหรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28A745',
+                cancelButtonColor: '#DC3545',
+                confirmButtonText: 'Confirm!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setEdit(!edit)
+                    updateSeriesData()
+                }
+            })
+            
+        }else if(command === 'cancel'){
+            Swal.fire({
+                title: 'ต้องการยกเลิกหรือไม่?',
+                text: "หากยกเลิกข้อมูลที่แก้ไขจะไม่ได้รับการบันทึก",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#DC3545',
+                cancelButtonColor: '#A3A4A5',
+                confirmButtonText: 'Confirm!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setEdit(!edit)
+                    setEditImg(undefined)
+                }
+            })
+        }
+    }
+
     const addEditGenres = (add) => {
           // new keyword not exist in array
           if(editGenres.indexOf(add) === -1){
             setEditGenres([...editGenres, add])
           }
-      }
+    }
     const removeEditGenres = (remove) => {
         const array = editGenres
         const index = array.indexOf(remove)
@@ -156,19 +258,40 @@ export default function SpecificSeries() {
         array.splice(index, 1)
         setEditKeywords([...array])
     }
+    const saveImage = (e) => {
+        setEditImg(e.target.files[0])
+    }
+    const removeEditImg = () => {
+        inputImage.current.value = ''
+        setEditImg()
+    }
 
     return (
         <div className={styles.container}>
             <SideNav />
+            <ToastContainer />
             <div className={styles.contentContainer}>
                 <div className={styles.productWrap}>
                     <div className={styles.detailsWrap}>
                         <div className={styles.title}> {productData.title} </div>
                         <div className={styles.flexRow}>
-                            <div className={styles.imageWrap}>
-                                {
-                                    productData.img != undefined && <Image src={productData.img} alt='Product image' layout="fill" />
-                                }
+                            <div>
+                                <div className={styles.imageWrap}>
+                                    {
+                                        productData.img != undefined && <Image src={productData.img} alt='Product image' layout="fill" objectFit='cover' />
+                                    }
+                                    {
+                                        edit && <div className={styles.fileDropArea}>
+                                            <div className={styles.imagesPreview} id='containerPreviewImg'>
+                                            { editImg && <Image src={URL.createObjectURL(editImg)} id='pre-img' layout="fill" objectFit='cover'/> }
+                                            </div>
+                                            <input ref={inputImage} className={styles.inputField} type="file" name='file' onChange={saveImage} />
+                                            <div className={styles.fakeBtn}>Choose files</div>
+                                            <div className={styles.msg}>or drag and drop files here</div>
+                                        </div>
+                                    }
+                                </div>
+                                { editImg && <div className={styles.btn} onClick={() => removeEditImg()}>ลบรูป</div> }
                             </div>
                             <div className={styles.detailsGroup}>
 
@@ -178,18 +301,23 @@ export default function SpecificSeries() {
                                 </div>
                                 { edit && <div className={styles.subDetails}>
                                     <div className={styles.label}>ชื่อเรื่อง :</div>
-                                    <input className={styles.input} defaultValue={productData.title}/>
+                                    <input id='edit-title' className={styles.input} defaultValue={productData.title}/>
                                 </div> 
                                 }
                                 <div className={styles.subDetails}>
                                     <div className={styles.label}>ผู้เขียน :</div>
                                     { !edit && <div className={styles.value}>{productData.author}</div>}
-                                    { edit && <input className={styles.input} defaultValue={productData.author}/> }
+                                    { edit && <input id='edit-author' className={styles.input} defaultValue={productData.author}/> }
+                                </div>
+                                <div className={styles.subDetails}>
+                                    <div className={styles.label}>ภาพประกอบ :</div>
+                                    { !edit && <div className={styles.value}>{productData.illustrator}</div>}
+                                    { edit && <input id='edit-illustrator' className={styles.input} defaultValue={productData.illustrator}/> }
                                 </div>
                                 <div className={styles.subDetails}>
                                     <div className={styles.label}>สำนักพิมพ์ :</div>
                                     { !edit && <div className={styles.value}>{productData.publisher}</div>}
-                                    { edit && <input className={styles.input} defaultValue={productData.publisher}/> }
+                                    { edit && <input id='edit-publisher' className={styles.input} defaultValue={productData.publisher}/> }
                                 </div>
                                 <div className={styles.subDetails}>
                                     <div className={styles.label}>หมวดหมู่ :</div>
@@ -302,7 +430,7 @@ export default function SpecificSeries() {
                             }
                             {
                                 edit && (
-                                    <textarea id='description' className={styles.textArea} defaultValue={productData.description}></textarea>
+                                    <textarea id='edit-description' className={styles.textArea} defaultValue={productData.description}></textarea>
                                 )
                             }
                         </div>
@@ -310,12 +438,12 @@ export default function SpecificSeries() {
                             <div>สินค้าทั้งหมด { productData.products != undefined && productData.products.totalProducts} รายการ </div>
                             <div className={styles.btnGroup}>
                                 <Link href={addProductURl}><a className={styles.btn}><MdOutlineAddToPhotos /> add product</a></Link>
-                                { !edit && <div className={styles.btn} onClick={editHandle}><AiOutlineEdit />Edit</div> }
+                                { !edit && <div className={styles.btn} onClick={() => editHandle('edit')}><AiOutlineEdit />Edit</div> }
                                 {
                                     edit && (
                                         <>
-                                            <div className={`${styles.btn} ${styles.btnGreen}`} onClick={editHandle}><IoMdSave />save</div>
-                                            <div className={`${styles.btn} ${styles.btnRed}`} onClick={editHandle}><MdOutlineCancel />cancel</div>
+                                            <div className={`${styles.btn} ${styles.btnGreen}`} onClick={() => editHandle('save')}><IoMdSave />save</div>
+                                            <div className={`${styles.btn} ${styles.btnRed}`} onClick={() => editHandle('cancel')}><MdOutlineCancel />cancel</div>
                                         </>
                                     )
                                 }
