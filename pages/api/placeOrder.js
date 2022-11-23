@@ -25,6 +25,8 @@ export default async function handle(req, res){
             res.status(401).send({ message: err.message })
         }
 
+        console.log('connect to omise')
+
         const omise = require('omise')({
             'publicKey': process.env.OMISE_PUBLIC_KEY,
             'secretKey': process.env.OMISE_SECRET_KEY
