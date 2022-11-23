@@ -1,0 +1,225 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.contentContainer {
+    width: calc(100% - 250px);
+    height: 100%;
+    min-height: 100vh;
+    background-color: var(--dashboard-background);
+}
+
+.orderWrap {
+    margin: 80px 100px;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; */
+    border-radius: 15px;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.flexEnd {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.refreshBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    cursor: pointer;
+    height: 35px;
+    width: 35px;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.orderList {
+    width: 100%;
+    overflow: auto;
+    min-height: 510px;
+}
+
+.orderList .itemHeader {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid #A1A3A5;
+    min-width: 400px;
+}
+
+.orderList .item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 0;
+    min-width: 400px;
+}
+
+.orderList .item:hover {
+    background-color: #F1F3F5;
+    /* background-color: #ebeffd; */
+}
+
+.orderList .itemHeader .itemDetails,
+.orderList .item .itemDetails {
+    width: 25%;
+    /* display: inline-flex; */
+}
+
+.btnGroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn {
+    background-color: rgb(250, 191, 81);
+    border-radius: 8px;
+    width: fit-content;
+    padding: 6px 10px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.status_gray,
+.status_red,
+.status_orange,
+.status_green {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    margin: auto 5px;
+}
+
+.status_gray {
+    background-color: #D3D4D5;
+}
+
+.status_red {
+    background-color: #DC3545;
+}
+
+.status_orange {
+    background-color: #FFC107;
+}
+
+.status_green {
+    background-color: green;
+}
+
+@media screen and (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+    }
+    .contentContainer {
+        width: 100%;
+    }
+    .orderWrap {
+        margin: 60px 40px 60px calc(40px + 78px);
+    }
+}
+
+@media screen and (max-width: 992px) {
+
+}
+
+
+@media screen and (max-width: 786px) {
+
+}
+
+@media screen and (max-width: 576px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+    }
+    .orderWrap {
+        margin: 1rem;
+        margin-top: calc(2rem + 10px);
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 356px) {
+    .orderWrap {
+        margin: 1rem 5px;
+        margin-top: 30px;
+        padding: 10px;
+    }
+}
+
+
+/* dropdown */
+.dropdownGroup {
+    user-select: none;
+    position: relative;
+    z-index: 2;
+    min-width: 140px;
+}
+
+.dropdownGroup .dropdownSelection{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    transition: all ease 0.5;
+    cursor: pointer;
+    max-height: 35px;
+}
+
+.dropdownGroup .dropdownSelection svg{
+    font-size: 20px;
+}
+
+.dropdownGroup .dropdownList{
+    background-color: #fff;
+    position: absolute;
+    margin-top: 2px;
+    padding: 4px 0;
+    /* border-radius: 0 0 8px 8px; */
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    /* overflow-y: hidden; */
+}
+
+.dropdownGroup.showDropdown .dropdownSelection {
+    cursor: pointer;
+    /* border-radius: 8px 8px 0 0; */
+    box-shadow: var(--shadow);
+}
+
+.dropdownGroup.showDropdown .dropdownList {
+    opacity: 1;
+    visibility: visible;
+    border-top: none;
+}
+
+.dropdownGroup .dropdownList .dropdownItem {
+    cursor: pointer;
+    padding: 6px 8px;
+}
+.dropdownGroup .dropdownList .dropdownItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
+}
+

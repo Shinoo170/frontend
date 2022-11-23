@@ -8,6 +8,7 @@ import styles from './productListMD.module.css'
 
 import { RiArrowLeftSLine } from 'react-icons/ri'
 import { FiChevronLeft,FiChevronRight } from 'react-icons/fi'
+import { TiStarHalf } from 'react-icons/ti'
 
 import QuickBuy from "components/quickBuy"
 
@@ -22,6 +23,7 @@ export default function ProductListMD(prop){
     const [ maxPage, setMaxPage ] = useState(0)
     const [ quickBuyData, setQuickBuyData ] = useState({})
     const [ showQuickBuy , setShowQuickBuy ] = useState(false)
+    const star = [1,2,3,4,5]
 
     useEffect(() => {
         if(showQuickBuy) {
@@ -38,7 +40,7 @@ export default function ProductListMD(prop){
     }
 
     const goBack = () => {
-        const target = '/series/' + allProduct[0].seriesId
+        const target = '/series/' + router.query.seriesId
         router.push({pathname: target, query:{} }, undefined,{ shallow: true })
     }
     const changePageHandle = (event) => {
@@ -68,6 +70,22 @@ export default function ProductListMD(prop){
         setListProduct(arr)
     }, [currentPage])
 
+    const showStar = (score, avg) => {
+        const halfScore = score-0.5
+        const selfScore = Math.round(avg*2)/2
+        return (
+            <div className={styles.fullStarGroup} key={`star-${score}`}>
+                <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>
+                <TiStarHalf className={`${styles.starHalfRight} ${selfScore >= score? styles.starActive:''} `}/>
+                <div className={styles.labelGroup}>
+                    <div className={styles.leftLabel}></div>
+                    <div className={styles.rightLabel} ></div>
+                </div>
+            </div>
+        )
+    }
+
+
     return (
         <div className={styles.container}>
             <div className={styles.top}>
@@ -90,20 +108,26 @@ export default function ProductListMD(prop){
                                     <div className={styles.image}>
                                         <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
                                     </div>
-                                    <div className={styles.title}>{element.title} เล่ม {element.bookNum}</div>
-                                    {
-                                        element.amount > 0 && element.status !== 'out' && 
-                                        <button className={styles.btn} onClick={quickBuy}>
-                                            <div className={styles.price}>{element.price} ฿</div>
-                                            <div className={styles.text}>Add to cart</div>
-                                        </button>
-                                    }
-                                    {
-                                        ( element.amount <= 0 || element.status === 'out') && 
-                                        <button className={styles.btnDisable} onClick={quickBuy}>
-                                            <div className={styles.price}>Out of stock</div>
-                                        </button>
-                                    }
+                                    <div className={styles.title}>{element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>}</div>
+                                    <div className={styles.bottomGroup}>
+                                        <div className={styles.starGroup}>
+                                            <div className={styles.tooltip}>{element.score.avg > 0? element.score.avg:'No review'}</div>
+                                            { star.map(e => showStar(e,element.score.avg)) }
+                                        </div>
+                                        {
+                                            element.amount > 0 && element.status !== 'out' && 
+                                            <button className={styles.btn} onClick={quickBuy}>
+                                                <div className={styles.price}>{element.price} ฿</div>
+                                                <div className={styles.text}>Add to cart</div>
+                                            </button>
+                                        }
+                                        {
+                                            ( element.amount <= 0 || element.status === 'out') && 
+                                            <button className={styles.btnDisable} onClick={quickBuy}>
+                                                <div className={styles.price}>Out of stock</div>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
                             </Link>
                         </div>

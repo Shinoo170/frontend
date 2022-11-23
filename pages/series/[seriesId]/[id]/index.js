@@ -12,8 +12,8 @@ import SwiperItemSeries from 'components/SwiperItemSeries'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { RiArrowDownSLine, RiArrowRightSLine } from 'react-icons/ri'
 import { MdShoppingCart } from 'react-icons/md'
-import { HiOutlineMenu } from 'react-icons/hi'
 import { TiStar } from 'react-icons/ti'
+import { IoIosHeartEmpty, IoIosHeart } from 'react-icons/io'
 
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -40,6 +40,7 @@ export default function ProductDetails(){
     const [ starSelect, setStarSelect] = useState(5)
     const reviewTextarea = useRef()
     const [ otherReview, setOtherReview ] = useState([])
+    const [ isWishlist, setIsWishlist ] = useState(false)
 
     useEffect(() => {
         if(router.isReady){
@@ -50,7 +51,6 @@ export default function ProductDetails(){
                 })
             }
             setSelectAmount(1)
-            console.log(router.query)
             var split_query = router.query.id.split('-')
             split_query = split_query[split_query.length -1]
             var ca = ''
@@ -67,13 +67,13 @@ export default function ProductDetails(){
                 setOtherProduct(result.data.otherProducts)
                 setSimProduct(result.data.similarProducts)
 
+                getWishlists()
                 const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + result.data.productDetails.productId
                 axios.get(reviewUrl)
                 .then( result => {
                     console.log(result.data)
                     const id = localStorage.getItem('userId')
                     const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
-                    console.log(reviewTemp)
                     setOtherReview(reviewTemp)
                 })
             }).catch( err => {
@@ -168,6 +168,69 @@ export default function ProductDetails(){
         
     }
 
+    
+    const getWishlists = () => {
+        const jwt = localStorage.getItem('jwt')
+        if(!jwt){ return }
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
+        axios.get(url, {
+            headers: {
+                jwt
+            }
+        })
+        .then(result => {
+            setIsWishlist(result.data)
+        })
+    }
+
+    const addNewWishlists  = () => {
+        const jwt = localStorage.getItem('jwt')
+        if(!jwt){
+            return toast.error('กรุณาล็อกอิน', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            }) 
+        }
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
+        axios.put(url, {
+            jwt
+        })
+        .then(result => {
+            setIsWishlist(result.data)
+        })
+    }
+
+    const deleteWishlists = () => {
+        const jwt = localStorage.getItem('jwt')
+        if(!jwt){
+            return toast.error('กรุณาล็อกอิน', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        }
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
+        axios.delete(url, {
+            headers: {
+                jwt
+            }
+        })
+        .then(result => {
+            setIsWishlist(result.data)
+        })
+    }
+
     return (
         <div>
             <Head>
@@ -183,7 +246,7 @@ export default function ProductDetails(){
                         <div className={styles.title}>{productsData.title} {productsData.bookNum}</div>
                         <div className={styles.buySection}>
                             <div className={styles.imageContainer}>
-                                <img src={showImage}/>
+                                { showImage? <img src={showImage}/> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
                                 <div className={styles.listImages}>
                                     <Swiper
                                         slidesPerView={3}
@@ -197,15 +260,15 @@ export default function ProductDetails(){
                                         className="listImage"
                                         >
                                         {
-                                        productsData.img.map( (element, index) => {
-                                            return (
-                                            <SwiperSlide key={`list-img-${index}`}>
-                                                <div className={styles.image}>
-                                                    <img src={element} onClick={ e => setShowImage(element) }/>
-                                                </div>
-                                            </SwiperSlide>
-                                            )
-                                        })
+                                            productsData.img.map( (element, index) => {
+                                                return (
+                                                    <SwiperSlide key={`list-img-${index}`}>
+                                                        <div className={styles.image}>
+                                                            <img src={element} onClick={ e => setShowImage(element) }/>
+                                                        </div>
+                                                    </SwiperSlide>
+                                                )
+                                            })
                                         }
                                     </Swiper>
                                 </div>
@@ -229,10 +292,22 @@ export default function ProductDetails(){
                                     </div>
                                 </div>
                                 {
-                                    productsData.amount > 0 && productsData.status !== 'out' && <div className={styles.btn} onClick={addToCartHandle}> <div className={styles.cartIcon}><MdShoppingCart/></div> Add to cart</div>
+                                    productsData.amount > 0 && productsData.status !== 'out' && <div className={styles.flexRow}>
+                                        <div className={styles.btn} onClick={addToCartHandle}>
+                                            <div className={styles.cartIcon}><MdShoppingCart/></div> Add to cart
+                                        </div> 
+                                        { !isWishlist && <div className={styles.icon} onClick={() => addNewWishlists()}><IoIosHeartEmpty /></div> }
+                                        { isWishlist && <div className={styles.iconPink} onClick={() => deleteWishlists()}><IoIosHeart /></div> }
+                                    </div>
                                 }
                                 {
-                                    (productsData.amount === 0 || productsData.status === 'out') && <div className={styles.btnDisable}> <div className={styles.cartIcon}><MdShoppingCart/></div> Out of stock</div>
+                                    (productsData.amount === 0 || productsData.status === 'out') && <div className={styles.flexRow}>
+                                        <div className={styles.btnDisable}>
+                                            <div className={styles.cartIcon}><MdShoppingCart/></div> Out of stock
+                                        </div>
+                                        { !isWishlist && <div className={styles.icon} onClick={() => addNewWishlists()}><IoIosHeartEmpty /></div> }
+                                        { isWishlist && <div className={styles.iconPink} onClick={() => deleteWishlists()}><IoIosHeart /></div> }
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -302,7 +377,7 @@ export default function ProductDetails(){
                         {
                             simProduct.length > 0 && <div className={styles.listProduct}>
                                 <div className={styles.top}>
-                                    <div className={styles.label}>สินค้าที่คุณอาจสนใจ</div>
+                                    <div className={styles.label}>เรื่องที่คุณอาจสนใจ</div>
                                 </div>
                                 <div className={styles.swiperContainer}>
                                     <SwiperItemSeries data={simProduct} href={`/series/`} seriesId={router.query.seriesId}/>

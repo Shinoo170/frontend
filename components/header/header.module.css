@@ -257,18 +257,17 @@
 .userInfo .userDropdown .subItem {
     padding: 4px;
     cursor: pointer;
-}
-.userInfo .userDropdown .subItem:hover {
     border-radius: 10px;
-    color: #3761ee;
-    background-color: #ebeffd;
-}
-.userInfo .userDropdown .subItem .subTitle{
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    width: 100%;
 }
-.userInfo .userDropdown .subItem .subTitle svg{
+.userInfo .userDropdown .subItem:hover {
+    color: #3761ee;
+    background-color: #ebeffd;
+}
+.userInfo .userDropdown .subItem svg{
     font-size: 16px;
 }
 

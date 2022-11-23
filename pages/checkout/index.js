@@ -12,6 +12,9 @@ import SelectAddress from 'components/checkout_components/address'
 import PaymentMethod from 'components/checkout_components/payment'
 import PlaceOrderSuccess from 'components/checkout_components/success'
 
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 export const checkoutContext = createContext()
 
 export default function CheckOut(){
@@ -22,9 +25,16 @@ export default function CheckOut(){
     const [ exchange_rate, set_exchange_rate ] = useState(1)
     const [ currency, setCurrency ] = useState('บาท')
     const [ shippingFee, setShippingFee ] = useState(40)
+    const [ orderResult, setOrderResult ] = useState({})
+    const [ isLogin, setIsLogin ] = useState(false)
 
     useEffect(() => {
-        getCart()
+        if(localStorage.getItem('jwt')){
+            setIsLogin(true)
+            getCart()
+        } else {
+            router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+        }
     }, [])
 
     useEffect(() => {
@@ -147,8 +157,19 @@ export default function CheckOut(){
                     cart,
                 }).then(result => {
                     console.log(result.data)
+                    setOrderResult(result.data)
                 }).catch(error => {
                     console.log(error.response.data.message)
+                    toast.error( error.response.data.message , {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    })
                 })
             },
             onFormClosed: () => { },
@@ -156,24 +177,8 @@ export default function CheckOut(){
     }
     const omisePayHandle = (e) => {
         e.preventDefault()
-        creditCardConfigure()
-
-        // const jwt = localStorage.getItem('jwt')
-        // // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
-        // const url = '/api/placeOrder'
-        // axios.post( url , {
-        //     jwt,
-        //     token: undefined,
-        //     method: 'credit_card',
-        //     amount: priceSummary + shippingFee,
-        //     shippingFee,
-        //     exchange_rate,
-        //     cart,
-        // }).then(result => {
-        //     console.log(result.data)
-        // }).catch(err => {
-        //     console.log(err.response.data.message)
-        // })
+        // creditCardConfigure()
+        setState('success')
     }
 
     const metamaskPayHandle = async () => {
@@ -230,6 +235,7 @@ export default function CheckOut(){
                 hash: tx.hash,
             }).then(result => {
                 console.log(result.data)
+                setOrderResult(result.data)
             }).catch(error => {
                 console.log(error.response.data.message)
             })
@@ -266,14 +272,18 @@ export default function CheckOut(){
         }
     }
     const hideAnimationLoader = () => {
-        document.getElementById('summary-container').classList.remove(styles.hide)
-        var e = document.getElementsByClassName('text')
-        var e1 = document.getElementsByClassName('loader-container')
-        for(let i=0; i<e.length; i++){
-            e[i].classList.remove(styles.hide)
-        }
-        for(let i=0; i<e1.length; i++){
-            e1[i].classList.add(styles.hide)
+        try {
+            document.getElementById('summary-container').classList.remove(styles.hide)
+            var e = document.getElementsByClassName('text')
+            var e1 = document.getElementsByClassName('loader-container')
+            for(let i=0; i<e.length; i++){
+                e[i].classList.remove(styles.hide)
+            }
+            for(let i=0; i<e1.length; i++){
+                e1[i].classList.add(styles.hide)
+            }
+        } catch (error) {
+            
         }
     }
 
@@ -285,9 +295,10 @@ export default function CheckOut(){
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
+            <ToastContainer />
             <div className={styles.container}>
                 <div className={styles.stepperWrapper}>
-                    <div className={`${styles.stepperItem} ${state==='address'? styles.active:''} ${state!=='address'? styles.completed:''}`} onClick={e => setState('address')}>
+                    <div className={`${styles.stepperItem} ${state==='address'? styles.active:''} ${state!=='address'? styles.completed:''}`} onClick={() => { if(state==='payment') setState('address')}}>
                         <div className={styles.stepCounter}>1</div>
                         <div className={styles.stepName}>ที่อยู่จัดส่ง</div>
                     </div>
@@ -303,7 +314,7 @@ export default function CheckOut(){
                 <main className={styles.main}>
                     <div className={styles.checkoutSection}>
                         <div className={styles.Section}>
-                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState}}>
+                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult}}>
                                 { (state === 'address') && <SelectAddress /> }
                                 { (state === 'payment') && <PaymentMethod /> }
                                 { (state === 'success') && <PlaceOrderSuccess /> }
@@ -347,40 +358,41 @@ export default function CheckOut(){
                             }
                         </div>
                     </div>
-                    <div className={styles.summarySection}>
-                        <div id='summary-container' className={styles.summaryContainer}>
-                            <div className={styles.row}>
-                                <div>ราคา</div>
-                                <div>{ priceSummary } {currency}</div>
+                    { (state !== 'success') &&  
+                        <div className={styles.summarySection}>
+                            <div id='summary-container' className={styles.summaryContainer}>
+                                <div className={styles.row}>
+                                    <div>ราคา</div>
+                                    <div>{ priceSummary } {currency}</div>
+                                </div>
+                                <div className={styles.row}>
+                                    <div>ค่าจัดส่ง</div>
+                                    <div>{ Math.round(shippingFee/exchange_rate * 100)/100 } {currency}</div>
+                                </div>
+                                <div className={styles.row}>
+                                    <div>ราคารวม</div>
+                                    <div>{ Math.round((priceSummary + shippingFee/exchange_rate) *100)/100 } {currency}</div>
+                                </div>
+                            </div>
+                            <div className={`${styles.summaryContainer} ${styles.hide} loader-container`}>
+                                <span className={styles.loader}></span>
                             </div>
                             <div className={styles.row}>
-                                <div>ค่าจัดส่ง</div>
-                                <div>{ Math.round(shippingFee/exchange_rate * 100)/100 } {currency}</div>
+                                { (state === 'address') && <div className={styles.btn} onClick={e => changePageHandle()}>ถัดไป</div> }
+                                { 
+                                    (state === 'payment' && paymentMethod === 'credit_card') && <div className={styles.btn} onClick={omisePayHandle}>
+                                        <Script url="https://cdn.omise.co/omise.js"/>
+                                        <form>
+                                            <div id="credit-card">ชำระเงิน</div>
+                                        </form>
+                                    </div> 
+                                }
+                                {
+                                    (state === 'payment' && paymentMethod === 'metamask') && <div className={styles.btn} onClick={metamaskPayHandle}>ชำระเงิน</div> 
+                                }
                             </div>
-                            <div className={styles.row}>
-                                <div>ราคารวม</div>
-                                <div>{ Math.round((priceSummary + shippingFee/exchange_rate) *100)/100 } {currency}</div>
-                            </div>
                         </div>
-                        <div className={`${styles.summaryContainer} ${styles.hide} loader-container`}>
-                            <span className={styles.loader}></span>
-                        </div>
-                        <div className={styles.row}>
-                            { (state === 'address') && <div className={styles.btn} onClick={e => changePageHandle()}>ถัดไป</div> }
-                            { 
-                                (state === 'payment' && paymentMethod === 'credit_card') && <div className={styles.btn} onClick={omisePayHandle}>
-                                    <Script url="https://cdn.omise.co/omise.js"/>
-                                    <form>
-                                        <div id="credit-card">ชำระเงิน</div>
-                                    </form>
-                                </div> 
-                            }
-                            { 
-                                (state === 'payment' && paymentMethod === 'metamask') && <div className={styles.btn} onClick={metamaskPayHandle}>ชำระเงิน</div> 
-                            }
-                        </div>
-                    </div>
-                    
+                    }
                 </main>
             </div>
         </div>

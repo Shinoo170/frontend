@@ -91,10 +91,10 @@ export default function Cart(){
     },[cart])
 
     useEffect(() => {
-        // update exchange rate every 20 sec
+        // update exchange rate every 3 hours
         if(currency === 'BUSD' ){
             const local_exchange_rate = JSON.parse(localStorage.getItem('exchange-rate'))
-            if(!local_exchange_rate || local_exchange_rate.lastUpdate + 20*60*1000 < Date.now()){
+            if(!local_exchange_rate || local_exchange_rate.expire < Date.now()){
                 setPriceSummary(e => 'Loading')
                 const USD_rate_url = process.env.NEXT_PUBLIC_BACKEND + '/util/exchangeRate/USDTHB'
                 axios.get(USD_rate_url)
@@ -104,9 +104,11 @@ export default function Cart(){
                 })
             } else {
                 set_exchange_rate(local_exchange_rate.rate)
+                calPriceSummary()
             }
         } else {
             set_exchange_rate(1)
+            calPriceSummary()
         }
     }, [currency])
 

@@ -13,6 +13,9 @@ import ProductListMD from 'components/productListMD'
 import { RiArrowRightSLine } from 'react-icons/ri'
 import { IoBookmarkOutline, IoBookmark, IoShareOutline } from 'react-icons/io5'
 
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 export default function Products(){
     const router = useRouter()
     const [ seriesData, setSeriesData ] = useState({products:{}, score:{ avg: 0 }, state:'init'})
@@ -82,20 +85,17 @@ export default function Products(){
             else return current = 'More'
         })
     }
-
+    
     const SwiperProduct = (category, title, total) => {
         var data = {}
         if(category === 'Novel') {
             data = productsData.novel
-            data[0].category = 'นิยาย'
         }
         if(category === 'Manga') {
             data = productsData.manga
-            data[0].category = 'มังงะ'
         }
         if(category === 'Other') {
             data = productsData.other
-            data[0].category = 'สินค้า'
         }
         return (
             <div className={styles.listProduct}>
@@ -112,6 +112,7 @@ export default function Products(){
 
     const getBookmark = () => {
         const jwt = localStorage.getItem('jwt')
+        if(!jwt){ return }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.get(url, {
             headers: {
@@ -125,6 +126,18 @@ export default function Products(){
 
     const addNewBookmark = () => {
         const jwt = localStorage.getItem('jwt')
+        if(!jwt){
+            return toast.error('กรุณาล็อกอิน', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.put(url, {
             jwt
@@ -136,6 +149,18 @@ export default function Products(){
 
     const deleteBookmark = () => {
         const jwt = localStorage.getItem('jwt')
+        if(!jwt){
+            return toast.error('กรุณาล็อกอิน', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.delete(url, {
             headers: {
@@ -155,13 +180,17 @@ export default function Products(){
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
+            <ToastContainer /> 
             <div className={styles.container}>
                 <main className={styles.main}>
                     <div className={styles.detailContainer}>
                         <div className={styles.title}>{seriesData.title}</div>
                         <div className={styles.flex}>
                             <div className={styles.image}>
-                                <img src={seriesData.img} />
+                                {/* <img src={seriesData.img} /> */}
+                                <div className={styles.imageControl}>
+                                { seriesData.img? <Image src={seriesData.img} alt='img' layout='fill' objectFit='cover' /> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
+                                </div>
                                 <div className={styles.iconContainer}>
                                     {
                                         !isBookmark && (

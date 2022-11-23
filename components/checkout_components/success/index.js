@@ -8,7 +8,7 @@ import styles from './success.module.css'
 export default function PlaceOrderSuccess(props){
 
     return (
-        <div>
+        <div className={styles.container}>
             สำเร็จ
         </div>
     )

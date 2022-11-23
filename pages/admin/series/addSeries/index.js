@@ -12,7 +12,7 @@ import { S3Client, S3 } from "@aws-sdk/client-s3"
 import { RiCloseCircleLine, RiArrowDownSLine } from 'react-icons/ri'
 
 export default function AddSeries() {
-  const [ file, setFile ] = useState('')
+  const [ file, setFile ] = useState()
   const [ inputData, setInputData ] = useState()
   const [ genres, setGenres ] = useState([])
   const [ keywords, setKeywords] = useState([])
@@ -33,11 +33,42 @@ export default function AddSeries() {
   }, [])
 
   const saveFile = (e) => {
-    setFile(e.target.files[0])
+    const file = e.target.files[0]
+    if(file){
+      const fileType = file.type
+      var allowedExtensions = /(\jpg|\jpeg|\png|\gif)$/i
+      if (!allowedExtensions.exec(fileType)) {
+        toast.error('Invalid file type', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        })
+        return false
+      }
+    }
+    setFile(file)
   }
   
   const uploadSeries = async (e) => {
     e.preventDefault()
+    if(file === undefined) {
+      toast.error('กรุณาอัพโหลดรูป', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        })
+        return
+    }
     try{
       const myPromise = new Promise( async (resolve, reject) => {
         // [ Upload image ]
@@ -47,7 +78,9 @@ export default function AddSeries() {
         const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Series/' + imgName
         const mergeKeywords = [author, ...genres, ...keywords]
         const ky = mergeKeywords.map(e => e.toLowerCase())
+        const jwt = localStorage.getItem('jwt')
         await axios.post( axiosURL , {
+          jwt,
           title: inputData.title,
           author: inputData.author,
           illustrator: inputData.illustrator,
@@ -87,7 +120,7 @@ export default function AddSeries() {
         },
         error: {
           render({data}){return data}
-        }
+        },
       })
     } catch(err) {
       console.log(err)
@@ -187,26 +220,26 @@ export default function AddSeries() {
             <div className={styles.msg}>or drag and drop files here</div>
           </div>
           
-          <div className={styles.inputFormWarp} onSubmit={e => e.preventDefault()}>
+          <form className={styles.inputFormWarp} onSubmit={e => uploadSeries(e)}>
 
             <div className={styles.inputWarp}>
               <div className={styles.label}>Title</div>
-              <input id='title' name='title' onChange={(e) => onChangeHandler(e.target)} />
+              <input id='title' name='title' onChange={(e) => onChangeHandler(e.target)} required/>
             </div>
             
             <div className={styles.inputWarp}>
               <div className={styles.label}>author</div>
-              <input id='author' name='author' onChange={(e) => { onChangeHandler(e.target); setAuthor(e.target.value) } } />
+              <input id='author' name='author' onChange={(e) => { onChangeHandler(e.target); setAuthor(e.target.value) } } required/>
             </div>
 
             <div className={styles.inputWarp}>
               <div className={styles.label}>illustrator</div>
-              <input id='illustrator' name='illustrator' onChange={(e) => onChangeHandler(e.target)} />
+              <input id='illustrator' name='illustrator' onChange={(e) => onChangeHandler(e.target)} required/>
             </div>
 
             <div className={styles.inputWarp}>
               <div className={styles.label}>publisher</div>
-              <input id='publisher' name='publisher' onChange={(e) => onChangeHandler(e.target)} />
+              <input id='publisher' name='publisher' onChange={(e) => onChangeHandler(e.target)} required/>
             </div>
 
             <div className={styles.inputWarp}>
@@ -295,9 +328,9 @@ export default function AddSeries() {
               <input id='keyword' name='keyword' onKeyUp={e => addKeywords(e)} autoComplete="off" />
             </div>
 
-            <button className={styles.button4} onClick={e => uploadSeries(e)}>Add Product</button>
+            <button className={styles.button4} type='submit'>Add Product</button>
 
-          </div>
+          </form>
 
         </div>
 

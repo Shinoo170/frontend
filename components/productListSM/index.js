@@ -60,13 +60,15 @@ export default function ProductListSM(prop){
                     listProduct.map( (element, index) => {
                         return <div key={`item-${index}`} className={styles.itemContainer}>
                             <Link href={`${prop.url}${element.url}`}>
-                                <div className={styles.item}>
-                                    <div className={styles.image}>
-                                        <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' />
+                                <a>
+                                    <div className={styles.item}>
+                                        <div className={styles.image}>
+                                            <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' />
+                                        </div>
+                                        <div className={styles.title}>{element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>} </div>
+                                        <button className={styles.btn}>{element.price} ฿</button>
                                     </div>
-                                    <div className={styles.title}>{element.title} เล่ม {element.bookNum}</div>
-                                    <button className={styles.btn}>{element.price} $</button>
-                                </div>
+                                </a>
                             </Link>
                         </div>
                     })

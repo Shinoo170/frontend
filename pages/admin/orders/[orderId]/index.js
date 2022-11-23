@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { RiArrowDownSLine } from 'react-icons/ri'
 import { VscTriangleRight } from 'react-icons/vsc'
 
-export default function Order() {
+export default function OrderDetails() {
     const [ orderId, setOrderId ] = useState('')
     const [ orderData, setOrderData ] = useState({})
     const [ productDetails, setProductDetails ] = useState([])
@@ -34,31 +34,40 @@ export default function Order() {
     }, [router])
 
     const getOrder = () => {
+        const jwt = localStorage.getItem('jwt')
         const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/getOrderDetails?orderId=' + router.query.orderId
-        axios.get(axiosURL)
-        .then( result => {
-            console.log(result.data)
-            // setOrderData(result.data.order)
-            setProductDetails(result.data.productDetails)
-            statusIconChange(result.data.order.status)
-            setNConvertStatus(result.data.order.status)
-            if(result.data.order.method === 'metamask') {
-                metamaskDetail(result.data.order)
+        axios.get(axiosURL, {
+            headers: {
+                jwt
+            }
+        }).then( result => {
+            // setOrderData(d.order)
+            const d = result.data
+            console.log(d)
+            setProductDetails(d.productDetails)
+            statusIconChange(d.order.status)
+            setNConvertStatus(d.order.status)
+            if(d.order.method === 'metamask') {
+                metamaskDetail(d.order)
             }
             else {
-                setOrderData(result.data.order)
+                setOrderData(d.order)
             }
+            var time = d.order.paymentDetails.date.split(',') || d.order.date.split(',') 
+            setDateTime({date: time[0], time: time[1] })
         }).catch( err => {
-            toast.error(`can't get orders`, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            if(err.name === 'AxiosError'){
+                toast.error(`can't get orders`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
+            }
         })
     }
 
@@ -79,17 +88,13 @@ export default function Order() {
             setEditStatus({status, thai: 'จัดส่งแล้ว'})
         } else if(status === 'cancel'){
             setEditStatus({status, thai: 'ยกเลิก'})
+        } else if(status === 'ordered') {
+            setEditStatus({status, thai: 'รอการชำระเงิน'})
         }
     }
 
     const metamaskDetail = (data) => {
         setCurrency('BUSD')
-        var fullDate = data.paymentDetails.date
-        var fp = fullDate.split('T')
-        var d = fp[0].split('-')
-        var d2 = d[2] + ' / ' + d[1] + ' / ' + d[0]
-        var t = fp[1].replaceAll(':',' : ').split('.')
-        setDateTime({date: d2, time: t[0] })
         if(data.paymentDetails.refund){
             data.total = data.paymentDetails.net
         }
@@ -161,26 +166,61 @@ export default function Order() {
 
     const saveChange = () => {
         if(orderData.status !== editStatus.status){
+            const jwt = localStorage.getItem('jwt')
             if(editStatus.status === 'delivered'){
                 var trackingNumber = document.getElementById('tracking-number').value
                 if(trackingNumber.trim() === ''){
-                    Swal.fire({
+                    return Swal.fire({
                         title: 'กรุณากรอกข้อมูลให้ครบ',
                         icon: 'error',
                         confirmButtonColor: '#DC3545',
                     })
                 }
+                var data = {
+                    jwt,
+                    orderId: orderData.orderId,
+                    status: editStatus.status,
+                    trackingNumber
+                }
+                sendData(data)
             }else if(editStatus.status === 'cancel'){
-                var trackingNumber = document.getElementById('cancel-message').value
-                if(trackingNumber.trim() === ''){
-                    Swal.fire({
+                var cancelMessage = document.getElementById('cancel-message').value
+                if(cancelMessage.trim() === ''){
+                    return Swal.fire({
                         title: 'กรุณากรอกข้อมูลให้ครบ',
                         icon: 'error',
                         confirmButtonColor: '#DC3545',
                     })
                 }
+                var data = {
+                    jwt,
+                    orderId: orderData.orderId,
+                    status: editStatus.status,
+                    cancelMessage
+                }
+                sendData(data)
             }
         }
+    }
+
+    const sendData = (data) => {
+        const uploadPromise = new Promise(async (resolve, reject) => {
+            const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/updateOrder'
+            axios.patch(axiosURL, data)
+            .then( result => {
+                getOrder()
+                resolve()
+            }).catch( err => {
+                console.log(err)
+                reject()
+            })
+        })
+
+        toast.promise(uploadPromise, {
+            pending: "Pending",
+            success: "อัพเดตข้อมูลสำเร็จ",
+            error: "อัพเดตข้อมูลไม่สำเร็จ",
+        })
     }
 
     useEffect(() => {
@@ -238,13 +278,27 @@ export default function Order() {
                     <div className={styles.orderDetails}>
                         <div>ข้อมูลคำสั่งซื้อ</div>
                         <div>ช่องทางชำระเงิน : {orderData.method}</div>
-                        <div>ราคาทั้งหมด : {orderData.total} {currency}</div>
+                        <div>ราคาทั้งหมด : {orderData.total} {currency} (รวมค่าจัดส่ง)</div>
                         {
                             orderData.status !== 'ordered' && <div ref={paymentDetails} className={`${styles.paymentDetails} ${showPaymentDetails? styles.show:''}`}>
                                 <div className={styles.label} onClick={() => setShowPaymentDetails(!showPaymentDetails)}><div className={styles.triangleIcon}><VscTriangleRight /></div>ดูรายละเอียดการชำระเงิน</div>
-                                <div ref={DetailsContent} className={styles.detail}> 
+                                <div ref={DetailsContent} className={styles.detail}>
                                     {
-                                        orderData.method === 'metamask' && (<div>
+                                        orderData.method === 'credit_card' && orderData.paymentDetails.total !== undefined && (<div>
+                                                <div>Transaction Id : {orderData.paymentDetails.omiseTransactionId}</div>
+                                                <div>Charge Id : {orderData.paymentDetails.omiseChargeId}</div>
+                                                <div>Total : {orderData.paymentDetails.total} บาท</div>
+                                                <div>Net : {orderData.paymentDetails.net} บาท</div>
+                                                <div>Fee : {orderData.paymentDetails.fee} บาท</div>
+                                                <div>Vat : {orderData.paymentDetails.fee_vat} บาท</div>
+                                                <div>วันที่โอน : {dateTime.date}</div>
+                                                <div>เวลา : {dateTime.time} น.  </div>
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        orderData.method === 'metamask' && orderData.paymentDetails.hash !== undefined && (
+                                            <div>
                                                 <div>Exchange rate : {orderData.exchange_rate} Baht/USD</div>
                                                 <div>Transaction Hash : 
                                                     <Link href={`https://testnet.bscscan.com/tx/${orderData.paymentDetails.hash}`}>
@@ -279,13 +333,15 @@ export default function Order() {
                             <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}><div>{editStatus.thai}</div> <RiArrowDownSLine/></div>
                             <div className={styles.dropdownList} onClick={e => changeStatusHandle(e)}>
                                 <div className={styles.dropdownItem} data-value={'delivered'}>จัดส่งแล้ว</div>
-                                <div className={styles.dropdownItem} data-value={'paid'}>ชำระเงินแล้ว</div>
+                                {/* <div className={styles.dropdownItem} data-value={'paid'}>ชำระเงินแล้ว</div> */}
                                 <div className={styles.dropdownItem} data-value={'cancel'}>ยกเลิก</div>
                             </div>
                         </div>
                     </div>
-                    { editStatus.status === 'delivered' && <div className={styles.inputField}>หมายเลขพัสดุ : <input id='tracking-number' className={styles.input} autoComplete="off"/></div> }
-                    { editStatus.status === 'cancel' && <div className={styles.inputField}>สาเหตุ : <input id='cancel-message' className={styles.input} autoComplete="off"/></div> }
+                    { orderData.status === 'cancel' && <div>ยกเลิกเนื่องจาก : {orderData.failure_message}</div> }
+                    { orderData.status === 'delivered' && <div>Tracking Number : {orderData.trackingNumber}</div> }
+                    { (orderData.status !== editStatus.status) && (editStatus.status === 'delivered') && <div className={styles.inputField}>หมายเลขพัสดุ : <input id='tracking-number' className={styles.input} autoComplete="off"/></div> }
+                    { (orderData.status !== editStatus.status) && (editStatus.status === 'cancel') && <div className={styles.inputField}>สาเหตุ : <input id='cancel-message' className={styles.input} autoComplete="off"/></div> }
                     <div>
                         <div className={`${orderData.status !== editStatus.status? styles.btn : styles.btnDisable}`} onClick={saveChange}>บันทึก</div>
                     </div>

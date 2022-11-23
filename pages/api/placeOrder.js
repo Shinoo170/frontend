@@ -8,7 +8,7 @@ const omise = require('omise')({
 
 const chargeOmise = async (amount, token) => {
     const charge = await omise.charges.create({
-        amount: amount*100,
+        amount: amount * 100,
         currency: 'thb',
         card: token
     })
@@ -55,13 +55,11 @@ export default async function handle(req, res){
                 }).toArray()
 
             var totalPriceSummary = shippingFee
-            var refund = 0
             const finalOrder = cart.map((element) => {
                 const productIndex = product.findIndex(e => e.productId === element.productId)
                 var finalAmount = element.amount
                 if(element.amount > product[productIndex].amount){
                     finalAmount = product[productIndex].amount
-                    refund += Math.round( (element.amount - finalAmount) * product[productIndex].price  * 100) / 100
                 }
                 totalPriceSummary +=  Math.round(finalAmount * product[productIndex].price * 100) / 100
                 return {
@@ -96,7 +94,7 @@ export default async function handle(req, res){
                 method,
                 cart: finalOrder,
                 created_at: date,
-                date: new Date(date).toISOString(),
+                date: new Date(date).toLocaleString('en-US', { hour12: false}),
                 paymentDetails: {},
                 address: {},
                 status: 'ordered',
@@ -140,7 +138,7 @@ export default async function handle(req, res){
                     })
                     return
                 }
-                if(charge.status !== 'successful'){
+                if(charge.status !== 'successful') {
                     // ! Charge error
                     finalOrder.forEach(async element => {
                         await db.collection('products').updateOne({productId: element.productId}, {
@@ -172,7 +170,7 @@ export default async function handle(req, res){
                                 omiseChargeId: charge.id,
                                 omiseTransactionId: charge.transaction,
                                 created_at: paidDate,
-                                date: new Date(paidDate).toISOString(),
+                                date: new Date(date).toLocaleString('en-US', { hour12: false}),
                             },
                             status: 'paid',
                         }

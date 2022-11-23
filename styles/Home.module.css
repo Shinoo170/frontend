@@ -1,9 +1,10 @@
 .container {
-  width: 100%;
+  width: 100vw;
   height: 100%;
   display: flex;
   justify-content: center;
   padding-top: 56px;
+  padding-right: 15px;
 }
 
 .main {

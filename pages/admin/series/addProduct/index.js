@@ -42,12 +42,50 @@ export default function AddProduct() {
   }, [productStatus])
 
   const saveFile = (e) => {
-    setFile([...e.target.files])
-    setPreviewImg(e.target.files[0])
+    const tempImage = [...e.target.files]
+    const filter = []
+    var error = 0
+    var allowedExtensions = /(\jpg|\jpeg|\png|\gif)$/i
+    tempImage.forEach(element => {
+      if (allowedExtensions.exec(element.type)) {
+        filter.push(element)
+      } else {
+        error++
+      }
+    })
+    // setFile([...e.target.files])
+    // setPreviewImg(e.target.files[0])
+    if(error !== 0){
+      toast.warning('some file not allow', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      })
+    }
+    setFile([...filter])
+    setPreviewImg(filter[0])
   }
 
   const uploadProduct = async (e) => {
     e.preventDefault()
+    if(file.length === 0) {
+      toast.error('กรุณาอัพโหลดรูป', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        })
+        return
+    }
     try{
       const myPromise = new Promise( async (resolve, reject) => {
         const listImageName = []
@@ -63,9 +101,11 @@ export default function AddProduct() {
         var thai_category = ''
         if(category === 'manga') thai_category = 'มังงะ'
         else if(category === 'novel') thai_category = 'นิยาย'
-        else if(category === 'product') thai_category = 'สินค้า'
+        else if(category === 'other') thai_category = 'สินค้า'
+        const jwt = localStorage.getItem('jwt')
         const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/addProduct'
         await axios.post( axiosURL , {
+          jwt,
           seriesId: parseInt(seriesId),
           title: e.target.title.value,
           bookNum: e.target.bookNum.value,
@@ -78,25 +118,25 @@ export default function AddProduct() {
           img: listImgURL,
         }).then( res => {
           // [ Upload image ]
-          file.forEach( async (element, index) => {
-            const parallelUploads3 = new Upload({
-              client: new S3Client({
-                region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
-                credentials: {
-                  accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
-                  secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
-                }
-              }),
-              params: { 
-                Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
-                Key: 'Products/' + seriesId + '/' + listImageName[index],
-                Body: element
-              },
-              partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-              leavePartsOnError: false, // optional manually handle dropped parts
-            })
-            await parallelUploads3.done()
-          })
+          // file.forEach( async (element, index) => {
+          //   const parallelUploads3 = new Upload({
+          //     client: new S3Client({
+          //       region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+          //       credentials: {
+          //         accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+          //         secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+          //       }
+          //     }),
+          //     params: { 
+          //       Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+          //       Key: 'Products/' + seriesId + '/' + listImageName[index],
+          //       Body: element
+          //     },
+          //     partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+          //     leavePartsOnError: false, // optional manually handle dropped parts
+          //   })
+          //   await parallelUploads3.done()
+          // })
           resolve( res.data.message )
         }).catch( err => {
           console.log(err)
@@ -182,24 +222,24 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>Title</div>
-              <input id='title' />
+              <input id='title' required/>
             </div>
             
             <div className={styles.inputWrap}>
               <div className={styles.label}>SeriesId</div>
-              <input id='seriesId' disabled/>
+              <input id='seriesId' disabled required/>
             </div>
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>เล่มที่</div>
-              <input id='bookNum'/>
+              <input id='bookNum' required/>
             </div>
 
             <div className={styles.labelRadio}>ประเภท</div> 
             <div className={styles.radioInputWrap}>
               <input type='radio' label='มังงะ' name='type' value='manga' checked={category === 'manga'} onChange={onCategoryChange}/>
               <input type='radio' label='นิยาย' name='type' value='novel' checked={category === 'novel'} onChange={onCategoryChange}/>
-              <input type='radio' label='สินค้าอื่นๆ' name='type' value='product' checked={category === 'product'} onChange={onCategoryChange}/>
+              <input type='radio' label='สินค้าอื่นๆ' name='type' value='other' checked={category === 'other'} onChange={onCategoryChange}/>
             </div>
 
             <div className={styles.inputWrap}>
@@ -216,12 +256,12 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>ราคา</div>
-              <input id='price' type='number'/>
+              <input id='price' type='number' required/>
             </div>
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>จำนวนสินค้า</div>
-              <input id='amount' type='number'/>
+              <input id='amount' type='number' required/>
             </div>
 
             <button className={styles.button4} type='submit'>Add Product</button>

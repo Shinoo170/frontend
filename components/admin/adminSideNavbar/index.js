@@ -61,13 +61,13 @@ export default function SideNavbar(){
                             <span className={styles.tooltip}>Series</span>
                         </li>
                         <li>
-                            <Link href='/admin/order'> 
+                            <Link href='/admin/orders'> 
                                 <a>
                                     <i><BiCart /></i>
-                                    <span className={styles.linkName}>Order</span>
+                                    <span className={styles.linkName}>Orders</span>
                                 </a>
                             </Link>
-                            <span className={styles.tooltip}>Order</span>
+                            <span className={styles.tooltip}>Orders</span>
                         </li>
                         <li>
                             <Link href='#'> 

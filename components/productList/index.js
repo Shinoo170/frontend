@@ -6,6 +6,7 @@ import styles from './productList.module.css'
 
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
+import { TiStarHalf } from 'react-icons/ti'
 
 export default function ProductList(prop){
     const router = useRouter()
@@ -15,7 +16,7 @@ export default function ProductList(prop){
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(parseInt(prop.maxPerPage))
     const [ maxPage, setMaxPage ] = useState(0)
     const [ dataChange, setDataChange ] = useState(0)
-    const [ filterSortReverse, setFilterSortReverse ] = useState()
+    const star = [1,2,3,4,5]
 
     useEffect(() => {
     //     if(prop.data !== allProduct){
@@ -65,6 +66,21 @@ export default function ProductList(prop){
         }
     }
 
+    const showStar = (score, avg) => {
+        const halfScore = score-0.5
+        const selfScore = Math.round(avg*2)/2
+        return (
+            <div className={styles.fullStarGroup} key={`star-${score}`}>
+                <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>
+                <TiStarHalf className={`${styles.starHalfRight} ${selfScore >= score? styles.starActive:''} `}/>
+                <div className={styles.labelGroup}>
+                    <div className={styles.leftLabel}></div>
+                    <div className={styles.rightLabel} ></div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             <div className={styles.listProductContainer}>
@@ -79,7 +95,14 @@ export default function ProductList(prop){
                                             <Image src={img} alt='img' layout='fill' objectFit='cover' />
                                         </div>
                                         <div className={styles.title}>{element.title}</div>
-                                        <button className={styles.btn}>details</button>
+                                        
+                                        <div className={styles.bottomGroup}>
+                                            <div className={styles.starGroup}>
+                                                <div className={styles.tooltip}>{element.score.avg > 0? element.score.avg:'No review'}</div>
+                                                { star.map(e => showStar(e,element.score.avg)) }
+                                            </div>
+                                            <button className={styles.btn}>details</button>
+                                        </div>
                                     </a>
                                 </Link>
                             </div>

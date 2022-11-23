@@ -60,7 +60,6 @@ export default function Header(){
             axios.get('/api/getJwtRole',{ headers: {jwt:localStorage.getItem('jwt')}})
             .then(result => {
                 if(result.data.role === 'admin') setIsAdmin(true)
-                console.log(result.data.role)
             })
         }
     },[])
@@ -134,12 +133,13 @@ export default function Header(){
                                 </div>
                                 <div className={styles.info}>{localStorage.getItem('displayName')}</div>
                                 <hr />
-                                { isAdmin && <div className={styles.subItem}><Link href='/admin'><a className={styles.subTitle}><MdOutlineSpaceDashboard/>Dashboard</a></Link></div> }
-                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BiUser/>บัญชีของฉัน</a></Link></div>
-                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BsBoxSeam/>รายการสั่งซื้อ</a></Link></div>
-                                <div className={styles.subItem}><Link href='#'><a className={styles.subTitle}><BsBookmarks/>รายการที่ติดตาม</a></Link></div>
+                                { isAdmin && <Link href='/admin'><a className={styles.subItem}><MdOutlineSpaceDashboard/>Dashboard</a></Link> }
+                                <Link href='/user'><a className={styles.subItem}><BiUser/>บัญชีของฉัน</a></Link>
+                                <Link href='/#'><a className={styles.subItem}><BsBoxSeam/>รายการสั่งซื้อ</a></Link>
+                                <Link href='/#'><a className={styles.subItem}><BsBookmarks/>รายการที่ติดตาม</a></Link>
+                                <Link href='/#'><a className={styles.subItem}><BsSuitHeart/>รายการที่อยากได้</a></Link>
                                 <hr />
-                                <div className={styles.subItem} onClick={signOutHandle}><div className={styles.subTitle}><VscSignOut/>ออกจากระบบ</div></div>
+                                <div className={styles.subItem} onClick={signOutHandle}><VscSignOut/><div className={styles.subTitle}>ออกจากระบบ</div></div>
                             </div>
                         </div>
                     )

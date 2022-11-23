@@ -10,7 +10,7 @@ import ProductList from 'components/productList'
 import styles from './products.module.css'
 
 import { HiFilter } from 'react-icons/hi'
-import { TiStarHalf } from 'react-icons/ti'
+import { TiStarHalf, TiStar } from 'react-icons/ti'
 import { RiArrowDownSLine } from 'react-icons/ri'
 import { HiSortAscending, HiSortDescending, HiChevronLeft } from 'react-icons/hi'
 
@@ -22,11 +22,11 @@ export default function Products(){
     const [ starSelect, setStarSelect] = useState(0)
     const star = [1,2,3,4,5]
     const [ searchText, setSearchText ] = useState('')
+    const [ filter, setFilter ] = useState({})
     const [ filterGenres, setFilterGenres ] = useState([])
     const [ filterMatch, setFilterMatch ] = useState('ค่าเริ่มต้น')
     const [ filterCategory, setFilterCategory ] = useState('')   // -> Manga,Novel,Other
     const [ filterPrice, setFilterPrice ] = useState([])
-    const [ filterScore, setFilterScore ] = useState(0)
     const [ filterCount, updateFilterCount] = useState(0)
     const [ filterOrderBy, setFilterOrderBy ] = useState('ค่าเริ่มต้น')
     const [ filterSortReverse, setFilterSortReverse ] = useState()   // false (down) = A->Z 0-100 , True (up) = Z->A 100-0
@@ -96,8 +96,8 @@ export default function Products(){
                 <TiStarHalf className={`${styles.starHalfLeft} ${starHover>=halfScore? styles.starHover:''}`}/>
                 <TiStarHalf className={`${styles.starHalfRight} ${starHover>=score? styles.starHover:''}`}/>
                 <div className={styles.labelGroup}>
-                    <div className={styles.leftLabel} onClick={e => setStarSelect(halfScore)} onMouseEnter={e => setStarHover(halfScore)} onMouseLeave={e => setStarHover(starSelect)}></div>
-                    <div className={styles.rightLabel} onClick={e => setStarSelect(score)} onMouseEnter={e => setStarHover(score)} onMouseLeave={e => setStarHover(starSelect)}></div>
+                    <div className={styles.leftLabel} onClick={() => setStarSelect(halfScore)} onMouseEnter={() => setStarHover(halfScore)} onMouseLeave={() => setStarHover(starSelect)}></div>
+                    <div className={styles.rightLabel} onClick={() => setStarSelect(score)} onMouseEnter={() => setStarHover(score)} onMouseLeave={() => setStarHover(starSelect)}></div>
                 </div>
             </div>
         )
@@ -149,6 +149,7 @@ export default function Products(){
     useEffect(() => {
         if(router.isReady){
             const query = router.query
+            query.searchText? setSearchText(query.searchText) : setSearchText('')
             if(filterCount < 2){
                 Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
                 // "query.genres?" mean "query.genres" is not unified?"
@@ -157,7 +158,7 @@ export default function Products(){
                 setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
             }
             query.category? setFilterCategory(query.category) : setFilterCategory('')
-            query.searchText? setSearchText(query.searchText) : setSearchText('')
+            if(query.score) setStarSelect(query.score)
         }
     },[router])
 
@@ -165,7 +166,7 @@ export default function Products(){
     useEffect(() => {
         // * Initial sort
         if( (allSeries.length > 0) && (filterCount < 2) ){
-            filterGenres.map( element => {
+            filterGenres.forEach( element => {
                 try{
                     document.getElementById(element).checked = true
                 }catch(err){
@@ -174,6 +175,10 @@ export default function Products(){
             })
             filterProcess()
             updateFilterCount(c => c + 1)
+        }
+        if(searchText !== ''){
+            searchSeries()
+            return
         }
         // * Update router
         if( (allSeries.length > 0) && filterCount > 1){
@@ -187,17 +192,17 @@ export default function Products(){
             filterMatch != 'ค่าเริ่มต้น'? router.query.match = filterMatch : delete router.query.match
             // [ filter Category ]
             filterCategory !== ''? router.query.category = filterCategory : delete router.query.category
+            // [ score]
+            starSelect > 0 ? router.query.score = starSelect : delete router.query.score
             // [ Sort products ]
             filterOrderBy !== 'ค่าเริ่มต้น'? router.query.orderBy = filterOrderBy: delete router.query.orderBy
             filterSortReverse? router.query.sort = "Up" : delete router.query.sort
 
-            // if(searchText !== '') delete router.query.searchText
             delete router.query.searchText
-            // if(search !== router.query.searchText) delete router.query.searchText
             router.push({pathname: '/products', query:{ ...router.query } }, undefined,{ shallow: true } )
             filterProcess()
         }
-    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, filterScore, filterOrderBy, filterSortReverse])
+    }, [allSeries, filterMatch, filterGenres, filterCategory, filterPrice, starSelect, filterOrderBy, filterSortReverse])
 
     const filterProcess = () => {
         if(searchText !== ''){
@@ -208,32 +213,47 @@ export default function Products(){
         setSearch('')
         const tempSort = []
         const genresLength = filterGenres.length
-        var counter
         if(filterCategory !== '') {
-            allSeries.forEach( element => {
-                if(filterCategory === 'Novel') {
-                    if(element.products.totalNovel > 0) {
-                        if(isGenresFilterMatch(element)) tempSort.push(element)
-                    }
-                }
-                else if(filterCategory === 'Manga'){
-                    if(element.products.totalManga > 0) {
-                        if(isGenresFilterMatch(element)) tempSort.push(element)
-                    }
-                }
-                else if(filterCategory === 'Other'){
-                    if(element.products.totalOther > 0) {
-                        if(isGenresFilterMatch(element)) tempSort.push(element)
-                    }
-                }
-            })
-        } else {
-            if(genresLength === 0){
-                tempSort = allSeries
-            } else {
+            if(filterCategory === 'Novel') {
                 allSeries.forEach( element => {
-                    if(isGenresFilterMatch(element)) tempSort.push(element)
+                    if(element.products.totalNovel > 0 && element.score.avg >= starSelect) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
                 })
+            }
+            else if(filterCategory === 'Manga'){
+                allSeries.forEach( element => {
+                    if(element.products.totalManga > 0 && element.score.avg >= starSelect) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
+                })
+            }
+            else if(filterCategory === 'Other'){
+                allSeries.forEach( element => {
+                    if(element.products.totalOther > 0 && element.score.avg >= starSelect) {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    }
+                })
+            }
+        } else {
+            if(genresLength === 0) {
+                if(starSelect === 0) {
+                    tempSort = allSeries
+                } else {
+                    allSeries.forEach(e => {
+                        if(e.score.avg >= starSelect) tempSort.push(e)
+                    })
+                }
+            } else {
+                if(starSelect === 0){
+                    allSeries.forEach( element => {
+                        if(isGenresFilterMatch(element)) tempSort.push(element)
+                    })
+                } else {
+                    allSeries.forEach( element => {
+                        if(isGenresFilterMatch(element) && element.score.avg >= starSelect) tempSort.push(element)
+                    })
+                }
             }
         }
 
@@ -248,6 +268,7 @@ export default function Products(){
         setFilterProduct(filterSortReverse? finalSort.reverse() : finalSort)
 
         function isGenresFilterMatch(e) {
+            var counter
             if(genresLength === 0) return true
             if(filterMatch === 'ค่าเริ่มต้น'){
                 counter = 0
@@ -274,7 +295,20 @@ export default function Products(){
                 return false
             }
         }
+    }
 
+    const resetFilter = () => {
+        filterGenres.forEach( element => {
+            try{
+                document.getElementById(element).checked = false
+            }catch(err){}
+        })
+        setSearchText('')
+        setFilterGenres([])
+        setFilterMatch('ค่าเริ่มต้น')
+        setFilterCategory('')
+        setFilterOrderBy('ค่าเริ่มต้น')
+        setFilterSortReverse()
     }
 
     useEffect(() => {
@@ -289,7 +323,7 @@ export default function Products(){
 
     const searchSeries = () => {
         if(searchText !== ''){
-            var regExp = new RegExp(searchText, 'gi' );
+            var regExp = new RegExp(searchText, 'gi' )
             const p = allSeries.filter(e => {
                 // if(e.title.match(regExp) || e.publisher.match(regExp) || e.author.match(regExp)) return true
                 if(e.title.match(regExp) || e.publisher.toLowerCase() === searchText.toLowerCase() || e.author.toLowerCase() === searchText.toLowerCase()) return true
@@ -334,6 +368,7 @@ export default function Products(){
                                             if(e.target.id === `id-genres-${index}` || e.target.id === `id-genres-label-${index}`){ document.getElementById(element).checked = !document.getElementById(element).checked }
                                             if(document.getElementById(element).checked){ setFilterGenres([...filterGenres, element]) }
                                             else{ setFilterGenres(filterGenres.filter(item => item != element)) }
+                                            setSearchText('')
                                         }
                                         return (
                                             <div id={`id-genres-${index}`} className={styles.subItem} key={`genres-${index}`} onClick={e => {handle(e); updateFilterCount(current => current+1)}} >
@@ -352,19 +387,21 @@ export default function Products(){
                                 <div className={filterCategory === 'Manga'? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('Manga')}>มังงะ</div>
                                 <div className={filterCategory === 'Other'? styles.btnActive:styles.btn} onClick={e => setCategoryHandle('Other')}>สินค้าอื่นๆ</div>
                             </div>
+                            <hr/>
+                            <div className={styles.buttonGroup}><div className={styles.btn} onClick={e => resetFilter()}>Reset</div></div>
                         </div>
                         <div className={styles.item}>
-                            <div className={styles.title}>ราคา</div>
+                            {/* <div className={styles.title}>ราคา</div>
                             <div className={styles.row}>
                                 <input className={styles.priceInput} type='number'/>
                                 -
                                 <input className={styles.priceInput} type='number'/>
-                            </div>
+                            </div> */}
                             <div className={styles.title}>คะแนน</div>
                             <div className={styles.starGroup}>
                                 { star.map(e => showStar(e)) }
                             </div>
-                            <button onClick={e => setStarSelect(0)}>Reset</button>
+                            <div className={styles.buttonGroup} ><div className={styles.btn} onClick={e => setStarSelect(0)}>Reset</div></div>
                         </div>
                     </div>
                     <div className={styles.listProducts}>
@@ -375,6 +412,7 @@ export default function Products(){
                                     <div className={styles.label}>Filter&nbsp;:</div>
                                     <div className={styles.category} id='showCategory' onMouseDown={mouseDownHandler}>
                                         { search!=='' && <div className={styles.item} >ค้นหา: {search}</div> }
+                                        { starSelect>0 && <div className={styles.item} ><TiStar className={styles.star}/> {starSelect}</div>}
                                         {
                                             filterGenres.map( (element, index) => {
                                                 return(
@@ -392,7 +430,7 @@ export default function Products(){
                                             <div className={styles.dropdownItem} onClick={e => orderByHandle('ค่าเริ่มต้น')}>ค่าเริ่มต้น</div>
                                             <div className={styles.dropdownItem} onClick={e => orderByHandle('ความนิยม')}>ความนิยม</div>
                                             <div className={styles.dropdownItem} onClick={e => orderByHandle('เพิ่มล่าสุด')}>เพิ่มล่าสุด</div>
-                                            <div className={styles.dropdownItem} onClick={e => orderByHandle('ราคา')}>ราคา</div>
+                                            {/* <div className={styles.dropdownItem} onClick={e => orderByHandle('ราคา')}>ราคา</div> */}
                                             <div className={styles.dropdownItem} onClick={e => orderByHandle('ชื่อ')}>ชื่อ</div>
                                         </div>
                                     </div>

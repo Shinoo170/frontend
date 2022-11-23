@@ -9,8 +9,26 @@ import "swiper/css/pagination"
 
 import styles from './swiperItem.module.css'
 
+import { TiStarHalf } from 'react-icons/ti'
 
 export default function SwiperItemSeries(props){
+    const star = [1,2,3,4,5]
+
+    const showStar = (score, avg) => {
+        const halfScore = score-0.5
+        const selfScore = Math.round(avg*2)/2
+        return (
+            <div className={styles.fullStarGroup} key={`star-${score}`}>
+                <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>
+                <TiStarHalf className={`${styles.starHalfRight} ${selfScore >= score? styles.starActive:''} `}/>
+                <div className={styles.labelGroup}>
+                    <div className={styles.leftLabel}></div>
+                    <div className={styles.rightLabel} ></div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             <Swiper
@@ -36,9 +54,15 @@ export default function SwiperItemSeries(props){
                                                     <div className={styles.title}>{element.title}</div>
                                                 </a>
                                             </Link>
-                                            <button className={styles.btn}>
-                                                <div className={styles.text}>Details</div>
-                                            </button>
+                                            <div className={styles.bottomGroup}>
+                                                <div className={styles.starGroup}>
+                                                    <div className={styles.tooltip}>{element.score.avg > 0? element.score.avg:'No review'}</div>
+                                                    { star.map(e => showStar(e,element.score.avg)) }
+                                                </div>
+                                                <button className={styles.btn}>
+                                                    <div className={styles.text}>Details</div>
+                                                </button>
+                                            </div>
                                         </div>
                                 </div>
                             </SwiperSlide>

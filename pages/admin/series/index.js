@@ -139,7 +139,7 @@ export default function ProductPage(){
                     <div className={styles.pageButtonGroup}>
                         <button onClick={e => changePageHandle(-1) }><FiChevronLeft /></button>
                         <div className={styles.currentPageText}>
-                            {currentPage}
+                            {currentPage} / {maxPage}
                         </div>
                         <button onClick={e => changePageHandle(1) }><FiChevronRight /></button>
                     </div>

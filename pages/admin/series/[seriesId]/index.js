@@ -1,5 +1,6 @@
 import axios from "axios"
 import Image from 'next/image'
+import Head from 'next/head'
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from 'next/router'
 import SideNav from 'components/admin/adminSideNavbar'
@@ -20,7 +21,6 @@ import { IoMdSave } from 'react-icons/io'
 
 export default function SpecificSeries() {
     const [ productData, setProductData ] = useState({})
-    const [ addProductURl, setAddProductURl] = useState('')
     const [ mangaProducts, setMangaProducts ] = useState([])
     const [ novelProducts, setNovelProducts ] = useState([])
     const [ otherProducts, setOtherProducts ] = useState([])
@@ -35,7 +35,7 @@ export default function SpecificSeries() {
     const router = useRouter()
 
     const inputImage = useRef()
-    async function getSeriesDetails(){
+    function getSeriesDetails(){
         const seriesId = router.query.seriesId
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/series/' + seriesId
         axios.get(url).then( (result) => {
@@ -46,24 +46,37 @@ export default function SpecificSeries() {
             setOtherProducts(result.data.productData.other)
             setGenres(result.data.seriesData.genres)
             setKeywords(result.data.seriesData.keywords)
-            setAddProductURl('/admin/series/addProduct/?seriesId=' + seriesId + '&title=' + result.data.seriesData.title)
         }).catch( (err)=> {
-            console.log(err)
-            axios.post('/api/getSeriesDetails', { url })
-            .then( (result) => { 
-                setProductData(result.data.seriesData)
-                setMangaProducts(result.data.productData.manga)
-                setNovelProducts(result.data.productData.novel)
-                setOtherProducts(result.data.productData.other)
-                setAddProductURl('/admin/series/addProduct/?seriesId=' + seriesId + '&title=' + result.data.seriesData.title)
-            })
-            .catch( (err) => {
-                setProductData({ seriesId: 'error'})
+            // console.log(err)
+            // axios.post('/api/getSeriesDetails', { url })
+            // .then( (result) => { 
+            //     setProductData(result.data.seriesData)
+            //     setMangaProducts(result.data.productData.manga)
+            //     setNovelProducts(result.data.productData.novel)
+            //     setOtherProducts(result.data.productData.other)
+            // })
+            // .catch( (err) => {
+            //     setProductData({ seriesId: 'error'})
+            // })
+            const errorMessage = <>ไม่พบข้อมูลซีรี่ย์<br/>กลับหน้าหลักใน 5 วินาที</>
+            toast.error(errorMessage, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                onClose: () => {
+                    router.push({pathname: '/admin/series/', query:{} }, undefined,{ shallow: true } )
+                },
+                enableHtml: true
             })
         })
     }
 
-    const showData = (time) => {
+    const showDate = (time) => {
         if(!time){
             return 0
         }
@@ -129,7 +142,7 @@ export default function SpecificSeries() {
             }
             const jwt = localStorage.getItem('jwt')
             const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series'
-            axios.put(axiosURL, {
+            axios.patch(axiosURL, {
                 jwt,
                 seriesId: productData.seriesId,
                 title: document.getElementById('edit-title').value,
@@ -163,14 +176,14 @@ export default function SpecificSeries() {
                 getSeriesDetails()
                 resolve()
             }).catch( err => {
-                reject()
+                reject( err.response.data.message )
                 addViewMoreBtn()
             })
         })
         toast.promise(updatePromise, {
             pending: "กำลังอัพเดต",
             success: 'อัพเดตสำเร็จ',
-            error: 'อัพเดตไม่สำเร็จ'
+            error: { render({data}){return 'อัพเดตไม่สำเร็จเนื่องจาก ' + data} },
         },{ autoClose: 2000 })
     }
 
@@ -409,11 +422,11 @@ export default function SpecificSeries() {
                                 </div>
                                 <div className={styles.subDetails}>
                                     <div className={styles.label}>วันที่เพิ่ม :</div>
-                                    <div className={styles.value}>{showData(productData.addDate)} </div>
+                                    <div className={styles.value}>{showDate(productData.addDate)} </div>
                                 </div>
                                 <div className={styles.subDetails}>
                                     <div className={styles.label}>วันที่แก้ไขล่าสุด:</div>
-                                    <div className={styles.value}>{showData(productData.lastModify)} </div>
+                                    <div className={styles.value}>{showDate(productData.lastModify)} </div>
                                 </div>
                             </div>
                         </div>
@@ -437,7 +450,7 @@ export default function SpecificSeries() {
                         <div className={styles.listAllProduct}>
                             <div>สินค้าทั้งหมด { productData.products != undefined && productData.products.totalProducts} รายการ </div>
                             <div className={styles.btnGroup}>
-                                <Link href={addProductURl}><a className={styles.btn}><MdOutlineAddToPhotos /> add product</a></Link>
+                                <Link href={`/admin/series/addProduct/?seriesId=${router.query.seriesId}&title=${productData.title}`}><a className={styles.btn}><MdOutlineAddToPhotos /> add product</a></Link>
                                 { !edit && <div className={styles.btn} onClick={() => editHandle('edit')}><AiOutlineEdit />Edit</div> }
                                 {
                                     edit && (
@@ -463,7 +476,7 @@ export default function SpecificSeries() {
                     )}
 
                     {/* Manga List */}
-                    { (productData.products != undefined) && (productData.products.otherProducts > 0) && (
+                    { (productData.products != undefined) && (productData.products.totalOther > 0) && (
                         <ProductListSM data={otherProducts} title='สินค้าอื่นๆ' url={`/admin/series/${router.query.seriesId}/`} />
                     )}
 

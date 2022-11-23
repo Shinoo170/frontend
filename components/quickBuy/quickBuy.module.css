@@ -1,6 +1,5 @@
 /* ------------------------------------------------
 [ Quick add ] */
-
 .quickAddContainer {
     background-color: #fff;
     border-radius: 15px;
@@ -202,13 +201,17 @@
 	cursor: default;
 }
 
-
+@media screen and (min-width: 993px) {
+	.quickAddContainer {
+		transform: translateY(-5rem);
+	}
+}
 /* ------------------------------------------------
 [ Medium device (tablets) ] */
 @media screen and (max-width: 992px) {
 	.buySection {
 		flex-direction: column;
-		padding: 30px;
+		padding: 30px 80px;
 	}
 	.subSection {
 		width: 100%;
@@ -244,7 +247,7 @@
 
 @media screen and (max-width: 576px){
     .buySection {
-        padding-top: 50px;
+        padding: 50px 30px 30px;
     }
 	.dropdownGroup .dropdownList .dropdownItem {
 		padding: 4px 8px;
