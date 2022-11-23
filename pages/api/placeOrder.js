@@ -1,19 +1,8 @@
 const MongoClient = require('mongodb').MongoClient
 const ObjectId = require('mongodb').ObjectId
 const jwt = require('jsonwebtoken')
-const omise = require('omise')({
-    'publicKey': process.env.OMISE_PUBLIC_KEY,
-    'secretKey': process.env.OMISE_SECRET_KEY
-})
 
-const chargeOmise = async (amount, token) => {
-    const charge = await omise.charges.create({
-        amount: amount * 100,
-        currency: 'thb',
-        card: token
-    })
-    return charge
-}
+
 
 export default async function handle(req, res){
     if(req.method === 'POST'){
@@ -34,6 +23,20 @@ export default async function handle(req, res){
             })
         }catch(err){
             res.status(401).send({ message: err.message })
+        }
+
+        const omise = require('omise')({
+            'publicKey': process.env.OMISE_PUBLIC_KEY,
+            'secretKey': process.env.OMISE_SECRET_KEY
+        })
+        
+        const chargeOmise = async (amount, token) => {
+            const charge = await omise.charges.create({
+                amount: amount * 100,
+                currency: 'thb',
+                card: token
+            })
+            return charge
         }
 
         const client = new MongoClient(process.env.MONGODB_URI)
