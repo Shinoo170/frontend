@@ -177,8 +177,8 @@ export default function CheckOut(){
     }
     const omisePayHandle = (e) => {
         e.preventDefault()
-        // creditCardConfigure()
-        setState('success')
+        creditCardConfigure()
+        // setState('success')
     }
 
     const metamaskPayHandle = async () => {
