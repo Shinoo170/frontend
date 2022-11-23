@@ -128,6 +128,7 @@ export default function CheckOut(){
         OmiseCard = window.OmiseCard
         OmiseCard.configure({
             publicKey: process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY,
+            secretKey: 'skey_test_5tphsxg5lj1j0k7uojy',
             currency: 'THB',
             frameLabel: 'PTBookShop',
             submitLabel: 'Pay NOW',
@@ -142,11 +143,11 @@ export default function CheckOut(){
 
         OmiseCard.open({
             amount: (priceSummary + shippingFee)*100,
-            onCreateTokenSuccess: (token) => {
+            onCreateTokenSuccess: async (token) => {
                 console.log(token)
                 const jwt = localStorage.getItem('jwt')
-                // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
-                const url = '/api/placeOrder'
+
+                const url = process.env.NEXT_PUBLIC_BACKEND + '/user/omise'
                 axios.post( url , {
                     jwt,
                     token: token,
@@ -157,20 +158,37 @@ export default function CheckOut(){
                     cart,
                 }).then(result => {
                     console.log(result.data)
-                    setOrderResult(result.data)
+                    // setOrderResult(result.data)
                 }).catch(error => {
-                    console.log(error.response.data.message)
-                    toast.error( error.response.data.message , {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                    })
+                    console.log(error.response.data)
                 })
+                // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
+                
+                // const url = '/api/placeOrder'
+                // axios.post( url , {
+                //     jwt,
+                //     token: token,
+                //     method: 'credit_card',
+                //     amount: priceSummary + shippingFee,
+                //     shippingFee,
+                //     exchange_rate,
+                //     cart,
+                // }).then(result => {
+                //     console.log(result.data)
+                //     setOrderResult(result.data)
+                // }).catch(error => {
+                //     console.log(error.response.data.message)
+                //     toast.error( error.response.data.message , {
+                //         position: "top-right",
+                //         autoClose: 5000,
+                //         hideProgressBar: false,
+                //         closeOnClick: true,
+                //         pauseOnHover: true,
+                //         draggable: true,
+                //         progress: undefined,
+                //         theme: "light",
+                //     })
+                // })
             },
             onFormClosed: () => { },
         })
