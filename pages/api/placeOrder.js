@@ -29,6 +29,8 @@ export default async function handle(req, res){
             'publicKey': process.env.OMISE_PUBLIC_KEY,
             'secretKey': process.env.OMISE_SECRET_KEY
         })
+
+        console.log(omise)
         
         const chargeOmise = async (amount, token) => {
             const charge = await omise.charges.create({
