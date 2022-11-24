@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react"
 import axios from 'axios'
 import Link from "next/link"
 import Image from 'next/image'
+import Router from 'next/router'
 import styles from './quickBuy.module.css'
 
 import { RiArrowDownSLine } from 'react-icons/ri'
@@ -47,13 +48,19 @@ export default function QuickBuy(props) {
         setShowQuickBuy(false)
     }
 
+    const linkToPage = () => {
+        setShowQuickBuy(false)
+        Router.push({pathname: `/series/${product.seriesId}/${product.url}`, query:{ } }, undefined,{ shallow: false } )
+    }
+
     return (
         <div className={styles.quickAddContainer}>
             <div className={styles.closeIcon} onClick={e => close()}><CgClose /></div>
             <div className={styles.buySection}>
                 <div className={styles.imageContainer}>
                     <img src={product.img[0]}/>
-                    <Link href={`/series/${product.seriesId}/${product.url}`}><a className={styles.link}>ดูรายละเอียด</a></Link>
+                    {/* <Link href={`/series/${product.seriesId}/${product.url}`}><a className={styles.link}>ดูรายละเอียด</a></Link> */}
+                    <div className={styles.link} onClick={linkToPage}>ดูรายละเอียด</div>
                 </div>
                 <div className={styles.subSection}>
                     <div className={styles.title}>{product.title} {product.bookNum}</div>
