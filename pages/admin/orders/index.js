@@ -138,23 +138,20 @@ export default function Order() {
                             {
                                 orderList.map((element, index) => {
                                     var time = element.paymentDetails.date || element.date
-
+                                    time = time.replaceAll('.','/')
                                     return (
-                                        // <div key={`order-${index}`} ></div>
-                                            <Link href={`/admin/orders/${element.orderId}`} key={`order-${index}`}><a className={styles.item}>
-                                                <div className={styles.itemDetails}>{element.orderId}</div>
-                                                {/* <div className={styles.itemDetails}>{d2 + ' ' + t[0]}</div> */}
-                                                <div className={styles.itemDetails}>{time}</div>
-                                                <div className={styles.itemDetails}>{element.method}</div>
-                                                <div className={styles.itemDetails} style={{display: 'flex'}}>
-                                                    { element.status === 'ordered' && <div className={styles.status_gray}></div> }
-                                                    { element.status === 'paid' && <div className={styles.status_orange}></div> }
-                                                    { element.status === 'delivered' && <div className={styles.status_green}></div> }
-                                                    { element.status === 'cancel' && <div className={styles.status_red}></div> }
-                                                    {element.status}
-                                                </div>
-                                            </a></Link>
-                                        
+                                        <Link href={`/admin/orders/${element.orderId}`} key={`order-${index}`}><a className={styles.item}>
+                                            <div className={styles.itemDetails}>{element.orderId}</div>
+                                            <div className={styles.itemDetails}>{time}</div>
+                                            <div className={styles.itemDetails}>{element.method}</div>
+                                            <div className={styles.itemDetails} style={{display: 'flex'}}>
+                                                { element.status === 'ordered' && <div className={styles.status_gray}></div> }
+                                                { element.status === 'paid' && <div className={styles.status_orange}></div> }
+                                                { element.status === 'delivered' && <div className={styles.status_green}></div> }
+                                                { element.status === 'cancel' && <div className={styles.status_red}></div> }
+                                                {element.status}
+                                            </div>
+                                        </a></Link>
                                     )
                                 })
                             }

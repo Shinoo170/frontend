@@ -71,7 +71,6 @@ export default function ProductDetails(){
                 const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + result.data.productDetails.productId
                 axios.get(reviewUrl)
                 .then( result => {
-                    console.log(result.data)
                     const id = localStorage.getItem('userId')
                     const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
                     setOtherReview(reviewTemp)
@@ -84,6 +83,16 @@ export default function ProductDetails(){
             })
         }
     },[router])
+
+    const getReview = () => {
+        const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + productsData.productId
+        axios.get(reviewUrl)
+        .then( result => {
+            const id = localStorage.getItem('userId')
+            const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
+            setOtherReview(reviewTemp)
+        })
+    }
 
     const amountHandle = (e) => {
         const value = e.target.getAttribute('data-value')
@@ -168,7 +177,6 @@ export default function ProductDetails(){
         
     }
 
-    
     const getWishlists = () => {
         const jwt = localStorage.getItem('jwt')
         if(!jwt){ return }
@@ -258,7 +266,7 @@ export default function ProductDetails(){
                                         }}
                                         modules={[FreeMode, Mousewheel, Pagination]}
                                         className="listImage"
-                                        >
+                                    >
                                         {
                                             productsData.img.map( (element, index) => {
                                                 return (
@@ -407,6 +415,39 @@ export default function ProductDetails(){
                                     otherReview.map((element, index) => {
                                         var score = element.score
                                         const userId = localStorage.getItem('userId')
+                                        const dropdownID = `review-dropdown-${index}`
+
+                                        const showDropdownHandle = () => {
+                                            const container = document.getElementById(dropdownID)
+                                            if(container.classList.length === 1){
+                                                container.classList.add(styles.showDropdown)
+                                                document.addEventListener('mouseup', mouseUpHandle)
+                                            } else {
+                                                container.classList.remove(styles.showDropdown)
+                                            }
+                                        }
+                                        const mouseUpHandle = (e) => {
+                                            const container = document.getElementById(dropdownID)
+                                            if (!container.contains(e.target)) {
+                                                container.classList.remove(styles.showDropdown)
+                                                document.removeEventListener('mouseup', mouseUpHandle)
+                                            }
+                                        }
+                                        const changeStatusHandle = (e) => {
+                                            const container = document.getElementById(dropdownID)
+                                            container.classList.remove(styles.showDropdown)
+                                            document.removeEventListener('mouseup', mouseUpHandle)
+                                            var newValue = e.target.getAttribute('data-value')
+                                            if(newValue === 'delete'){
+                                                const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id
+                                                axios.delete(url, {
+                                                    headers: { jwt : localStorage.getItem('jwt') }
+                                                }).then( result => {
+                                                    getReview()
+                                                })
+                                            }
+                                        }
+
                                         return (
                                             <div key={`review-${index}`} className={styles.reviewContainer}>
                                                 <div className={styles.row}>
@@ -427,7 +468,13 @@ export default function ProductDetails(){
                                                     </div>
                                                     {
                                                         userId === element.user_id && <div className={styles.reviewMenu}>
-                                                            <BsThreeDotsVertical />
+                                                            <div id={dropdownID} className={`${styles.dropdownGroup}`} >
+                                                                <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}> <BsThreeDotsVertical /> </div>
+                                                                <div className={styles.dropdownList} onClick={e => changeStatusHandle(e)}>
+                                                                    {/* <div className={styles.dropdownItem} data-value={'edit'}>แก้ไข</div> */}
+                                                                    <div className={styles.dropdownItem} data-value={'delete'}>ลบ</div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     }
                                                     

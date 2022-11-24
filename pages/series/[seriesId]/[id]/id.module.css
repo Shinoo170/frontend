@@ -49,15 +49,21 @@
 .imageContainer .imgLoading {
 	height: 320px;
 	width: 215px;
-	border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
 .loading {
 	background: #eee;
 	background: linear-gradient(115deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+	background: linear-gradient(115deg, #eee 12%, #ececec 20%, #f5f5f5 33%, #ececec 45%);
 	border-radius: 5px;
-	background-size: 150% 100%;
+	background-size: 200% 100%;
+	animation: 2.0s shine linear infinite;
+}
+
+@keyframes shine {
+	to {
+	  background-position-x: -200%;
+	}
 }
 
 .listImages {
@@ -436,12 +442,35 @@
 }
 .review .reviewContainer .reviewMenu {
 	height: fit-content;
-	font-size: 20px;
+	/* font-size: 20px; */
 	cursor: pointer;
 }
 .review .reviewContainer .starGroup {
 	font-size: 20px;
 	cursor: default;
+}
+
+.reviewMenu .dropdownGroup .dropdownSelection {
+	width: fit-content;
+	border: none;
+	font-size: 16px;
+}
+.reviewMenu .dropdownGroup .dropdownSelection{
+	width: fit-content;
+}
+.reviewMenu .dropdownGroup .dropdownList {
+	position: absolute;
+	right: 0;
+	width: 50px;
+	margin: 0;
+}
+
+.reviewMenu .dropdownGroup .dropdownList .dropdownItem {
+	text-align: center;
+}
+
+.reviewMenu .dropdownGroup.showDropdown .dropdownList {
+	border: 1px solid #c9c9c9;
 }
 
 @media screen and (min-width: 2048px) {

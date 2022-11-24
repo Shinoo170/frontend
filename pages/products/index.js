@@ -280,7 +280,7 @@ export default function Products(){
                 }
                 return false
             }
-            else if(filterMatch === 'เฉพาะที่เลือก'){
+            else if(filterMatch === 'ตรงทั้งหมด'){  // เฉพาะที่เลือก
                 counter = 0
                 for(let j=0; j<filterGenres.length; j++){
                     if(e.genres.indexOf(filterGenres[j]) === -1) return false
@@ -288,7 +288,7 @@ export default function Products(){
                 }
                 if(e.genres.length === counter) return true
             }
-            else if(filterMatch === 'อย่างใดอย่างหนึ่ง'){
+            else if(filterMatch === 'ตรงอย่างน้อยหนึ่งอย่าง'){ // อย่างใดอย่างหนึ่ง
                 for(let j=0; j<filterGenres.length; j++){
                     if(e.genres.indexOf(filterGenres[j]) !== -1) return true
                 }
@@ -355,8 +355,8 @@ export default function Products(){
                                 <div className={styles.dropdownSelection} onClick={e => {setShowDropdown1(!showDropdown1)}}>{filterMatch} <RiArrowDownSLine/></div>
                                 <div className={styles.dropdownList}>
                                     <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('ค่าเริ่มต้น'); updateFilterCount(current => current+1)}}>ค่าเริ่มต้น</div>
-                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('เฉพาะที่เลือก'); updateFilterCount(current => current+1)}}>เฉพาะที่เลือก</div>
-                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('อย่างใดอย่างหนึ่ง'); updateFilterCount(current => current+1)}}>อย่างใดอย่างหนึ่ง</div>
+                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('ตรงทั้งหมด'); updateFilterCount(current => current+1)}}>ตรงทั้งหมด</div>
+                                    <div className={styles.dropdownItem} onClick={e => {dropdown1Handle('ตรงอย่างน้อยหนึ่งอย่าง'); updateFilterCount(current => current+1)}}>ตรงอย่างน้อยหนึ่งอย่าง</div>
                                 </div>
                             </div>
                             <hr/>

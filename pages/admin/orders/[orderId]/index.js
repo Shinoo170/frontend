@@ -15,7 +15,7 @@ import { VscTriangleRight } from 'react-icons/vsc'
 
 export default function OrderDetails() {
     const [ orderId, setOrderId ] = useState('')
-    const [ orderData, setOrderData ] = useState({})
+    const [ orderData, setOrderData ] = useState({address:{}})
     const [ productDetails, setProductDetails ] = useState([])
     const [ currency, setCurrency ] = useState('บาท')
     const [ dateTime, setDateTime ] = useState({})
@@ -176,13 +176,24 @@ export default function OrderDetails() {
                         confirmButtonColor: '#DC3545',
                     })
                 }
-                var data = {
-                    jwt,
-                    orderId: orderData.orderId,
-                    status: editStatus.status,
-                    trackingNumber
-                }
-                sendData(data)
+                Swal.fire({
+                    title: 'ต้องการบันทึกหรือไม่?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28A745',
+                    cancelButtonColor: '#DC3545',
+                    confirmButtonText: 'Confirm!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var data = {
+                            jwt,
+                            orderId: orderData.orderId,
+                            status: editStatus.status,
+                            trackingNumber
+                        }
+                        sendData(data)
+                    }
+                })
             }else if(editStatus.status === 'cancel'){
                 var cancelMessage = document.getElementById('cancel-message').value
                 if(cancelMessage.trim() === ''){
@@ -192,13 +203,25 @@ export default function OrderDetails() {
                         confirmButtonColor: '#DC3545',
                     })
                 }
-                var data = {
-                    jwt,
-                    orderId: orderData.orderId,
-                    status: editStatus.status,
-                    cancelMessage
-                }
-                sendData(data)
+                Swal.fire({
+                    title: 'ต้องการบันทึกหรือไม่?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28A745',
+                    cancelButtonColor: '#DC3545',
+                    confirmButtonText: 'Confirm!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var data = {
+                            jwt,
+                            orderId: orderData.orderId,
+                            status: editStatus.status,
+                            cancelMessage
+                        }
+                        sendData(data)
+                    }
+                })
+                
             }
         }
     }
@@ -291,7 +314,7 @@ export default function OrderDetails() {
                                                 <div>Net : {orderData.paymentDetails.net} บาท</div>
                                                 <div>Fee : {orderData.paymentDetails.fee} บาท</div>
                                                 <div>Vat : {orderData.paymentDetails.fee_vat} บาท</div>
-                                                <div>วันที่โอน : {dateTime.date}</div>
+                                                <div>วันที่โอน : {dateTime.date.replaceAll('.', '/')}</div>
                                                 <div>เวลา : {dateTime.time} น.  </div>
                                             </div>
                                         )
@@ -323,10 +346,11 @@ export default function OrderDetails() {
                                 </div>  
                             </div>
                         }
-                        <div>ชื่อ : นายภัทรพงศ์ ภาคมฤค</div>
-                        <div>ที่อยู่ : 22/59 ต.บ้านใหม่ อ.ปากเกร็ด จ.นนทบุรี 11120</div>
-                        <div>เบอร์โทร : 082-188-6593</div>
-                        <div>อีเมล : patrapong17@gmail.com</div>
+
+                        <div>ชื่อ : {orderData.address.firstName} {orderData.address.lastName}</div>
+                        <div>ที่อยู่ : {orderData.address.address} ต.{orderData.address.subdistrict} อ.{orderData.address.district} จ.{orderData.address.province} {orderData.address.zipCode} ประเทศ{orderData.address.country}</div>
+                        <div>เบอร์โทร : {orderData.address.tel.slice(0,3) + '-' + orderData.address.tel.slice(3,6) + '-' + orderData.address.tel.slice(6)}</div>
+                        <div>อีเมล : {orderData.address.email}</div>
                     </div>
                     <div className={styles.orderStatusSelect}>สถานะ order : 
                         <div id='status-dropdown' className={`${styles.dropdownGroup}`} >

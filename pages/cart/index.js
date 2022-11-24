@@ -99,7 +99,9 @@ export default function Cart(){
                 const USD_rate_url = process.env.NEXT_PUBLIC_BACKEND + '/util/exchangeRate/USDTHB'
                 axios.get(USD_rate_url)
                 .then( result => {
-                    set_exchange_rate(e => result.data.rate)
+                    if(currency === 'BUSD'){
+                        set_exchange_rate(result.data.rate)
+                    }
                     localStorage.setItem('exchange-rate', JSON.stringify(result.data) )
                 })
             } else {

@@ -3,6 +3,7 @@ import Head from 'next/head'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
+import Router from 'next/router'
 import Header from 'components/header'
 import styles from './checkout.module.css'
 import Script from "react-load-script"
@@ -26,6 +27,7 @@ export default function CheckOut(){
     const [ currency, setCurrency ] = useState('บาท')
     const [ shippingFee, setShippingFee ] = useState(40)
     const [ orderResult, setOrderResult ] = useState({})
+    const [ selectAddress, setSelectAddress ] = useState({})
     const [ isLogin, setIsLogin ] = useState(false)
 
     useEffect(() => {
@@ -33,7 +35,7 @@ export default function CheckOut(){
             setIsLogin(true)
             getCart()
         } else {
-            router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+            Router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
         }
     }, [])
 
@@ -45,7 +47,9 @@ export default function CheckOut(){
                 const USD_rate_url = process.env.NEXT_PUBLIC_BACKEND + '/util/exchangeRate/USDTHB'
                 axios.get(USD_rate_url)
                 .then( result => {
-                    set_exchange_rate(result.data.rate)
+                    if(paymentMethod === 'metamask'){
+                        set_exchange_rate(result.data.rate)
+                    }
                     localStorage.setItem('exchange-rate', JSON.stringify(result.data) )
                     hideAnimationLoader()
                 })
@@ -143,11 +147,11 @@ export default function CheckOut(){
 
         OmiseCard.open({
             amount: (priceSummary + shippingFee)*100,
-            onCreateTokenSuccess: async (token) => {
+            onCreateTokenSuccess: (token) => {
                 console.log(token)
                 const jwt = localStorage.getItem('jwt')
 
-                const url = process.env.NEXT_PUBLIC_BACKEND + '/user/omise'
+                const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
                 axios.post( url , {
                     jwt,
                     token: token,
@@ -156,39 +160,13 @@ export default function CheckOut(){
                     shippingFee,
                     exchange_rate,
                     cart,
+                    selectAddress
                 }).then(result => {
                     console.log(result.data)
                     // setOrderResult(result.data)
                 }).catch(error => {
                     console.log(error.response.data)
                 })
-                // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
-                
-                // const url = '/api/placeOrder'
-                // axios.post( url , {
-                //     jwt,
-                //     token: token,
-                //     method: 'credit_card',
-                //     amount: priceSummary + shippingFee,
-                //     shippingFee,
-                //     exchange_rate,
-                //     cart,
-                // }).then(result => {
-                //     console.log(result.data)
-                //     setOrderResult(result.data)
-                // }).catch(error => {
-                //     console.log(error.response.data.message)
-                //     toast.error( error.response.data.message , {
-                //         position: "top-right",
-                //         autoClose: 5000,
-                //         hideProgressBar: false,
-                //         closeOnClick: true,
-                //         pauseOnHover: true,
-                //         draggable: true,
-                //         progress: undefined,
-                //         theme: "light",
-                //     })
-                // })
             },
             onFormClosed: () => { },
         })
@@ -251,6 +229,7 @@ export default function CheckOut(){
                 exchange_rate,
                 cart,
                 hash: tx.hash,
+                selectAddress,
             }).then(result => {
                 console.log(result.data)
                 setOrderResult(result.data)
@@ -332,7 +311,7 @@ export default function CheckOut(){
                 <main className={styles.main}>
                     <div className={styles.checkoutSection}>
                         <div className={styles.Section}>
-                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult}}>
+                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult, selectAddress, setSelectAddress}}>
                                 { (state === 'address') && <SelectAddress /> }
                                 { (state === 'payment') && <PaymentMethod /> }
                                 { (state === 'success') && <PlaceOrderSuccess /> }

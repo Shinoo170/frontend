@@ -1,0 +1,61 @@
+.fileDropArea {
+    position: relative;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 280px;
+    height: 350px;
+    max-width: 100%;
+    padding: 25px;
+    border: 1px dashed rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+}
+
+.imagesPreview {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imagesPreview img {
+    position: relative;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.inputField {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    opacity: 0;
+    cursor: pointer;
+}
+
+.fakeBtn {
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    padding: 8px 15px;
+    margin-right: 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.msg {
+    max-width: 100%;
+    font-size: small;
+    font-weight: 300;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 10px;
+}

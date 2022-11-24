@@ -14,9 +14,224 @@
     height: 100%;
     width: 80vw;
     margin-top: 40px;
+    padding: 30px 0;
     gap: 20px;
     display: flex;
     flex-direction: row;
-    --sideBarWidth: 250px;
 }
 
+.screen {
+    width: 100%;
+    border-radius: 15px;
+    background-color: #fff;
+    padding: 40px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.profile_header {
+    text-decoration: none solid rgb(2, 26, 36);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    word-spacing: 0px;
+    font-size: 18px;
+    line-height: 24px;
+    font-family: Helvetica, Thonburi, Tahoma, sans-serif;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.profile_header .profile_left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.profile_header .profile_left .images_profile {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+}
+
+.profile_header .profile_left .profile_name {
+    display: block;
+    font-weight: 500;
+    font-family: notosansregular;
+    margin: 23px 0 0 0;
+    padding: 5px 5px 5px 25px;
+    /* float: left; */
+    margin-bottom: 15px;
+}
+
+.profile_header .edit {
+    text-align: center;
+    /* margin-left: auto; */
+    background-color: #FFFFFF;
+    border: 1px solid #00BF6C;
+    color: #00BF6C;
+    padding: 6px 12px 6px 12px;
+    min-width: 80px;
+    /* float: right; */
+    cursor: pointer;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.profile_header .edit:hover {
+    background-color: #00BF6C;
+    color: #FFFFFF;
+}
+
+.live {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.profile_content {
+    text-decoration: none solid rgb(2, 26, 36);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    word-spacing: 0px;
+    font-size: 18px;
+    line-height: 24px;
+    font-family: Helvetica, Thonburi, Tahoma, sans-serif;
+    width: 100%;
+    margin-bottom: 20px;
+    word-break: break-word;
+}
+
+.profile_content .btnGroup {
+    display: flex;
+    gap: 5px;
+}
+
+.liveEdit {
+    text-align: center;
+    margin-left: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #00BF6C;
+    color: #00BF6C;
+    padding: 6px 12px 6px 12px;
+    min-width: 40px;
+    float: right;
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.liveEdit:hover {
+    background-color: #00BF6C;
+    color: #FFFFFF
+}
+
+.liveDelete {
+    text-align: center;
+    background-color: #FFFFFF;
+    border: 1px solid red;
+    color: red;
+    padding: 6px 12px 6px 12px;
+    min-width: 40px;
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.liveDelete:hover {
+    background-color: red;
+    color: #FFFFFF
+}
+
+.profile_content .edit {
+    text-align: center;
+    margin-left: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #00BF6C;
+    color: #00BF6C;
+    padding: 6px 12px 6px 12px;
+    min-width: 80px;
+    float: right;
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.profile_content .edit:hover {
+    background-color: #00BF6C;
+    color: #FFFFFF;
+}
+
+.liveAdd {
+    text-align: center;
+    background-color: #FFFFFF;
+    border: 1px solid #00BF6C;
+    color: #00BF6C;
+    padding: 6px 12px 6px 12px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 30px;
+}
+
+.liveAdd:hover {
+    background-color: #00BF6C;
+    color: #FFFFFF
+}
+
+.profile_img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px
+}
+
+@media screen and (max-width: 1700px) {
+    .main {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 1376px) {
+    .main {
+        width: 90vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .container {
+        padding-top: 96px;
+    }
+}
+
+/* ------------------------------------------------
+[ Small device (phone) ] */
+@media screen and (max-width: 576px) {
+    .main {
+        margin: 20px 0px;
+    }
+    .profile_content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btnGroup {
+        align-items: flex-end;
+        width: 100%;
+    }
+}
+
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+    .container {
+        padding-top: 56px;
+    }
+
+    .main {
+        padding: 30px 10px;
+    }
+}
