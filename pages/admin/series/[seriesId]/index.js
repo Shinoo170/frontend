@@ -136,9 +136,15 @@ export default function SpecificSeries() {
         const updatePromise = new Promise( async (resolve, reject) => {
             var imgName = ''
             var imgURL = productData.img
+            var imgChange = {isImageChange: false}
+            var isTitleChange = false
+            if(productData.title !== document.getElementById('edit-title').value){
+                isTitleChange = true
+            }
             if(editImg){
                 imgName = Date.now() + '-' + editImg.name.replaceAll(' ','-')
                 imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Series/' + imgName
+                imgChange = {isImageChange: true, previousImage: productData.img}
             }
             const jwt = localStorage.getItem('jwt')
             const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series'
@@ -153,6 +159,8 @@ export default function SpecificSeries() {
                 keywords: editKeywords,
                 img: imgURL,
                 description: document.getElementById('edit-description').value,
+                isTitleChange,
+                imgChange,
             }).then( async result => {
                 if(editImg){
                     const parallelUploads3 = new Upload({
