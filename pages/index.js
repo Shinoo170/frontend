@@ -20,14 +20,12 @@ export default function Home() {
     var url2 = process.env.NEXT_PUBLIC_BACKEND + '/product/mostSoldProduct'
     axios.get(url).then( result => {
       setLatestProduct(result.data)
-    }).catch( err => {
+    }).catch( err => { })
 
-    })
     axios.get(url2).then( result => {
       setMostSoldProduct(result.data)
-    }).catch( err => {
+    }).catch( err => { })
 
-    })
   }
 
   useEffect( () => {
@@ -63,11 +61,11 @@ export default function Home() {
             </Swiper>
           </div>
           <div className={styles.swiperContainer}>
-            วางจำหน่ายล่าสุด
+            <div className={styles.title}>วางจำหน่ายล่าสุด</div>
             { latestProduct && <SwiperItem data={latestProduct} href={'/product'}/> }
           </div>
           <div className={styles.swiperContainer}>
-            ขายดี
+            <div className={styles.title}>ขายดี</div>
             { latestProduct && <SwiperItem data={mostSoldProduct} href={'/product'}/> }
           </div>
         </main>

@@ -15,7 +15,7 @@ import { Upload } from "@aws-sdk/lib-storage"
 import { S3Client, S3 } from "@aws-sdk/client-s3"
 
 import { AiOutlineEdit } from 'react-icons/ai'
-import { MdOutlineAddToPhotos, MdOutlineCancel } from 'react-icons/md'
+import { MdOutlineAddToPhotos, MdOutlineCancel, MdDeleteForever } from 'react-icons/md'
 import { RiCloseCircleLine, RiArrowDownSLine } from 'react-icons/ri'
 import { IoMdSave } from 'react-icons/io'
 
@@ -286,6 +286,50 @@ export default function SpecificSeries() {
         inputImage.current.value = ''
         setEditImg()
     }
+    const deleteSeries = () => {
+        Swal.fire({
+            title: 'ต้องการลบสินค้าหรือไม่',
+            text: "หากลบสินค้าแล้วจะไม่สามารถกู้คืนข้อมูลได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
+            icon: 'warning',
+            input: 'text',
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            confirmButtonColor: '#DC3545',
+            cancelButtonColor: '#A3A4A5',
+            showLoaderOnConfirm: true,
+            preConfirm: (confirmText) => {
+                if(confirmText === 'DELETE'){
+                    const deletePromise = new Promise( (resolve, reject) => {
+                        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series?productId=' + productData.productId
+                        axios.delete(axiosURL, { headers: { jwt: localStorage.getItem('jwt') }})
+                        .then(result => {
+                            resolve()
+                            setTimeout(() => {
+                                const redirectURL = '/admin/series/'
+                                router.push({pathname: redirectURL, query:{} }, undefined,{ shallow: true } )
+                            }, 2000)
+                        }).catch(err => {
+                            reject(err.response.data.message)
+                        })  
+                    })
+                    toast.promise(deletePromise, {
+                        pending: "กำลังลบ",
+                        success: 'ลบสำเร็จแล้ว',
+                        error:  { render({data}){return 'อัพเดตไม่สำเร็จเนื่องจาก ' + data} },
+                    },{ autoClose: 2000 })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ข้อความไม่ถูกต้อง',
+                    })
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        })
+    }
 
     return (
         <div className={styles.container}>
@@ -306,7 +350,7 @@ export default function SpecificSeries() {
                                             <div className={styles.imagesPreview} id='containerPreviewImg'>
                                             { editImg && <Image src={URL.createObjectURL(editImg)} id='pre-img' layout="fill" objectFit='cover'/> }
                                             </div>
-                                            <input ref={inputImage} className={styles.inputField} type="file" name='file' onChange={saveImage} />
+                                            <input ref={inputImage} className={styles.inputField} type="file" name='file' onChange={saveImage} accept="image/png, image/jpeg, image/jpg, image/gif"/>
                                             <div className={styles.fakeBtn}>Choose files</div>
                                             <div className={styles.msg}>or drag and drop files here</div>
                                         </div>
@@ -463,6 +507,7 @@ export default function SpecificSeries() {
                                 {
                                     edit && (
                                         <>
+                                            <div className={`${styles.btn} ${styles.btnGray}`} onClick={() => deleteSeries()}><MdDeleteForever />Delete</div>
                                             <div className={`${styles.btn} ${styles.btnGreen}`} onClick={() => editHandle('save')}><IoMdSave />save</div>
                                             <div className={`${styles.btn} ${styles.btnRed}`} onClick={() => editHandle('cancel')}><MdOutlineCancel />cancel</div>
                                         </>

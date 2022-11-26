@@ -41,6 +41,11 @@
   height: auto;
 }
 
+.title {
+  font-size: 20px;
+  padding: 10px 0;
+}
+
 @media screen and (max-width: 1700px) {
   .main {
     width: 80vw;

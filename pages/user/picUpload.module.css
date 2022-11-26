@@ -7,15 +7,17 @@
     width: 280px;
     height: 350px;
     max-width: 100%;
-    padding: 25px;
+    /* padding: 25px; */
     border: 1px dashed rgba(0, 0, 0, 0.4);
     border-radius: 5px;
 }
 
 .imagesPreview {
     position: absolute;
-    width: calc(100% - 50px);
-    height: calc(100% - 50px);
+    /* width: calc(100% - 50px);
+    height: calc(100% - 50px); */
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

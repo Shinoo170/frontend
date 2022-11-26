@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
-import styles from './productList.module.css'
+import styles from './seriesList.module.css'
 
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
@@ -89,7 +89,7 @@ export default function SeriesList(prop){
                         const img = Array.isArray(element.img)? element.img[0]:element.img
                         return (
                             <div key={`item-${index}`} className={styles.itemContainer}>
-                                <Link href={`${prop.href}${element.seriesId}/${element.url}`}>
+                                <Link href={`${prop.href}${element.seriesId}`}>
                                     <a className={styles.item}>
                                         <div className={styles.image}>
                                             <Image src={img} alt='img' layout='fill' objectFit='cover' />
@@ -101,7 +101,7 @@ export default function SeriesList(prop){
                                                 <div className={styles.tooltip}>{element.score.avg > 0? element.score.avg:'No review'}</div>
                                                 { star.map(e => showStar(e,element.score.avg)) }
                                             </div>
-                                            <button className={styles.btn}>{element.price} ฿</button>
+                                            <button className={styles.btn}>details</button>
                                         </div>
                                     </a>
                                 </Link>

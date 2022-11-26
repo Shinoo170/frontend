@@ -215,7 +215,7 @@ export default function AddSeries() {
             <div className={styles.imagesPreview} id='containerPreviewImg'>
               { file && <img src={URL.createObjectURL(file)} id='pre-img'/> }
             </div>
-            <input className={styles.inputField} type="file" name='file' onChange={saveFile} />
+            <input className={styles.inputField} type="file" name='file' onChange={saveFile} accept="image/png, image/jpeg, image/jpg, image/gif"/>
             <div className={styles.fakeBtn}>Choose files</div>
             <div className={styles.msg}>or drag and drop files here</div>
           </div>

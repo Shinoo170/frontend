@@ -6,7 +6,7 @@ import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from 'components/header'
-import ProductList from 'components/productList'
+import SeriesList from 'components/seriesList'
 import styles from './products.module.css'
 
 import { HiFilter } from 'react-icons/hi'
@@ -260,7 +260,7 @@ export default function Products(){
         const finalSort = tempSort.map(e => e)
         if(filterOrderBy !== 'ค่าเริ่มต้น'){
             if(filterOrderBy === 'เพิ่มล่าสุด'){
-                finalSort.sort((a,b) => (a.lastModify > b.lastModify)? -1 : ((b.lastModify > a.lastModify)? 1 : 0))
+                finalSort.sort((a,b) => (a.addDate > b.addDate)? -1 : ((b.addDate > a.addDate)? 1 : 0))
             }else if(filterOrderBy === 'ชื่อ'){
                 finalSort.sort((a,b) => (a.title > b.title)? 1 : ((b.title > a.title)? -1 : 0))
             }
@@ -443,7 +443,7 @@ export default function Products(){
                             </div>
                         </div>
                         <div className={styles.productContainer}>
-                            { (filterProduct[0] != undefined) && <ProductList data={filterProduct} revert={filterSortReverse} maxPerPage='5' href='/series/'/> }
+                            { (filterProduct[0] != undefined) && <SeriesList data={filterProduct} revert={filterSortReverse} maxPerPage='5' href='/series/'/> }
                         </div>
                     </div>
                 </main>

@@ -115,9 +115,7 @@ export default function Products(){
         if(!jwt){ return }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.get(url, {
-            headers: {
-                jwt
-            }
+            headers: { jwt }
         })
         .then(result => {
             setIsBookmark(result.data)
@@ -139,9 +137,7 @@ export default function Products(){
             })
         }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
-        axios.put(url, {
-            jwt
-        })
+        axios.put(url, { jwt })
         .then(result => {
             setIsBookmark(result.data)
         })
@@ -163,13 +159,16 @@ export default function Products(){
         }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/subscribe?seriesId=' + router.query.seriesId
         axios.delete(url, {
-            headers: {
-                jwt
-            }
+            headers: { jwt }
         })
         .then(result => {
             setIsBookmark(result.data)
         })
+    }
+
+    const shareHandle = () => {
+        const navUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + process.env.NEXT_PUBLIC_DOMAIN + router.asPath
+        window.open(navUrl , '_blank')
     }
 
     return (
@@ -189,7 +188,7 @@ export default function Products(){
                             <div className={styles.image}>
                                 {/* <img src={seriesData.img} /> */}
                                 <div className={styles.imageControl}>
-                                { seriesData.img? <Image src={seriesData.img} alt='img' layout='fill' objectFit='cover' /> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
+                                    { seriesData.img? <Image src={seriesData.img} alt='img' layout='fill' objectFit='cover' /> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
                                 </div>
                                 <div className={styles.iconContainer}>
                                     {
@@ -208,7 +207,7 @@ export default function Products(){
                                             </div>
                                         )
                                     }
-                                    <div className={styles.item}>
+                                    <div className={styles.item} onClick={shareHandle}>
                                         <div className={styles.icon}><IoShareOutline /></div>
                                         <div className={styles.label}>แชร์</div>
                                     </div>

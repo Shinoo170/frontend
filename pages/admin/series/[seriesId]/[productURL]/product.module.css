@@ -421,6 +421,12 @@
     background-color:  #f35363;
 }
 
+.btnGroup .btnGray {
+    background-color: #d3d5d7;
+}
+.btnGroup .btnGray:hover {
+    background-color: #C3C5C7;
+}
 
 /* ------------------------------------------------
 [ Dropdown ] */

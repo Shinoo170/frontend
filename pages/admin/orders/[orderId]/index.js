@@ -349,7 +349,7 @@ export default function OrderDetails() {
 
                         <div>ชื่อ : {orderData.address.firstName} {orderData.address.lastName}</div>
                         <div>ที่อยู่ : {orderData.address.address} ต.{orderData.address.subdistrict} อ.{orderData.address.district} จ.{orderData.address.province} {orderData.address.zipCode} ประเทศ{orderData.address.country}</div>
-                        <div>เบอร์โทร : {orderData.address.tel.slice(0,3) + '-' + orderData.address.tel.slice(3,6) + '-' + orderData.address.tel.slice(6)}</div>
+                        <div>เบอร์โทร : {orderData.address.tel.length === 10 && (orderData.address.tel.slice(0,3) + '-' + orderData.address.tel.slice(3,6) + '-' + orderData.address.tel.slice(6))}</div>
                         {/* <div>เบอร์โทร : {orderData.address.tel}</div> */}
                         <div>อีเมล : {orderData.address.email}</div>
                     </div>

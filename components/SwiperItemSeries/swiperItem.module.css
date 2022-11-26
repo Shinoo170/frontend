@@ -142,7 +142,7 @@
     transition: all 0.2s ease-in-out;
 }
 .starGroup:hover .tooltip {
-    opacity: 0.95;
+    opacity: 1;
     top: -45px;
 }
 

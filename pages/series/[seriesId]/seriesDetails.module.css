@@ -100,6 +100,7 @@
 }
 
 .description {
+    position: relative;
     white-space: pre-wrap;
     padding: 0 10px 0 20px;
     max-width: 500px;
@@ -221,6 +222,7 @@
         display: block;
     }
     .description {
+        min-width: 0;
         max-width: 100%;
         margin-top: 20px;
     }
@@ -272,18 +274,19 @@
     .detailsGroup {
         width: 100%;
         min-width: 0px;
-        max-width: 70vw;
+        max-width: 100%;
     }
     .detailsGroup .subDetail {
         flex-wrap: wrap;
-        width: 75vw;
+        border-bottom: 1px solid #d3d5d7;
+        /* width: 75vw; */
     }
     .subDetail .detailTitle {
         min-width: 100px;
-        width: 50%;
-        max-width: 120px;
+        width: 100%;
+        max-width: 100px;
     }
     .subDetail .detailValue {
-        width: 50%;
+        width: fit-content;
     }
 }

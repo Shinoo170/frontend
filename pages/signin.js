@@ -21,7 +21,7 @@ const SignIn = () => {
             console.log(response.data)
             localStorage.setItem('jwt', response.data.token)
             localStorage.setItem('displayName', response.data.name)
-            localStorage.setItem('userImg', response.data.img)
+            localStorage.setItem('userImg', response.data.img || '/no_profile_image.png')
             localStorage.setItem('userId', response.data.userId)
             setLogin(true)
         }).catch((error) => {

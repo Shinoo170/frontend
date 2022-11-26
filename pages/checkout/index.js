@@ -160,7 +160,7 @@ export default function CheckOut(){
                     shippingFee,
                     exchange_rate,
                     cart,
-                    selectAddress
+                    selectAddress,
                 }).then(result => {
                     console.log(result.data)
                     // setOrderResult(result.data)

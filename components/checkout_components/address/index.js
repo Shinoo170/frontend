@@ -23,8 +23,20 @@ export default function SelectAddress(props){
         axios.get(url, { headers: { jwt: localStorage.getItem('jwt')} } )
         .then(result => {
             setUserData(result.data)
+            
         })
     }
+
+    useEffect(() => {
+        var address = {
+            ...userData.address[0],
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            tel: userData.tel,
+        }
+        setSelectAddress(address)
+    }, [userData])
 
     const setIndexAddress = (e , index) => {
         var address = e

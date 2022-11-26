@@ -19,10 +19,9 @@ import "swiper/css/free-mode"
 import "swiper/css/pagination"
 
 import { AiOutlineEdit } from 'react-icons/ai'
-import { MdOutlineAddToPhotos, MdOutlineCancel } from 'react-icons/md'
+import { MdDeleteForever, MdOutlineCancel } from 'react-icons/md'
 import { RiCloseCircleLine, RiArrowDownSLine } from 'react-icons/ri'
 import { IoMdSave } from 'react-icons/io'
-
 
 export default function SpecificProduct() {
     const [ productData, setProductData ] = useState({score:{}})
@@ -123,7 +122,6 @@ export default function SpecificProduct() {
                 listImgURL,
                 previousCategory: productData.category 
             }
-            console.log(data)
             
             axios.patch(axiosURL, data)
             .then( result => {
@@ -152,8 +150,12 @@ export default function SpecificProduct() {
                 setEditImg([])
                 setPreviewImage()
                 resolve()
-                const targetUrl = '/admin/series/' + router.query.seriesId + '/' + result.data.url
-                router.push({pathname: targetUrl, query:{} }, undefined,{ shallow: true } )
+                // redirect when data change
+                // delay 0.5s for image load
+                setTimeout(() => {
+                    const redirectURL = '/admin/series/' + router.query.seriesId + '/' + result.data.url
+                    router.push({pathname: redirectURL, query:{} }, undefined,{ shallow: true } )
+                }, 500)
             }).catch( err => {
                 reject( err.response.data.message )
                 addViewMoreBtn()
@@ -162,7 +164,7 @@ export default function SpecificProduct() {
         toast.promise(updatePromise, {
             pending: "กำลังอัพเดต",
             success: 'อัพเดตสำเร็จ',
-            error:  { render({data}){return 'อัพเดตไม่สำเร็จเนื่องจาก ' + data} },
+            error:  { render({data}){return 'อัพเดตไม่สำเร็จเนื่องจาก ' + data} }
         },{ autoClose: 2000 })
     }
 
@@ -224,6 +226,52 @@ export default function SpecificProduct() {
                 }
             })
         }
+    }
+
+    const deleteProduct = () => {
+        Swal.fire({
+            title: 'ต้องการลบสินค้าหรือไม่',
+            text: "หากลบสินค้าแล้วจะไม่สามารถกู้คืนข้อมูลได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
+            icon: 'warning',
+            input: 'text',
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            confirmButtonColor: '#DC3545',
+            cancelButtonColor: '#A3A4A5',
+            showLoaderOnConfirm: true,
+            preConfirm: (confirmText) => {
+                if(confirmText === 'DELETE'){
+                    const deletePromise = new Promise( (resolve, reject) => {
+                        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/product?productId=' + productData.productId 
+                            + '&_id=' + productData._id + '&category=' + productData.category + '&seriesId=' + productData.seriesId
+                        axios.delete(axiosURL, { headers: { jwt: localStorage.getItem('jwt') }})
+                        .then(result => {
+                            resolve()
+                            setTimeout(() => {
+                                const redirectURL = '/admin/series/' + router.query.seriesId
+                                router.push({pathname: redirectURL, query:{} }, undefined,{ shallow: true } )
+                            }, 2000)
+                        }).catch(err => {
+                            reject(err.response.data.message)
+                        })  
+                    })
+                    toast.promise(deletePromise, {
+                        pending: "กำลังลบ",
+                        success: 'ลบสำเร็จแล้ว',
+                        error:  { render({data}){return 'อัพเดตไม่สำเร็จเนื่องจาก ' + data} },
+                    },{ autoClose: 2000 })
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ข้อความไม่ถูกต้อง',
+                    })
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+          })
     }
 
     const saveImage = (e) => {
@@ -344,7 +392,7 @@ export default function SpecificProduct() {
                                                 <div className={styles.imagesPreview} id='containerPreviewImg'>
                                                 { editImg.length > 0 && <Image src={URL.createObjectURL(previewImage)} id='pre-img' layout="fill" objectFit='cover'/> }
                                                 </div>
-                                                <input id='fileInput' className={styles.inputField} type="file" name='file' multiple onChange={e => saveImage(e)} />
+                                                <input id='fileInput' className={styles.inputField} type="file" name='file' multiple onChange={e => saveImage(e)} accept="image/png, image/jpeg, image/jpg, image/gif"/>
                                                 <div className={styles.fakeBtn}>Choose files</div>
                                                 <div className={styles.msg}>or drag and drop files here</div>
                                             </div>
@@ -403,12 +451,11 @@ export default function SpecificProduct() {
                                         <div className={styles.label}>ซีรี่ย์ :</div>
                                         <div className={styles.value}>{productData.seriesTitle}</div>
                                     </div>
-                                    {
-                                        edit && <div className={styles.subDetails}>
-                                            <div className={styles.label}>ชื่อสินค้า : </div>
-                                            <input id='edit-title' className={styles.input} defaultValue={productData.title}/>
-                                        </div>
-                                    }
+                                    <div className={styles.subDetails}>
+                                        <div className={styles.label}>ชื่อสินค้า :</div>
+                                        { !edit && <div className={styles.value}>{productData.title}</div> }
+                                        { edit && <input id='edit-title' className={styles.input} defaultValue={productData.title}/> }
+                                    </div>
                                     <div className={styles.subDetails}>
                                         <div className={styles.label}>
                                             {productData.category !== 'other' && <>เล่มที่ : </>} 
@@ -494,10 +541,12 @@ export default function SpecificProduct() {
                                 }
                             </div>
                             <div className={styles.btnGroup}>
+                                
                                 { productData._id && !edit && <div className={styles.btn} onClick={() => editHandle('edit')}><AiOutlineEdit />Edit</div> }
                                 {
                                     edit && (
                                         <>
+                                            <div className={`${styles.btn} ${styles.btnGray}`} onClick={() => deleteProduct()}><MdDeleteForever />Delete</div>
                                             <div className={`${styles.btn} ${styles.btnGreen}`} onClick={() => editHandle('save')}><IoMdSave />save</div>
                                             <div className={`${styles.btn} ${styles.btnRed}`} onClick={() => editHandle('cancel')}><MdOutlineCancel />cancel</div>
                                         </>

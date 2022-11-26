@@ -35,7 +35,7 @@ export default function ProductDetails(){
     const [ viewMore, setViewMore ] = useState('hide')
     const [ selectAmount, setSelectAmount ] = useState(1)
     const amount = [1,2,3,4,5,6,7,8,9,10]
-    const [ userData, setUserData ] = useState({name: 'Guest', img: undefined})
+    const [ userData, setUserData ] = useState({name: 'Guest', img: '/no_profile_image.png'})
     const [ starHover, setStarHover] = useState(5)
     const [ starSelect, setStarSelect] = useState(5)
     const reviewTextarea = useRef()
@@ -67,7 +67,7 @@ export default function ProductDetails(){
                 setOtherProduct(result.data.otherProducts)
                 setSimProduct(result.data.similarProducts)
 
-                getWishlists()
+                getWishlists(result.data.productDetails.productId)
                 const reviewUrl = process.env.NEXT_PUBLIC_BACKEND + '/product/review?productId=' + result.data.productDetails.productId
                 axios.get(reviewUrl)
                 .then( result => {
@@ -177,14 +177,12 @@ export default function ProductDetails(){
         
     }
 
-    const getWishlists = () => {
+    const getWishlists = (productId) => {
         const jwt = localStorage.getItem('jwt')
         if(!jwt){ return }
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productId
         axios.get(url, {
-            headers: {
-                jwt
-            }
+            headers: { jwt }
         })
         .then(result => {
             setIsWishlist(result.data)
@@ -230,9 +228,7 @@ export default function ProductDetails(){
         }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
         axios.delete(url, {
-            headers: {
-                jwt
-            }
+            headers: { jwt } 
         })
         .then(result => {
             setIsWishlist(result.data)
@@ -331,7 +327,7 @@ export default function ProductDetails(){
                                 <p style={{fontSize: '17px'}}><b>ข้อมูลซีรี่ย์ : </b></p>
                                 <div className={styles.subDetail}>
                                     <div className={styles.detailTitle}>Series :</div>
-                                    <div className={styles.detailValue}><Link href={`/series/${router.query.seriesId}`}><a>{productsData.title}</a></Link></div>
+                                    <div className={styles.detailValue}><Link href={`/series/${router.query.seriesId}`}><a className={styles.linkTitle}>{productsData.title}</a></Link></div>
                                 </div>
                                 <div className={styles.subDetail}>
                                     <div className={styles.detailTitle}>Author :</div>
@@ -359,7 +355,7 @@ export default function ProductDetails(){
                                                 return (
                                                     <div key={`genres-${index}`} className={styles.item}>
                                                         <Link href={`/products?genres=${filter}`}>
-                                                            <a>{element}</a>
+                                                            <a className={styles.linkTitle}>{element}</a>
                                                         </Link>
                                                     </div>
                                                 )
@@ -396,7 +392,15 @@ export default function ProductDetails(){
                         <div className={styles.review}>
                             <div className={styles.label}>รีวิว</div>
                             <div className={styles.reviewArea}>
-                                {userData.name}
+                                <div className={styles.inline}>
+                                    <div className={styles.userImageContainer}>
+                                        {/* <img src={userData.img} className={styles.img}/> */}
+                                        <div className={styles.image}>
+                                            <Image src={userData.img} alt='user-profile' layout='fill' objectFit='contain' />
+                                        </div>
+                                    </div>
+                                    {userData.name}
+                                </div>
                                 <div className={styles.starGroup}>
                                     <TiStar className={`${styles.star} ${starHover>=1? styles.starHover:''}`} onClick={e => setStarSelect(1)} onMouseEnter={e => setStarHover(1)} onMouseLeave={e => setStarHover(starSelect)}/>
                                     <TiStar className={`${styles.star} ${starHover>=2? styles.starHover:''}`} onClick={e => setStarSelect(2)} onMouseEnter={e => setStarHover(2)} onMouseLeave={e => setStarHover(starSelect)}/>
@@ -452,11 +456,16 @@ export default function ProductDetails(){
                                             <div key={`review-${index}`} className={styles.reviewContainer}>
                                                 <div className={styles.row}>
                                                     <div className={styles.userInfo}>
-                                                        <div className={styles.image}>
-                                                            {element.detail[0].userData.img}
+                                                        <div className={styles.inline}>
+                                                            <div className={styles.userImageContainer}>
+                                                                {/* <img src={element.detail[0].userData.img} className={styles.img}/> */}
+                                                                <div className={styles.image}>
+                                                                    <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='contain' />
+                                                                </div>
+                                                            </div>
+                                                            {element.detail[0].userData.displayName}
                                                         </div>
                                                         <div className={styles.user}>
-                                                            {element.detail[0].userData.displayName}
                                                             <div className={styles.starGroup}>
                                                                 <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
                                                                 <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>

@@ -118,25 +118,25 @@ export default function AddProduct() {
           img: listImgURL,
         }).then( res => {
           // [ Upload image ]
-          // file.forEach( async (element, index) => {
-          //   const parallelUploads3 = new Upload({
-          //     client: new S3Client({
-          //       region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
-          //       credentials: {
-          //         accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
-          //         secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
-          //       }
-          //     }),
-          //     params: { 
-          //       Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
-          //       Key: 'Products/' + seriesId + '/' + listImageName[index],
-          //       Body: element
-          //     },
-          //     partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-          //     leavePartsOnError: false, // optional manually handle dropped parts
-          //   })
-          //   await parallelUploads3.done()
-          // })
+          file.forEach( async (element, index) => {
+            const parallelUploads3 = new Upload({
+              client: new S3Client({
+                region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+                credentials: {
+                  accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+                  secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+                }
+              }),
+              params: { 
+                Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+                Key: 'Products/' + seriesId + '/' + listImageName[index],
+                Body: element
+              },
+              partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+              leavePartsOnError: false, // optional manually handle dropped parts
+            })
+            await parallelUploads3.done()
+          })
           resolve( res.data.message )
         }).catch( err => {
           console.log(err)
@@ -187,7 +187,7 @@ export default function AddProduct() {
                 <div className={styles.imagesPreview} id='containerPreviewImg'>
                   { previewImg && <img src={URL.createObjectURL(previewImg)} id='pre-img'/> }
                 </div>
-                <input className={styles.inputField} type="file" multiple onChange={saveFile}/>
+                <input className={styles.inputField} type="file" multiple onChange={saveFile} accept="image/png, image/jpeg, image/jpg, image/gif"/>
                 <div className={styles.fakeBtn}>Choose files</div>
                 <div className={styles.msg}>or drag and drop files here</div>
             </div>

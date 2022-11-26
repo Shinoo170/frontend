@@ -5,7 +5,6 @@ import Image from 'next/image'
 import styles from './user.module.css'
 import Modal from './Modal.module.css'
 import picUpload from "./picUpload.module.css"
-import './user.module.css'
 import Header from 'components/header'
 import SideNavBar from 'components/user/sideNavbar'
 import axios from 'axios'
@@ -30,7 +29,7 @@ export default function User() {
     const [showAddModal, setShowAddModal] = useState(false)
     const [showImgModal, setShowImgModal] = useState(false)
     const [index, setIndex] = useState('')
-    const [file, setFile] = useState() // เก็บรูป
+    const [file, setFile] = useState()
 
     useEffect(() => {
         if(localStorage.getItem('jwt')){
@@ -48,7 +47,6 @@ export default function User() {
         })
         .then(result => {
             setData({
-                id: result.data._id,
                 displayName: result.data.userData.displayName,
                 img: result.data.userData.img,
                 Tel: result.data.userData.tel,
@@ -61,32 +59,57 @@ export default function User() {
     }
 
     async function onClickUpload() {
-        const i = data.id
-        const imgName = Date.now() + '-' + file.name.replaceAll(' ', '-') // ชื่อไฟล์
-        const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/users/' + imgName    // ไว้เก็บบน MongoDB
-        const parallelUploads3 = new Upload({
-          client: new S3Client({
-            region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
-            credentials: {
-              accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
-              secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+        try {
+            if(file.size > 1024 * 1024 * 5){
+                return toast.error('🦄 Maximum file size is 5 MB!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
             }
-          }),
-          params: {
-            Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
-            Key: 'users/' + imgName,
-            Body: file
-          },
-          partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-          leavePartsOnError: false, // optional manually handle dropped parts
-        })
-        await parallelUploads3.done()
+            const imgName = Date.now() + '-' + file.name.replaceAll(' ', '-')
+            const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/users/' + imgName
+            const parallelUploads3 = new Upload({
+            client: new S3Client({
+                region: process.env.NEXT_PUBLIC_AWS_S3_REGION,
+                credentials: {
+                accessKeyId: process.env.NEXT_PUBLIC_AWS_S3_ACCESS_KEY_ID,
+                secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
+                }
+            }),
+            params: {
+                Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+                Key: 'users/' + imgName,
+                Body: file
+            },
+            partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+            leavePartsOnError: false, // optional manually handle dropped parts
+            })
+            await parallelUploads3.done()
 
-        const url = process.env.NEXT_PUBLIC_BACKEND + '/user/updateUserProfile'
-        await axios.patch(url, {  jwt: localStorage.getItem('jwt'), imgURL, i })
-        .then(result => {
-            getData()
-            toast.success('🦄 ADD SUCCESS!', {
+            const url = process.env.NEXT_PUBLIC_BACKEND + '/user/updateUserProfile'
+            await axios.patch(url, {  jwt: localStorage.getItem('jwt'), imgURL, previousImgUrl: data.img })
+            .then(result => {
+                getData()
+                toast.success('🦄 ADD SUCCESS!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
+                setFile()
+            })
+        } catch (error) {
+            toast.error('🦄 ADD FAILED!', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -96,7 +119,8 @@ export default function User() {
                 progress: undefined,
                 theme: "light",
             })
-        })
+        }
+        
     }
 
     async function onClickedit(u, t, e, firstName, lastName) {
@@ -106,9 +130,8 @@ export default function User() {
         if (e === '') e = data.email
         if (firstName === '') firstName = data.firstName 
         if (lastName === '') lastName = data.lastName
-        const i = data.id
         const url = process.env.NEXT_PUBLIC_BACKEND + '/user/updateUserData'
-        await axios.patch(url, { jwt: localStorage.getItem('jwt'), u, t, e, i, firstName, lastName })
+        await axios.patch(url, { jwt: localStorage.getItem('jwt'), u, t, e, firstName, lastName })
         .then(result => {
             getData()
             toast.success('🦄 Your profile has been updated!', {
@@ -133,9 +156,8 @@ export default function User() {
         if (prov === '') prov = data.Live[index].province
         if (zipC === '') zipC = data.Live[index].zipCode
         if (coun === '') coun = data.Live[index].country
-        const i = data.id
         const url = process.env.NEXT_PUBLIC_BACKEND + '/user/updateUserAddress'
-        await axios.patch(url, { jwt: localStorage.getItem('jwt'), a, l, index, i, subd, dist, prov, zipC, coun })
+        await axios.patch(url, { jwt: localStorage.getItem('jwt'), a, l, index, subd, dist, prov, zipC, coun })
         .then(result => {
             getData()
             toast.success('🦄 Your address is updated!', {
@@ -152,9 +174,8 @@ export default function User() {
     }
 
     async function onClickDeleteAddress(index) {
-        const i = data.id
         const url = process.env.NEXT_PUBLIC_BACKEND + '/user/deleteUserDataAddress'
-        await axios.patch(url, { jwt: localStorage.getItem('jwt'), index, i })
+        await axios.patch(url, { jwt: localStorage.getItem('jwt'), index })
         .then(result => {
             getData()
             toast.success('🦄 Your address is updated!', {
@@ -179,9 +200,8 @@ export default function User() {
           })
           return
         } 
-        const i = data.id
         const url = process.env.NEXT_PUBLIC_BACKEND + '/user/createUserDataAddress'
-        await axios.post(url, { jwt: localStorage.getItem('jwt'), a, l, i, subd, dist, prov, zipC, coun })
+        await axios.post(url, { jwt: localStorage.getItem('jwt'), a, l, subd, dist, prov, zipC, coun })
         .then(result => {
             getData()
             toast.success('🦄 ADD SUCCESS!', {
@@ -228,8 +248,7 @@ export default function User() {
                     <main className={styles.main}>
                         <SideNavBar />
                         <div className={styles.screen} >
-                            <title>profile</title>
-                            <center><h1 style={{fontSize: '30px'}}>จัดการบัญชี</h1></center>
+                            <center><div className={styles.title}>จัดการบัญชี</div></center>
                             <div >
                                 <div className={styles.profile_header}>
                                     <div className={styles.profile_left}>
@@ -242,20 +261,32 @@ export default function User() {
                                             </label>
                                         </div>
                                         <div className={styles.profile_name}>
-                                            Name: {data.displayName}<br />
-                                            Fullname: {data.firstName} &nbsp; {data.lastName}<br />
-                                            Tel: {data.Tel}<br />
-                                            Email: {data.email}
+                                            <div className={styles.row}>
+                                                <div className={styles.label}>Name :</div>
+                                                <div className={styles.value}>{data.displayName}</div>
+                                            </div>
+                                            <div className={styles.row}>
+                                                <div className={styles.label}>Fullname :</div>
+                                                <div className={styles.value}>{data.firstName} {data.lastName}</div>
+                                            </div>
+                                            <div className={styles.row}>
+                                                <div className={styles.label}>Tel :</div>
+                                                <div className={styles.value}>{data.Tel}</div>
+                                            </div>
+                                            <div className={styles.row}>
+                                                <div className={styles.label}>Email :</div>
+                                                <div className={styles.value}>{data.email}</div>
+                                            </div>
                                             {/* <label style={{color:'red',cursor:'pointer'}} >เปลี่ยนรหัสผ่าน</label> <br /> */}
-                                            <br />
                                         </div>
                                     </div>
                                     <button className={styles.edit} onClick={() => setShowModal(true)}>
                                         แก้ไขข้อมูลส่วนตัว
                                     </button>
+                                    
                                     <input style={{display:'none'}} onClick={() => setShowImgModal(true)} id="avatar" name="avatar" />
                                 </div>
-                                <br /><hr /><br />
+                                <hr />
                                 <div className={styles.live}>
                                     ข้อมูลที่จัดส่ง
                                 </div>
@@ -277,26 +308,26 @@ export default function User() {
                                 showModal ? (
                                 <div className={styles.screen}>
                                     <div className={Modal.overlay}>
-                                    <div className={Modal.modal}>
-                                        <div className={Modal.box}>
-                                        <div className={Modal.header}>
-                                            <a onClick={() => setShowModal(false)}>
-                                            <button className={Modal.edit_close} >Close</button>
-                                            </a>
+                                        <div className={Modal.modal}>
+                                            <div className={Modal.box}>
+                                                <div className={Modal.header}>
+                                                    <a onClick={() => setShowModal(false)}>
+                                                    <button className={Modal.edit_close} >Close</button>
+                                                    </a>
 
+                                                </div>
+                                                <div className={Modal.body}>
+                                                    <form >
+                                                        <label>Name : </label><input placeholder={data.displayName} type='text' name="user" id="user" className={Modal.Name}  /><br />
+                                                        <label>Firstname : </label><input placeholder={data.firstName} type='text' name="first" id="first" className={Modal.Name} /><br />
+                                                        <label>Lastname : </label><input placeholder={data.lastName} type='text' name="last" id="last" className={Modal.Name} /><br />
+                                                        <label>Phone : </label><input placeholder={data.Tel} type='tel' name="tele" id="tele" maxLength='10' className={Modal.Phone} /><br />
+                                                        <label>Email : </label><input placeholder={data.email} type='email' name="mail" id="mail" className={Modal.Email} />
+                                                        <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '75%' }} type="button" onClick={() => (onClickedit(user.value, tele.value, mail.value, first.value, last.value), setShowModal(false))} value="Save" /><br />
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className={Modal.body}>
-                                            <form >
-                                            <label>Name : </label><input placeholder={data.displayName} type='text' name="user" id="user" className={Modal.Name}  /><br />
-                                            <label>Firstname : </label><input placeholder={data.firstName} type='text' name="first" id="first" className={Modal.Name} /><br />
-                                            <label>Lastname : </label><input placeholder={data.lastName} type='text' name="last" id="last" className={Modal.Name} /><br />
-                                            <label>Phone : </label><input placeholder={data.Tel} type='tel' name="tele" id="tele" maxLength='10' className={Modal.Phone} /><br />
-                                            <label>Email : </label><input placeholder={data.email} type='email' name="mail" id="mail" className={Modal.Email} />
-                                            <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '75%' }} type="button" onClick={() => (onClickedit(user.value, tele.value, mail.value, first.value, last.value), setShowModal(false))} value="Save" /><br />
-                                            </form>
-                                        </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                                 ) : null
@@ -305,27 +336,27 @@ export default function User() {
                                 showLiveModal && index !== '' ? (
                                 <div className={styles.screen}>
                                     <div className={Modal.overlay}>
-                                    <div className={Modal.modal}>
-                                        <div className={Modal.box}>
-                                        <div className={Modal.header}>
-                                            <a onClick={() => (setShowLiveModal(false), setIndex(''))}>
-                                            <button className={Modal.edit_close} >Close</button>
-                                            </a>
+                                        <div className={Modal.modal}>
+                                            <div className={Modal.box}>
+                                                <div className={Modal.header}>
+                                                    <a onClick={() => (setShowLiveModal(false), setIndex(''))}>
+                                                    <button className={Modal.edit_close} >Close</button>
+                                                    </a>
+                                                </div>
+                                                <div className={Modal.body}>
+                                                    <form style={{width:'250px',marginLeft:'20px'}}>
+                                                        <label>ชื่อที่อยู่จัดส่ง : </label><input placeholder={data.Live[index].Name} type='text' id="liv" name="liv" className={Modal.Name} /><br />
+                                                        <label>บ้านเลขที่ : </label><br /><input placeholder={data.Live[index].address} name="addr" id="addr" className={Modal.Name} /><br />
+                                                        <label>แขวง / ตำบล  : </label><br /><input placeholder={data.Live[index].subdistrict} name="subd" id="subd" className={Modal.Name} /><br />
+                                                        <label>เขต / อำเภอ   : </label><br /><input placeholder={data.Live[index].district} name="dist" id="dist" className={Modal.Name} /><br />
+                                                        <label>จังหวัด  : </label><br /><input placeholder={data.Live[index].province} name="prov" id="prov" className={Modal.Name} /><br />
+                                                        <label>รหัสไปรษณีย์   : </label><br /><input placeholder={data.Live[index].zipCode} name="zipC" id="zipC" type='number' className={Modal.Name} /><br />
+                                                        <label>ประเทศ  : </label><br /><input placeholder={data.Live[index].country} name="coun" id="coun" className={Modal.Name} /><br />
+                                                        <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '68%' }} type="button" onClick={() => (onClickeditLive(liv.value, addr.value, index, subd.value, dist.value, prov.value, zipC.value, coun.value), setShowLiveModal(false), setIndex(''))} value="Save" /><br />
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className={Modal.body}>
-                                            <form style={{width:'250px',marginLeft:'20px'}}>
-                                            <label>ชื่อที่อยู่จัดส่ง : </label><input placeholder={data.Live[index].Name} type='text' id="liv" name="liv" className={Modal.Name} /><br />
-                                            <label>บ้านเลขที่ : </label><br /><input placeholder={data.Live[index].address} name="addr" id="addr" className={Modal.Name} /><br />
-                                            <label>แขวง / ตำบล  : </label><br /><input placeholder={data.Live[index].subdistrict} name="subd" id="subd" className={Modal.Name} /><br />
-                                            <label>เขต / อำเภอ   : </label><br /><input placeholder={data.Live[index].district} name="dist" id="dist" className={Modal.Name} /><br />
-                                            <label>จังหวัด  : </label><br /><input placeholder={data.Live[index].province} name="prov" id="prov" className={Modal.Name} /><br />
-                                            <label>รหัสไปรษณีย์   : </label><br /><input placeholder={data.Live[index].zipCode} name="zipC" id="zipC" type='number' className={Modal.Name} /><br />
-                                            <label>ประเทศ  : </label><br /><input placeholder={data.Live[index].country} name="coun" id="coun" className={Modal.Name} /><br />
-                                            <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '68%' }} type="button" onClick={() => (onClickeditLive(liv.value, addr.value, index, subd.value, dist.value, prov.value, zipC.value, coun.value), setShowLiveModal(false), setIndex(''))} value="Save" /><br />
-                                            </form>
-                                        </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                                 ) : null
@@ -334,27 +365,27 @@ export default function User() {
                                 showAddModal ? (
                                 <div className={styles.screen}>
                                     <div className={Modal.overlay}>
-                                    <div className={Modal.modal}>
-                                        <div className={Modal.box}>
-                                        <div className={Modal.header}>
-                                            <a onClick={() => (setShowAddModal(false))}>
-                                            <button className={Modal.edit_close} >Close</button>
-                                            </a>
+                                        <div className={Modal.modal}>
+                                            <div className={Modal.box}>
+                                                <div className={Modal.header}>
+                                                    <a onClick={() => (setShowAddModal(false))}>
+                                                    <button className={Modal.edit_close} >Close</button>
+                                                    </a>
+                                                </div>
+                                                <div className={Modal.body}>
+                                                    <form style={{width:'250px',marginLeft:'20px'}}>
+                                                        <label>ชื่อที่อยู่จัดส่ง : </label><input  type='text' id="liv" name="liv" className={Modal.Name} /><br />
+                                                        <label>บ้านเลขที่ : </label><br /><input name="addr" id="addr" className={Modal.Name} /><br />
+                                                        <label>แขวง / ตำบล  : </label><br /><input name="subd" id="subd" className={Modal.Name} /><br />
+                                                        <label>เขต / อำเภอ   : </label><br /><input name="dist" id="dist" className={Modal.Name} /><br />
+                                                        <label>จังหวัด  : </label><br /><input name="prov" id="prov" className={Modal.Name} /><br />
+                                                        <label>รหัสไปรษณีย์   : </label><br /><input name="zipC" id="zipC" type='number' className={Modal.Name} /><br />
+                                                        <label>ประเทศ  : </label><br /><input name="coun" id="coun" className={Modal.Name} /><br />
+                                                        <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '68%' }} type="button" onClick={() => (onClickAddLive(liv.value, addr.value, subd.value, dist.value, prov.value, zipC.value, coun.value), setShowAddModal(false))} value="Save" /><br />
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className={Modal.body}>
-                                            <form style={{width:'250px',marginLeft:'20px'}}>
-                                            <label>ชื่อที่อยู่จัดส่ง : </label><input  type='text' id="liv" name="liv" className={Modal.Name} /><br />
-                                            <label>บ้านเลขที่ : </label><br /><input name="addr" id="addr" className={Modal.Name} /><br />
-                                            <label>แขวง / ตำบล  : </label><br /><input name="subd" id="subd" className={Modal.Name} /><br />
-                                            <label>เขต / อำเภอ   : </label><br /><input name="dist" id="dist" className={Modal.Name} /><br />
-                                            <label>จังหวัด  : </label><br /><input name="prov" id="prov" className={Modal.Name} /><br />
-                                            <label>รหัสไปรษณีย์   : </label><br /><input name="zipC" id="zipC" type='number' className={Modal.Name} /><br />
-                                            <label>ประเทศ  : </label><br /><input name="coun" id="coun" className={Modal.Name} /><br />
-                                            <input className={Modal.edit_close} style={{ marginTop: '7px', marginLeft: '68%' }} type="button" onClick={() => (onClickAddLive(liv.value, addr.value, subd.value, dist.value, prov.value, zipC.value, coun.value), setShowAddModal(false))} value="Save" /><br />
-                                            </form>
-                                        </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                                 ) : null
@@ -363,27 +394,29 @@ export default function User() {
                                 showImgModal ? (
                                 <div className={styles.screen}>
                                     <div className={Modal.overlay}>
-                                    <div className={Modal.modal}>
-                                        <div className={Modal.box}>
-                                        <div className={Modal.header}>
-                                            <a onClick={() => (setShowImgModal(false))}>
-                                            <button className={Modal.edit_close} >Close</button>
-                                            </a>
-                                        </div>
-                                        <div className={Modal.body}>
-                                            <div className={picUpload.fileDropArea}>
-                                            <div className={picUpload.imagesPreview} id='containerPreviewImg'>
-                                                {file && <img src={URL.createObjectURL(file)} id='pre-img' />}
+                                        <div className={Modal.modal}>
+                                            <div className={Modal.box}>
+                                                <div className={Modal.header}>
+                                                    <a onClick={() => (setShowImgModal(false))}>
+                                                    <button className={Modal.edit_close} >Close</button>
+                                                    </a>
+                                                </div>
+                                                <div className={Modal.body}>
+                                                    <div className={picUpload.fileDropArea}>
+                                                        <div className={picUpload.imagesPreview} id='containerPreviewImg'>
+                                                            {file && <img src={URL.createObjectURL(file)} id='pre-img' />}
+                                                        </div>
+                                                        <input className={picUpload.inputField} type="file" name='filename' id="filename" onChange={e => setFile(e.target.files[0])} accept="image/png, image/jpeg, image/jpg, image/gif"/>
+                                                        <div className={picUpload.fakeBtn}>Choose files</div>
+                                                        <div className={picUpload.msg}>or drag and drop files here</div>
+                                                        <div className={picUpload.msg}>recommend file size 100x100</div>
+                                                        <div className={picUpload.msg}>Maximum file size 5MB</div>
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <input className={Modal.edit_close} style={{ marginLeft:'75%' }} type="button" onClick={() => {onClickUpload();setShowImgModal(false)}} value="Save" />
                                             </div>
-                                            <input className={picUpload.inputField} type="file" name='filename' id="filename" onChange={e => setFile(e.target.files[0])} accept="image/png, image/jpeg, image/jpg, image/gif"/>
-                                            <div className={picUpload.fakeBtn}>Choose files</div>
-                                            <div className={picUpload.msg}>or drag and drop files here</div><br />
-                                            </div>
                                         </div>
-                                        <br/>
-                                        <input className={Modal.edit_close} style={{ marginLeft:'75%' }} type="button" onClick={() => {onClickUpload();setShowImgModal(false)}} value="Save" />
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
                                 ) : null

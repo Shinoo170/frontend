@@ -41,6 +41,7 @@ export default function Header(){
         localStorage.removeItem('jwt')
         localStorage.removeItem('displayName')
         localStorage.removeItem('userImg')
+        localStorage.removeItem('userId')
         Router.reload()
     }
     const searchHandle = (e) => {
@@ -93,10 +94,10 @@ export default function Header(){
                         </div>
                     </div>
                 </div>
-                <div className={styles.navItem}><div className={styles.title}>ซีรีย์</div></div>
+                {/* <div className={styles.navItem}><div className={styles.title}>ซีรีย์</div></div> */}
                 <div className={styles.navItem}><div className={styles.title}>ขายดี</div></div>
                 <div className={styles.navItem}><div className={styles.title}>พรีออเดอร์</div></div>
-                <div className={styles.navItem}><div className={styles.title}>โปรโมชั่น</div></div>
+                {/* <div className={styles.navItem}><div className={styles.title}>โปรโมชั่น</div></div> */}
                 <div className={styles.dummyItem}></div>
             </div>
             <div className={styles.rightMenu}>
