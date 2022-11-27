@@ -68,7 +68,7 @@ export default function SeriesList(prop){
 
     const showStar = (score, avg) => {
         const halfScore = score-0.5
-        const selfScore = Math.round(avg*2)/2
+        const selfScore = Math.floor(avg*2)/2
         return (
             <div className={styles.fullStarGroup} key={`star-${score}`}>
                 <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>

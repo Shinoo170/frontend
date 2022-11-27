@@ -11,7 +11,7 @@ import { BsPlusCircle } from 'react-icons/bs'
 
 export default function SelectAddress(props){
     const [ userData, setUserData ] = useState({ address:[], tel:'' })
-    const [ selectIndex, setSelectIndex ] = useState(0)
+    const [ selectIndex, setSelectIndex ] = useState(-1)
     const { selectAddress, setSelectAddress } = useContext(checkoutContext)
 
     useEffect(() => {
@@ -28,14 +28,25 @@ export default function SelectAddress(props){
     }
 
     useEffect(() => {
-        var address = {
-            ...userData.address[0],
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email,
-            tel: userData.tel,
+        if(userData.address){
+            var address = {
+                ...userData.address[0],
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                tel: userData.tel,
+            }
+            setSelectAddress(address)
+            setSelectIndex(0)
+        } else {
+            var address = {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                tel: userData.tel,
+            }
+            setSelectAddress(address)
         }
-        setSelectAddress(address)
     }, [userData])
 
     const setIndexAddress = (e , index) => {
@@ -56,16 +67,24 @@ export default function SelectAddress(props){
                     <div>ชื่อ-นามสกุล : {userData.firstName} {userData.lastName}</div>
                     <div>อีเมล : {userData.email}</div>
                     {/* <div>เบอร์โทร : {userData.tel} </div> */}
-                    <div>เบอร์โทร : {userData.tel.slice(0,3) + '-' + userData.tel.slice(3,6) + '-' + userData.tel.slice(6)} </div>
+                    <div>เบอร์โทร : { userData.tel && (userData.tel.slice(0,3) + '-' + userData.tel.slice(3,6) + '-' + userData.tel.slice(6)) } </div>
                 </div>
                 <div className={styles.label}>เลือกที่อยู่จัดส่ง</div>
                 <div className={styles.addressContainer}>
                     {
-                        userData.address.map((element, index) => {
+                        userData.address && userData.address.map((element, index) => {
+                            try {
+                                // input check
+                               if(selectIndex===index){
+                                    document.getElementById(`address-${index}`).checked = true
+                                } else {
+                                    document.getElementById(`address-${index}`).checked = false
+                                } 
+                            }catch(err){}
                             return (
                                 <div key={`address-${index}`} className={`${styles.addressItem} ${selectIndex===index? styles.addressSelect:''}`} onClick={() => setIndexAddress(element, index)} >
                                     <div className={styles.checkbox}>
-                                        <input type="checkbox" id={`address-${index}`} checked={selectIndex===index}/>
+                                        <input type="checkbox" id={`address-${index}`} />
                                         <label ></label>
                                     </div>
                                     <div className={styles.detail}>

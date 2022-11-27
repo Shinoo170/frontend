@@ -146,6 +146,10 @@ export default function SpecificSeries() {
                 imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/Series/' + imgName
                 imgChange = {isImageChange: true, previousImage: productData.img}
             }
+            var isKeywordChange = false
+            if(editKeywords !== productData.keywords){
+                isKeywordChange = true
+            }
             const jwt = localStorage.getItem('jwt')
             const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series'
             axios.patch(axiosURL, {
@@ -161,6 +165,7 @@ export default function SpecificSeries() {
                 description: document.getElementById('edit-description').value,
                 isTitleChange,
                 imgChange,
+                isKeywordChange,
             }).then( async result => {
                 if(editImg){
                     const parallelUploads3 = new Upload({
@@ -289,7 +294,7 @@ export default function SpecificSeries() {
     const deleteSeries = () => {
         Swal.fire({
             title: 'ต้องการลบสินค้าหรือไม่',
-            text: "หากลบสินค้าแล้วจะไม่สามารถกู้คืนข้อมูลได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
+            text: "หากลบซี่รีย์แล้วไม่สามารถแก้ไขได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
             icon: 'warning',
             input: 'text',
             inputAttributes: {
@@ -303,7 +308,7 @@ export default function SpecificSeries() {
             preConfirm: (confirmText) => {
                 if(confirmText === 'DELETE'){
                     const deletePromise = new Promise( (resolve, reject) => {
-                        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series?productId=' + productData.productId
+                        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/admin/series?seriesId=' + router.query.seriesId
                         axios.delete(axiosURL, { headers: { jwt: localStorage.getItem('jwt') }})
                         .then(result => {
                             resolve()
@@ -313,7 +318,7 @@ export default function SpecificSeries() {
                             }, 2000)
                         }).catch(err => {
                             reject(err.response.data.message)
-                        })  
+                        })
                     })
                     toast.promise(deletePromise, {
                         pending: "กำลังลบ",

@@ -21,7 +21,7 @@ export default function Order() {
     const [ previousSort, setPreviousSort ] = useState({status: undefined, thai_status: undefined})
     const [ currentPages, setCurrentPages ] = useState(0)
     const router = useRouter()
-
+    
     useEffect(() => {
         if(router.isReady){
             setCurrentPages(parseInt(router.query.pages) || 1)
@@ -98,7 +98,7 @@ export default function Order() {
             case 'paid': setSort({status: e, thai_status: 'ชำระเงินแล้ว'}); break;
             case 'delivered': setSort({status: e, thai_status: 'จัดส่งแล้ว'}); break;
             case 'cancel': setSort({status: e, thai_status: 'ยกเลิก'}); break;
-            default: setSort({status: e, thai_status: 'ชำระเงินแล้ว'})
+            default: setSort({status: 'all', thai_status: 'ทั้งหมด'})
         }
     }
 
@@ -149,14 +149,12 @@ export default function Order() {
                                                 { element.status === 'paid' && <div className={styles.status_orange}></div> }
                                                 { element.status === 'delivered' && <div className={styles.status_green}></div> }
                                                 { element.status === 'cancel' && <div className={styles.status_red}></div> }
-                                                {element.status}
+                                                { element.status }
                                             </div>
                                         </a></Link>
                                     )
                                 })
                             }
-                            
-                            
                         </div>
                         <div className={styles.btnGroup}>
                             <div className={styles.btn} onClick={() => previousPaidOrders()}><IoIosArrowBack /></div>

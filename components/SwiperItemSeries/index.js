@@ -16,7 +16,7 @@ export default function SwiperItemSeries(props){
 
     const showStar = (score, avg) => {
         const halfScore = score-0.5
-        const selfScore = Math.round(avg*2)/2
+        const selfScore = Math.floor(avg*2)/2
         return (
             <div className={styles.fullStarGroup} key={`star-${score}`}>
                 <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>
@@ -48,7 +48,8 @@ export default function SwiperItemSeries(props){
                                                 <a>
                                                     <div className={styles.imageContainer}>
                                                         <div className={styles.image}>
-                                                            <Image src={element.img} alt='img' layout='fill' objectFit='cover' />
+                                                            { element.img? <Image src={element.img} alt='img' layout='fill' objectFit='cover' /> : <div className={`${styles.imgLoading} ${styles.loading}`}></div>}
+                                                            {/* <Image src={element.img} alt='img' layout='fill' objectFit='cover' /> */}
                                                         </div>
                                                     </div>
                                                     <div className={styles.title}>{element.title}</div>

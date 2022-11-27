@@ -1,0 +1,287 @@
+/* ------------------------------------------------
+[ Container ] */
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 56px;
+}
+
+/* ------------------------------------------------
+[ Main ] */
+.main {
+    height: 100%;
+    width: 80vw;
+    margin-top: 40px;
+    padding: 30px 0;
+    gap: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.screen {
+    width: 100%;
+    border-radius: 15px;
+    background-color: #fff;
+    padding: 40px;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------
+[ Header ] */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 18px;
+    border-bottom: 1px solid #A1A3A5;
+}
+
+.header .status {
+    display: flex;
+    align-items: center;
+    height: fit-content;
+}
+
+.header .title {
+    font-size: 24px;
+}
+
+/* ------------------------------------------------
+[ List cart product ] */
+.listProduct {
+    overflow: auto;
+}
+
+.listHeader {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    padding-top: 10px;
+}
+
+.priceColumn {
+    display: flex;
+    text-align: center;
+}
+
+.priceColumn .listColumn {
+    min-width: 100px;
+}
+
+.unitPriceColumn,
+.amountColumn {
+    min-width: 100px;
+}
+.totalColumn {
+    min-width: 70px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #A1A3A5;
+    padding: 10px 0;
+    min-width: 560px;
+}
+
+.productColumn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-right: 10px;
+    min-width: 290px;
+}
+
+.imgControl {
+    position: relative;
+	--img-const: 0.7;
+    --img-height: 150px;
+    min-height: var(--img-height);
+    max-height: var(--img-height);
+    min-width: calc( var(--img-height) * var(--img-const));
+    max-width: calc( var(--img-height) * var(--img-const));
+	box-shadow: var(--book-shadow);
+    border: 1px solid #f0f0f0;
+    border-radius: 7px;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ------------------------------------------------
+[ Order details ] */
+.orderDetails {
+    padding: 10px 0;
+    line-height: 25px;
+}
+
+.paymentDetails {
+    overflow: hidden;
+    transition: height 0.3s;
+    height: 25px;
+}
+
+.paymentDetails .label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.paymentDetails .triangleIcon {
+    display: inline-flex;
+    font-size: 13px;
+    padding: 0 2px;
+    transition: all 0.3s;
+    /* transform: rotate(90deg); */
+}
+
+.paymentDetails .detail {
+    padding: 0px 10px;
+    line-break: anywhere;
+    transition: height 0.3s;
+}
+
+.paymentDetails.show {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    padding-bottom: 5px;
+}
+
+.paymentDetails.show .triangleIcon {
+    transform: rotate(90deg);
+}
+
+.paymentDetails .detail a{
+    color: #3761ee;
+}
+
+.orderStatusSelect {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.inputField {
+    display: flex;
+    align-items: center;
+    line-height: 25px;
+    gap: 5px;
+    padding: 5px 0;
+}
+
+.inputField .input {
+    border: 1px solid #BBC1C9;
+    border-radius: 7px;
+    padding-left: 10px;
+    font-size: 14px;
+    height: 30px;
+    width: 200px;
+}
+
+.inputField .input:focus{
+    outline: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.btn, .btnDisable {
+	background-color: rgb(255, 205, 112);
+	border-radius: 15px;
+	width: fit-content;
+	padding: 4px 20px;
+    margin-top: 10px;
+	text-align: center;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+
+.btnDisable {
+    background-color: rgba(0, 0, 0, 0.07);
+    cursor: default;
+}
+
+.btn:hover {
+    background-color: rgb(250, 191, 81);
+}
+
+.btnDisable:hover {
+    background-color: #cecece;
+}
+
+/* ------------------------------------------------
+[ Order status ] */
+.status_gray, .status_red, .status_orange, .status_green {
+    width: 12px;
+    height: 12px;
+    border-radius: 20px;
+    margin: auto 5px;
+}
+
+.status_gray {
+    background-color: #D3D4D5;
+}
+
+.status_red {
+    background-color: #DC3545;
+}
+
+.status_orange {
+    background-color: #FFC107;
+}
+
+.status_green {
+    background-color: green;
+}
+
+@media screen and (max-width: 1700px) {
+    .main {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 1376px) {
+    .main {
+        width: 90vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .container {
+        padding-top: 96px;
+    }
+    .title {
+        font-size: 26px;
+    }
+}
+
+/* ------------------------------------------------
+[ Small device (phone) ] */
+@media screen and (max-width: 576px) {
+    .main {
+        margin: 20px 0px;
+    }
+    .title {
+        font-size: 24px;
+    }
+}
+
+/* ------------------------------------------------
+[ Extra small device (smaller then iPhone SE) ] */
+@media screen and (max-width: 356px) {
+    .container {
+        padding-top: 56px;
+    }
+    .main {
+        padding: 30px 10px;
+    }
+}

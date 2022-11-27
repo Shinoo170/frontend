@@ -338,7 +338,7 @@ export default function OrderDetails() {
                                                         </Link></div>
                                                     </>)
                                                 }
-                                                <div>วันที่โอน : {dateTime.date}</div>
+                                                <div>วันที่โอน : {dateTime.date.replaceAll('.','/')}</div>
                                                 <div>เวลา : {dateTime.time} น.  </div>
                                             </div>
                                         )

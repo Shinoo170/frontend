@@ -71,7 +71,8 @@ export default function ProductPage(){
             const searchProduct = []
             let index = 0
             while(index < allProduct.length){
-                if(allProduct[index].title.match(search)){
+                var regExp = new RegExp(search, 'gi' )
+                if(allProduct[index].title.match(regExp) || allProduct[index].publisher.toLowerCase() === search.toLowerCase() || allProduct[index].author.toLowerCase() === search.toLowerCase()){
                     searchProduct.push(allProduct[index])
                 }
                 index++

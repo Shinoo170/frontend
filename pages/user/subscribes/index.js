@@ -63,8 +63,7 @@ export default function Subscribes() {
                     <main className={styles.main}>
                         <SideNavBar />
                         <div className={styles.screen} >
-                            <title>profile</title>
-                            <center><h1 style={{fontSize: '30px'}}>รายการที่ติดตาม</h1></center>
+                            <center><div className={styles.title}>รายการที่ติดตาม</div></center>
                             <div>
                                 { (subscribes[0] != undefined) && <SeriesList data={subscribes} revert={false} maxPerPage='10' href='/series/'/> }
                             </div>

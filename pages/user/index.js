@@ -23,7 +23,7 @@ export default function User() {
     const [ isLogin, setIsLogin ] = useState(false)
     const router = useRouter()
 
-    const [data, setData] = useState({Live: [{}],})
+    const [data, setData] = useState({Live: [],})
     const [showModal, setShowModal] = useState(false)
     const [showLiveModal, setShowLiveModal] = useState(false)
     const [showAddModal, setShowAddModal] = useState(false)
@@ -53,7 +53,7 @@ export default function User() {
                 firstName: result.data.userData.firstName,
                 lastName: result.data.userData.lastName,
                 email: result.data.email,
-                Live: result.data.userData.address,
+                Live: result.data.userData.address || [],
             })
         })
     }
@@ -96,7 +96,8 @@ export default function User() {
             await axios.patch(url, {  jwt: localStorage.getItem('jwt'), imgURL, previousImgUrl: data.img })
             .then(result => {
                 getData()
-                toast.success('🦄 ADD SUCCESS!', {
+                localStorage.setItem('userImg', imgURL)
+                toast.success('🦄 UPDATE SUCCESS!', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -109,7 +110,7 @@ export default function User() {
                 setFile()
             })
         } catch (error) {
-            toast.error('🦄 ADD FAILED!', {
+            toast.error('🦄 UPDATE FAILED!', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -291,7 +292,7 @@ export default function User() {
                                     ข้อมูลที่จัดส่ง
                                 </div>
                                 {
-                                    data.Live.map((addr, x) => (
+                                    data.Live && data.Live.map((addr, x) => (
                                         <div className={styles.profile_content} key={`address-${x}`}>
                                             ชื่อที่อยู่จัดส่ง: {addr.Name} <br />
                                             ข้อมูลที่อยู่จัดส่ง: {addr.address} &nbsp; ต.{addr.subdistrict} &nbsp; อ.{addr.district} &nbsp; จ.{addr.province} &nbsp; {addr.zipCode} &nbsp; ประเทศ{addr.country} &nbsp; 
@@ -397,24 +398,34 @@ export default function User() {
                                         <div className={Modal.modal}>
                                             <div className={Modal.box}>
                                                 <div className={Modal.header}>
-                                                    <a onClick={() => (setShowImgModal(false))}>
+                                                    <a onClick={() => {setShowImgModal(false); setFile();}}>
                                                     <button className={Modal.edit_close} >Close</button>
                                                     </a>
                                                 </div>
                                                 <div className={Modal.body}>
                                                     <div className={picUpload.fileDropArea}>
                                                         <div className={picUpload.imagesPreview} id='containerPreviewImg'>
-                                                            {file && <img src={URL.createObjectURL(file)} id='pre-img' />}
+                                                            {/* {file && <img src={URL.createObjectURL(file)} id='pre-img' />} */}
+                                                            { file && 
+                                                                <div className={picUpload.images_profile}>
+                                                                    <img src={URL.createObjectURL(file)} className={picUpload.profile_img} alt={'upload image'} />
+                                                                </div>
+                                                            }
                                                         </div>
                                                         <input className={picUpload.inputField} type="file" name='filename' id="filename" onChange={e => setFile(e.target.files[0])} accept="image/png, image/jpeg, image/jpg, image/gif"/>
-                                                        <div className={picUpload.fakeBtn}>Choose files</div>
-                                                        <div className={picUpload.msg}>or drag and drop files here</div>
-                                                        <div className={picUpload.msg}>recommend file size 100x100</div>
-                                                        <div className={picUpload.msg}>Maximum file size 5MB</div>
+                                                        {
+                                                            !file && <>
+                                                                <div className={picUpload.fakeBtn}>Choose files</div>
+                                                                <div className={picUpload.msg}>or drag and drop files here</div>
+                                                                <div className={picUpload.msg}>recommend file size 100x100</div>
+                                                                <div className={picUpload.msg}>Maximum file size 5MB</div>
+                                                            </>
+                                                        }
+                                                        
                                                     </div>
                                                 </div>
                                                 <br/>
-                                                <input className={Modal.edit_close} style={{ marginLeft:'75%' }} type="button" onClick={() => {onClickUpload();setShowImgModal(false)}} value="Save" />
+                                                <input className={Modal.edit_close} style={{ marginLeft:'75%' }} type="button" onClick={() => {onClickUpload(); setShowImgModal(false)}} value="Save" />
                                             </div>
                                         </div>
                                     </div>

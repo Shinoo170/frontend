@@ -231,7 +231,7 @@ export default function SpecificProduct() {
     const deleteProduct = () => {
         Swal.fire({
             title: 'ต้องการลบสินค้าหรือไม่',
-            text: "หากลบสินค้าแล้วจะไม่สามารถกู้คืนข้อมูลได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
+            text: "หากลบสินค้าแล้วจะไม่สามารถแก้ไขได้ พิมพ์ DELETE เพื่อยืนยันการลบ",
             icon: 'warning',
             input: 'text',
             inputAttributes: {

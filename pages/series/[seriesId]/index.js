@@ -38,10 +38,20 @@ export default function Products(){
                     setSeriesData(result.data.seriesData)
                     setProductsData(result.data.productData)
                 }).catch( err => {
-                    console.log("Error to get data, using next API")
                     axios.post('/api/getSeriesDetails', { url }).then( result => {
                         setSeriesData(result.data.seriesData)
                         setProductsData(result.data.productData)
+                    })
+                    setSeriesData({title: 'ไม่พบข้อมูลซีรีย์',products:{}, score:{ avg: 0 }, state:'error', description: 'เลขซี่รีย์ไม่ถูกต้อง หรือข้อมูลอาจถูกลบแล้ว'})
+                    toast.error('ไม่พบข้อมูลซีรีย์', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
                     })
                 })
                 getBookmark()
@@ -140,6 +150,17 @@ export default function Products(){
         axios.put(url, { jwt })
         .then(result => {
             setIsBookmark(result.data)
+        }).catch(err => {
+            toast.error('ไม่สามารถติดตามได้', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
         })
     }
 
@@ -188,7 +209,7 @@ export default function Products(){
                             <div className={styles.image}>
                                 {/* <img src={seriesData.img} /> */}
                                 <div className={styles.imageControl}>
-                                    { seriesData.img? <Image src={seriesData.img} alt='img' layout='fill' objectFit='cover' /> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
+                                    { seriesData.img? <Image src={seriesData.img} alt='img' layout='fill' objectFit='cover' /> : <div className={`${styles.imgLoading} ${styles.loading}`}></div> }
                                 </div>
                                 <div className={styles.iconContainer}>
                                     {

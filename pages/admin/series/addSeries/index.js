@@ -220,7 +220,7 @@ export default function AddSeries() {
             <div className={styles.msg}>or drag and drop files here</div>
           </div>
           
-          <form className={styles.inputFormWarp} onSubmit={e => uploadSeries(e)}>
+          <form className={styles.inputFormWarp} onSubmit={e => uploadSeries(e)} onKeyPress={e => { if (e.key === 'Enter') e.preventDefault() }}>
 
             <div className={styles.inputWarp}>
               <div className={styles.label}>Title</div>

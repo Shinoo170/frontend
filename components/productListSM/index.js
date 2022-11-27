@@ -63,9 +63,10 @@ export default function ProductListSM(prop){
                                 <a>
                                     <div className={styles.item}>
                                         <div className={styles.image}>
-                                            <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' />
+                                            { element.img[0]? <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' /> : <div className={`${styles.imgLoading} ${styles.loading}`}></div>}
+                                            {/* <Image src={element.img[0]} alt='img' layout='fill' objectFit='contain' /> */}
                                         </div>
-                                        <div className={styles.title}>{element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>} </div>
+                                        <div className={styles.title}> {element.status==='preOrder'? '[ PreOrder ]':null} {element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>} </div>
                                         <button className={styles.btn}>{element.price} ฿</button>
                                     </div>
                                 </a>

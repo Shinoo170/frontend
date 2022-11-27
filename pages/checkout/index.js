@@ -123,7 +123,32 @@ export default function CheckOut(){
 
     const changePageHandle = () => {
         if(state === 'address'){
-            setState('payment')
+            console.log(selectAddress)
+            if(!selectAddress.firstName || !selectAddress.lastName || !selectAddress.tel || selectAddress.tel === '' ){
+                toast.error('กรุณากรอกชื่อ-นาม และ เบอร์โทร', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
+            } else if(!selectAddress.Name){
+                toast.error('กรุณาเพิ่มที่อยู่จัดส่ง', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
+            } else {
+                setState('payment')
+            }
         }
     }
 
@@ -338,7 +363,7 @@ export default function CheckOut(){
                                                         {/* <Link href={`/series/${element.seriesId}/${element.url}`}>
                                                             <a className={styles.title}>{element.title} {element.bookNum}</a>
                                                         </Link> */}
-                                                        <div className={styles.title}>{element.title} {element.bookNum}</div>
+                                                        <div className={styles.title}> {element.status==='preOrder'? '[ PreOrder ]':null} {element.title} {element.bookNum}</div>
                                                         <div className={styles.category}>{element.category}</div>
                                                         <div className={styles.price}>จำนวน : {itemAmount}</div>
                                                     </div>

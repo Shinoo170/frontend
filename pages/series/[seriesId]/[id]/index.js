@@ -76,10 +76,17 @@ export default function ProductDetails(){
                     setOtherReview(reviewTemp)
                 })
             }).catch( err => {
-                if(err.response.status === 400){
-                    setProductsData({ title: 'Not found', img:[], status: 404, score:{avg: 0} })
-                }
-                console.log("Error to get data")
+                setProductsData({ title: 'ไม่พบสินค้า', img:[], status: 404, score:{avg: 0} })
+                toast.error('ไม่พบข้อมูลสินค้า', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                })
             })
         }
     },[router])
@@ -147,6 +154,16 @@ export default function ProductDetails(){
                     const reviewTemp = [ ...result.data.filter(e => e.user_id === id), ...result.data.filter(e => e.user_id !== id)]
                     setOtherReview(reviewTemp)
                     reviewTextarea.current.value = ''
+                })
+                toast.success('ส่งรีวิวสำเร็จ', {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
                 })
             }).catch(err => console.log(err.message))
         }
@@ -247,10 +264,10 @@ export default function ProductDetails(){
             <div className={styles.container}>
                 <main className={styles.main}>
                     <div className={styles.detailContainer}>
-                        <div className={styles.title}>{productsData.title} {productsData.bookNum}</div>
+                        <div className={styles.title}> {productsData.status==='preOrder'? '[ PreOrder ]':null} {productsData.title} {productsData.bookNum}</div>
                         <div className={styles.buySection}>
                             <div className={styles.imageContainer}>
-                                { showImage? <img src={showImage}/> :<div className={`${styles.imgLoading} ${styles.loading}`}></div> }
+                                { showImage? <img src={showImage}/> : <div className={`${styles.imgLoading} ${styles.loading}`}></div> }
                                 <div className={styles.listImages}>
                                     <Swiper
                                         slidesPerView={3}
@@ -327,7 +344,7 @@ export default function ProductDetails(){
                                 <p style={{fontSize: '17px'}}><b>ข้อมูลซีรี่ย์ : </b></p>
                                 <div className={styles.subDetail}>
                                     <div className={styles.detailTitle}>Series :</div>
-                                    <div className={styles.detailValue}><Link href={`/series/${router.query.seriesId}`}><a className={styles.linkTitle}>{productsData.title}</a></Link></div>
+                                    <div className={styles.detailValue}><Link href={`/series/${router.query.seriesId}`}><a className={styles.linkTitle}>{seriesDetails.title}</a></Link></div>
                                 </div>
                                 <div className={styles.subDetail}>
                                     <div className={styles.detailTitle}>Author :</div>
@@ -396,7 +413,7 @@ export default function ProductDetails(){
                                     <div className={styles.userImageContainer}>
                                         {/* <img src={userData.img} className={styles.img}/> */}
                                         <div className={styles.image}>
-                                            <Image src={userData.img} alt='user-profile' layout='fill' objectFit='contain' />
+                                            <Image src={userData.img} alt='user-profile' layout='fill' objectFit='cover' />
                                         </div>
                                     </div>
                                     {userData.name}
@@ -443,11 +460,21 @@ export default function ProductDetails(){
                                             document.removeEventListener('mouseup', mouseUpHandle)
                                             var newValue = e.target.getAttribute('data-value')
                                             if(newValue === 'delete'){
-                                                const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id
+                                                const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
                                                 axios.delete(url, {
                                                     headers: { jwt : localStorage.getItem('jwt') }
                                                 }).then( result => {
                                                     getReview()
+                                                    toast.success('ลบรีวิวแล้ว', {
+                                                        position: "bottom-right",
+                                                        autoClose: 5000,
+                                                        hideProgressBar: false,
+                                                        closeOnClick: true,
+                                                        pauseOnHover: true,
+                                                        draggable: true,
+                                                        progress: undefined,
+                                                        theme: "light",
+                                                    })
                                                 })
                                             }
                                         }
@@ -460,7 +487,7 @@ export default function ProductDetails(){
                                                             <div className={styles.userImageContainer}>
                                                                 {/* <img src={element.detail[0].userData.img} className={styles.img}/> */}
                                                                 <div className={styles.image}>
-                                                                    <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='contain' />
+                                                                    <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='cover' />
                                                                 </div>
                                                             </div>
                                                             {element.detail[0].userData.displayName}

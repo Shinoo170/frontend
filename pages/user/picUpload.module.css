@@ -27,9 +27,31 @@
     position: relative;
     width: auto;
     height: auto;
-    max-width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 3px;
+}
+
+.imagesPreview .images_profile {
+    position: relative;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    scale: 2;
+}
+
+.imagesPreview .profile_img {
+    /* border-radius: 50%;
+    width: 100px;
+    height: 100px; */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
 }
 
 .inputField {

@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Link from "next/link"
 import axios from "axios"
 import Image from "next/image"
@@ -25,7 +26,7 @@ const SignUp = () => {
         const ConfirmPassword = event.target.ConfirmPassword.value
         if (email === "" || password === "" || ConfirmPassword === "") {
           toast.warn("All input is required", {
-            position: "top-center",
+            position: "top-right",
             autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
@@ -41,10 +42,22 @@ const SignUp = () => {
             })
             .then((response) => {
               console.log(response);
+              toast.success("Register success", {
+                position: "top-right",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                onClose: () => {
+                    router.push({pathname: '/signin', query:{} }, undefined,{ shallow: true } )
+                }
+              })
             })
         } else {
           toast.error("Password not match", {
-            position: "top-center",
+            position: "top-right",
             autoClose: 2500,
             hideProgressBar: false,
             closeOnClick: true,
@@ -57,114 +70,131 @@ const SignUp = () => {
 
     // redirect to home if already logged in
     const router = useRouter()
+    const [ loadDone, setLoadDone ] = useState(false)
+
     useEffect(()=> {
-        if(sessionStorage.getItem('jwt') || 0){
-            router.push('/')
+        if(router.isReady){
+            if(localStorage.getItem('jwt') || 0){
+                router.push('/')
+            } else {
+                setLoadDone(true)
+            }
         }
-    })
-
-    return (
-        <div className={styles.limiter}>
-            <ToastContainer
-                position="top-center"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
-            <div className={styles.containerSignUp}>
-                <div className={styles.wrapSignUp}>
-                    <div className={styles.containerBackBtn}>
-                        <Link href="../">
-                            <span className={styles.backIcon}>
-                                <FaChevronLeft />
-                                <span className={styles.tooltip}>Back</span>
-                            </span>
-                        </Link>
-                    </div>
-
-                    <form className={styles.SignUpForm} onSubmit={signUpRequest}>
-                        <span className={styles.SignUpFormTitle}>Register</span>
-
-                        <div className={styles.wrapInput}>
-                            <input
-                                className={styles.input}
-                                type="text"
-                                id="Email"
-                                name="Email"
-                                placeholder="Email"
-                            ></input>
-                            <span className={styles.focusInput}></span>
-                            <span className={styles.iconInput}>
-                                <i>
-                                    <FaRegEnvelope />
-                                </i>
-                            </span>
-                        </div>
-
-                        <div className={styles.wrapInput}>
-                            <input
-                                className={styles.input}
-                                type="password"
-                                id="user_Password"
-                                name="Password"
-                                placeholder="Password"
-                            ></input>
-                            <span className={styles.focusInput}></span>
-                            <span className={styles.iconInput}>
-                                <i>
-                                    <FaLock />
-                                </i>
-                            </span>
-                        </div>
-
-                        <div className={styles.wrapInput}>
-                            <input
-                                className={styles.input}
-                                type="password"
-                                id="ConfirmPassword"
-                                name="Password"
-                                placeholder="Confirm Password"
-                            />
-                            <span className={styles.focusInput}></span>
-                            <span className={styles.iconInput}>
-                                <i>
-                                    <FaLock />
-                                </i>
-                            </span>
-                        </div>
-
-                        <div className={styles.textLeft}>
-                            <input type="checkbox" />
-                            <span className={styles.txt1}>Accept</span>
-                            <span className={styles.txt1Link}>
-                                <Link href="#">Term of use</Link>
-                            </span>
-                        </div>
-
-                        <div className={styles.containerBtn}>
-                            <button className={styles.btn}>SignUp</button>
-                        </div>
-
-                        <div className={styles.textBottom}>
-                            <Link href="/signin">
-                                <span className={styles.txt2}>
-                                    Sign in
-                                    <i>
-                                        <FaLongArrowAltRight />
-                                    </i>
-                                </span>
+    }, [router])
+    
+    if(!loadDone){
+        return (
+            <div>
+                <Head>
+                    <title>Sign Up | PT Bookstore</title>
+                    <meta name="description" content="Generated by create next app" />
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+            </div>
+        )
+    } else {
+        return (
+            <div className={styles.limiter}>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                />
+                
+                <div className={styles.containerSignUp}>
+                    <div className={styles.wrapSignUp}>
+                        <div className={styles.containerBackBtn}>
+                            <Link href="../">
+                                <a><span className={styles.backIcon}>
+                                    <FaChevronLeft />
+                                    <span className={styles.tooltip}>Back</span>
+                                </span></a>
                             </Link>
                         </div>
-                    </form>
+
+                        <form className={styles.SignUpForm} onSubmit={signUpRequest}>
+                            <span className={styles.SignUpFormTitle}>Register</span>
+
+                            <div className={styles.wrapInput}>
+                                <input
+                                    className={styles.input}
+                                    type="text"
+                                    id="Email"
+                                    name="Email"
+                                    placeholder="Email"
+                                ></input>
+                                <span className={styles.focusInput}></span>
+                                <span className={styles.iconInput}>
+                                    <i>
+                                        <FaRegEnvelope />
+                                    </i>
+                                </span>
+                            </div>
+
+                            <div className={styles.wrapInput}>
+                                <input
+                                    className={styles.input}
+                                    type="password"
+                                    id="user_Password"
+                                    name="Password"
+                                    placeholder="Password"
+                                ></input>
+                                <span className={styles.focusInput}></span>
+                                <span className={styles.iconInput}>
+                                    <i>
+                                        <FaLock />
+                                    </i>
+                                </span>
+                            </div>
+
+                            <div className={styles.wrapInput}>
+                                <input
+                                    className={styles.input}
+                                    type="password"
+                                    id="ConfirmPassword"
+                                    name="Password"
+                                    placeholder="Confirm Password"
+                                />
+                                <span className={styles.focusInput}></span>
+                                <span className={styles.iconInput}>
+                                    <i>
+                                        <FaLock />
+                                    </i>
+                                </span>
+                            </div>
+
+                            <div className={styles.textLeft}>
+                                <input type="checkbox" />
+                                <span className={styles.txt1}>Accept</span>
+                                <span className={styles.txt1Link}>
+                                    <Link href="#"><a>Term of use</a></Link>
+                                </span>
+                            </div>
+
+                            <div className={styles.containerBtn}>
+                                <button className={styles.btn}>SignUp</button>
+                            </div>
+
+                            <div className={styles.textBottom}>
+                                <Link href="/signin">
+                                    <a><span className={styles.txt2}>
+                                        Sign in
+                                        <i><FaLongArrowAltRight /></i>
+                                    </span></a>
+                                </Link>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
 
 export default SignUp

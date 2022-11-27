@@ -124,7 +124,7 @@ export default function Cart(){
         setAlert(false)
         cart.forEach( (element, index) => {
             var itemAmount = element.amount
-            if(element.status === 'out' ){
+            if(element.status === 'out' || element.status === 'delete'){
                 setAlert(true)
                 return
             }
@@ -224,15 +224,18 @@ export default function Cart(){
                                             <div className={styles.detailGroup}>
                                                 <div className={styles.details}>
                                                     <Link href={`/series/${element.seriesId}/${element.url}`}>
-                                                        <a className={styles.title}>{element.title} {element.bookNum}</a>
+                                                        <a className={styles.title}> {element.status==='preOrder'? '[ PreOrder ]':null} {element.title} {element.bookNum}</a>
                                                     </Link>
-                                                    <div className={styles.category}>{element.category}</div>
+                                                    <div className={styles.category}>{element.thai_category}</div>
                                                     <div className={styles.price}>{priceSum} {currency}</div>
                                                     { element.status !== 'out' && element.amount > element.stockAmount && element.stockAmount > 0 && 
                                                         <div className={styles.warningLabel}>! มีสินค้าเพียง {element.stockAmount} ชิ้นในคลัง</div>
                                                     }
                                                     { (element.status === 'out' || element.stockAmount === 0) && 
                                                         <div className={styles.warningRedLabel}>! สินค้าหมด</div>
+                                                    }
+                                                    { (element.status === 'delete' ) && 
+                                                        <div className={styles.warningRedLabel}>! สินค้าถูกนำออกจากร้านค้าแล้ว</div>
                                                     }
                                                 </div>
                                                 <div className={styles.right}>

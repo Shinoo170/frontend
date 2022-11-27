@@ -67,7 +67,7 @@ export default function SwiperItem(props){
 
     const showStar = (score, avg) => {
         const halfScore = score-0.5
-        const selfScore = Math.round(avg*2)/2
+        const selfScore = Math.floor(avg*2)/2
         return (
             <div className={styles.fullStarGroup} key={`star-${score}`}>
                 <TiStarHalf className={`${styles.starHalfLeft} ${selfScore >= halfScore? styles.starActive:''}`}/>
@@ -105,10 +105,11 @@ export default function SwiperItem(props){
                                                 <a>
                                                     <div className={styles.imageContainer}>
                                                         <div className={styles.image}>
-                                                            <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />
+                                                            {element.img[0]? <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' />: <div className={`${styles.imgLoading} ${styles.loading}`}></div>}
+                                                            {/* <Image src={element.img[0]} alt='img' layout='fill' objectFit='cover' /> */}
                                                         </div>
                                                     </div>
-                                                    <div className={styles.title}>{element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>}</div>
+                                                    <div className={styles.title}> {element.status==='preOrder'? '[ PreOrder ]':null} {element.title} {element.category !== 'other' && <>เล่ม {element.bookNum}</>}</div>
                                                 </a>
                                             </Link>
                                             <div className={styles.bottomGroup}>
