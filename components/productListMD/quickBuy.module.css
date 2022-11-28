@@ -47,7 +47,9 @@
 .imageContainer img{
     box-shadow: var(--book-shadow);
     border: 1px solid #f0f0f0;
-    height: 320px;
+    height: auto;
+	max-height: 320px;
+	max-width: 300px;
 }
 
 .imageContainer .link {

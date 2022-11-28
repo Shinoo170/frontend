@@ -67,7 +67,7 @@ export default function QuickBuy(props) {
                     <div className={styles.link} onClick={linkToPage}>ดูรายละเอียด</div>
                 </div>
                 <div className={styles.subSection}>
-                    <div className={styles.title}> {product.status==='preOrder'? '[ PreOrder ]':null} {product.title} {product.bookNum}</div>
+                    <div className={styles.title}> {product.status==='preOrder'? '[ PreOrder ]':null} {product.title} {product.category!=='other' && <>เล่มที่ {product.bookNum}</>}</div>
                     <div className={styles.flexRow}>
                         <div className={styles.price}>
                             <div>{product.thai_category}</div>

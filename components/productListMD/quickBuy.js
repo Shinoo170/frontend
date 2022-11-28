@@ -81,7 +81,7 @@ export default function QuickBuy(props) {
                     <Link href={`/series/${product.seriesId}/${product.url}`}><a className={styles.link}>ดูรายละเอียด</a></Link>
                 </div>
                 <div className={styles.subSection}>
-                    <div className={styles.title}> {product.status==='preOrder'? '[ PreOrder ]':null} {product.title} {product.bookNum}</div>
+                    <div className={styles.title}> {product.status==='preOrder'? '[ PreOrder ]':null} {product.title} {product.category!=='other' && <>เล่มที่ {product.bookNum}</>}</div>
                     <div className={styles.flexRow}>
                         <div className={styles.price}>
                             <div>{product.thai_category}</div>
