@@ -54,6 +54,16 @@ const SignUp = () => {
                     router.push({pathname: '/signin', query:{} }, undefined,{ shallow: true } )
                 }
               })
+            }).catch(err => {
+                toast.error("Cannot register", {
+                    position: "top-right",
+                    autoClose: 2500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                })
             })
         } else {
           toast.error("Password not match", {
