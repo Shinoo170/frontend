@@ -238,6 +238,7 @@ export default function OrderDetails() {
                                                         <div>Bank : {orderData.paymentDetails.bank}</div>
                                                         <div>Brand : {orderData.paymentDetails.brand}</div>
                                                         <div>Total : {orderData.paymentDetails.total} บาท</div>
+                                                        <div>ค่าจัดส่ง : {orderData.shippingFee} บาท</div>
                                                         <div>วันที่โอน : {dateTime.date.replaceAll('.', '/')}</div>
                                                         <div>เวลา : {dateTime.time} น.  </div>
                                                     </div>
@@ -254,6 +255,7 @@ export default function OrderDetails() {
                                                         </div>
                                                         <div>Total : {orderData.paymentDetails.total} BUSD</div>
                                                         <div>Net : {orderData.paymentDetails.net} BUSD</div>
+                                                        <div>Shipping Fee : {orderData.shippingFee} BUSD</div>
                                                         {
                                                             orderData.paymentDetails.refund && (<>
                                                                 <div>Refund : {orderData.paymentDetails.refundDetails.refundTotal} BUSD</div>

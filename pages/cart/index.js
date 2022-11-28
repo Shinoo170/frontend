@@ -212,7 +212,10 @@ export default function Cart(){
                                         document.removeEventListener('mouseup', mouseUpHandle)
                                         var newValue = e.target.getAttribute('data-value')
                                         // if(newValue <= element.stockAmount)
-                                        editCartHandle(element.productId, newValue)
+                                        if(newValue !== null){
+                                            editCartHandle(element.productId, newValue)
+                                        }
+                                        
                                     }
                                     return (
                                         <div key={`cart-item-${index}`} className={styles.item}>
