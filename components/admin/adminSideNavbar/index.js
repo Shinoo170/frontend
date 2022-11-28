@@ -51,7 +51,7 @@ export default function SideNavbar(){
                             </Link>
                             <span className={styles.tooltip}>Series</span>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link href='/admin/pages'> 
                                 <a>
                                     <i><BiLayout /></i>
@@ -59,7 +59,7 @@ export default function SideNavbar(){
                                 </a>
                             </Link>
                             <span className={styles.tooltip}>Pages</span>
-                        </li>
+                        </li> */}
                         <li>
                             <Link href='/admin/orders'> 
                                 <a>

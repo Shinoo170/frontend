@@ -15,6 +15,7 @@ import { MdShoppingCart } from 'react-icons/md'
 import { TiStar } from 'react-icons/ti'
 import { IoIosHeartEmpty, IoIosHeart } from 'react-icons/io'
 
+import Swal from 'sweetalert2'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -459,41 +460,53 @@ export default function ProductDetails(){
                                             document.removeEventListener('mouseup', mouseUpHandle)
                                             var newValue = e.target.getAttribute('data-value')
                                             if(newValue === 'delete'){
-                                                if(!isAdmin){
-                                                    const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
-                                                    axios.delete(url, {
-                                                        headers: { jwt : localStorage.getItem('jwt') }
-                                                    }).then( result => {
-                                                        getReview()
-                                                        toast.success('ลบรีวิวแล้ว', {
-                                                            position: "bottom-right",
-                                                            autoClose: 5000,
-                                                            hideProgressBar: false,
-                                                            closeOnClick: true,
-                                                            pauseOnHover: true,
-                                                            draggable: true,
-                                                            progress: undefined,
-                                                            theme: "light",
-                                                        })
-                                                    })  
-                                                } else {
-                                                    const url = process.env.NEXT_PUBLIC_BACKEND + '/admin/deleteUserReview?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
-                                                    axios.delete(url, {
-                                                        headers: { jwt : localStorage.getItem('jwt') }
-                                                    }).then( result => {
-                                                        getReview()
-                                                        toast.success('ลบรีวิวแล้ว', {
-                                                            position: "bottom-right",
-                                                            autoClose: 5000,
-                                                            hideProgressBar: false,
-                                                            closeOnClick: true,
-                                                            pauseOnHover: true,
-                                                            draggable: true,
-                                                            progress: undefined,
-                                                            theme: "light",
-                                                        })
-                                                    })  
-                                                }
+                                                Swal.fire({
+                                                    title: 'ต้องการลบรีวิวนี้หรือไม่?',
+                                                    icon: 'question',
+                                                    showCancelButton: true,
+                                                    confirmButtonColor: '#28A745',
+                                                    cancelButtonColor: '#DC3545',
+                                                    confirmButtonText: 'Confirm!'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        if(!isAdmin){
+                                                            const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
+                                                            axios.delete(url, {
+                                                                headers: { jwt : localStorage.getItem('jwt') }
+                                                            }).then( result => {
+                                                                getReview()
+                                                                toast.success('ลบรีวิวแล้ว', {
+                                                                    position: "bottom-right",
+                                                                    autoClose: 5000,
+                                                                    hideProgressBar: false,
+                                                                    closeOnClick: true,
+                                                                    pauseOnHover: true,
+                                                                    draggable: true,
+                                                                    progress: undefined,
+                                                                    theme: "light",
+                                                                })
+                                                            })  
+                                                        } else {
+                                                            const url = process.env.NEXT_PUBLIC_BACKEND + '/admin/deleteUserReview?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
+                                                            axios.delete(url, {
+                                                                headers: { jwt : localStorage.getItem('jwt') }
+                                                            }).then( result => {
+                                                                getReview()
+                                                                toast.success('ลบรีวิวแล้ว', {
+                                                                    position: "bottom-right",
+                                                                    autoClose: 5000,
+                                                                    hideProgressBar: false,
+                                                                    closeOnClick: true,
+                                                                    pauseOnHover: true,
+                                                                    draggable: true,
+                                                                    progress: undefined,
+                                                                    theme: "light",
+                                                                })
+                                                            })  
+                                                        }
+                                                    }
+                                                })
+                                                
                                                 
                                             }
                                         }
