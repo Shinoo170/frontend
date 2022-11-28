@@ -44,7 +44,7 @@ export default function SpecificProduct() {
             setNConvertStatus(result.data.status)
             setEditCategory(result.data.thai_category)
         }).catch(err => {
-            // console.log(err)
+            console.log(err)
             const errorMessage = <>ไม่พบข้อมูลสินค้า<br/>กลับหน้าหลักใน 5 วินาที</>
             toast.error(errorMessage, {
                 position: "top-right",
@@ -147,7 +147,7 @@ export default function SpecificProduct() {
                                     secretAccessKey: process.env.NEXT_PUBLIC_AWS_S3_SECRET_ACCESS_KEY
                                 }
                             }),
-                            params: { 
+                            params: {
                                 Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
                                 Key: 'Products/' + router.query.seriesId + '/' + listImgName[index],
                                 Body: element
@@ -163,11 +163,11 @@ export default function SpecificProduct() {
                 setPreviewImage()
                 resolve()
                 // redirect when data change
-                // delay 0.5s for image load
+                // delay 1s for image load
                 setTimeout(() => {
                     const redirectURL = '/admin/series/' + router.query.seriesId + '/' + result.data.url
                     router.push({pathname: redirectURL, query:{} }, undefined,{ shallow: true } )
-                }, 500)
+                }, 1000)
             }).catch( err => {
                 reject( err.response.data.message )
                 addViewMoreBtn()
