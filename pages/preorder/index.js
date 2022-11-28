@@ -11,7 +11,7 @@ import ProductList from 'components/productList'
 
 export default function PreOrder() {
     const [ data, setData ] = useState([])
-    const [ isError, setIsError ] = useState('')
+    const [ isError, setIsError ] = useState('no_error')
     
     useEffect(() => {
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/getPreOrder'
@@ -37,8 +37,9 @@ export default function PreOrder() {
             <div className={styles.container}>
                 <main className={styles.main}>
                     <div className={styles.section}>
-                        {/* { (data[0] != undefined) && <ProductList data={data} revert={false} maxPerPage='60' href='/series/'/> } */}
+                        { (data[0] != undefined) && (isError==='no_error') && <ProductList data={data} revert={false} maxPerPage='60' href='/series/'/> }
                         { isError === '0_length' && <div className={styles.label}> ไม่พบสินค้า Pre Order</div> }
+                        { isError === 'error' && <div className={styles.label}> ระบบปิดปรับปรุง</div> }
                     </div>
                 </main>
             </div>
