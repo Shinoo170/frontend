@@ -233,8 +233,8 @@ export default function User() {
                                             </div>
                                             <div className={styles.row}>
                                                 <div className={styles.label}>Tel :</div>
-                                                { data.Tel.length === 10 && <div className={styles.value}>{(data.Tel.slice(0,3) + '-' + data.Tel.slice(3,6) + '-' + data.Tel.slice(6))}</div> }
-                                                { data.Tel.length !== 10 && <div className={styles.value}>{data.Tel}</div> }
+                                                { data.Tel && data.Tel.length === 10 && <div className={styles.value}>{(data.Tel.slice(0,3) + '-' + data.Tel.slice(3,6) + '-' + data.Tel.slice(6))}</div> }
+                                                { data.Tel && data.Tel.length !== 10 && <div className={styles.value}>{data.Tel}</div> }
                                             </div>
                                             <div className={styles.row}>
                                                 <div className={styles.label}>Email :</div>
