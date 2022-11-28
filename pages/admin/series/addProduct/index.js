@@ -256,12 +256,12 @@ export default function AddProduct() {
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>ราคา</div>
-              <input id='price' type='number' required/>
+              <input id='price' type='number' min='1' required/>
             </div>
 
             <div className={styles.inputWrap}>
               <div className={styles.label}>จำนวนสินค้า</div>
-              <input id='amount' type='number' required/>
+              <input id='amount' type='number' min='0' required/>
             </div>
 
             <button className={styles.button4} type='submit'>Add Product</button>

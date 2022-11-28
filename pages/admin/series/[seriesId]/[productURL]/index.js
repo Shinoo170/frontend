@@ -77,6 +77,34 @@ export default function SpecificProduct() {
 
     const uploadProductData = () => {
         const updatePromise = new Promise( async (resolve, reject) => {
+
+            if(document.getElementById('edit-price').value <= 0){
+                // toast.warning('ราคาต้องมากกว่า 0', {
+                //     position: "top-right",
+                //     autoClose: 3000,
+                //     hideProgressBar: false,
+                //     closeOnClick: true,
+                //     pauseOnHover: true,
+                //     draggable: true,
+                //     progress: undefined,
+                //     theme: "light",
+                // })
+                return reject('ราคาต้องมากกว่า 0')
+            }
+            if(document.getElementById('edit-amount').value < 0){
+                // toast.warning('จำนวนต้องมากกว่าเท่ากับ 0', {
+                //     position: "top-right",
+                //     autoClose: 3000,
+                //     hideProgressBar: false,
+                //     closeOnClick: true,
+                //     pauseOnHover: true,
+                //     draggable: true,
+                //     progress: undefined,
+                //     theme: "light",
+                // })
+                return reject('จำนวนต้องมากกว่าเท่ากับ 0')
+            }
+
             var listImgName = []
             var listImgURL = []
             var isImageChange = false
@@ -505,12 +533,12 @@ export default function SpecificProduct() {
                                     <div className={styles.subDetails}>
                                         <div className={styles.label}>ราคา :</div>
                                         { !edit && <div className={styles.value}>{productData.price} บาท</div>}
-                                        { edit && <input id='edit-price' className={styles.input} defaultValue={productData.price}/> }
+                                        { edit && <input id='edit-price' type='number' className={styles.input} defaultValue={productData.price} min='1'/> }
                                     </div>
                                     <div className={styles.subDetails}>
                                         <div className={styles.label}>จำนวนในคลัง :</div>
                                         { !edit && <div className={styles.value}>{productData.amount}</div>}
-                                        { edit && <input id='edit-amount' className={styles.input} defaultValue={productData.amount}/> }
+                                        { edit && <input id='edit-amount' type='number' className={styles.input} defaultValue={productData.amount} min='1'/> }
                                     </div>
 
                                     <div className={styles.subDetails}>
