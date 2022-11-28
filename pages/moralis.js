@@ -46,13 +46,13 @@ export default function Crypto(){
             )
             // await data.wait()
             // console.log(data)
-            const url = process.env.NEXT_PUBLIC_BACKEND + '/pay'
-            axios.post(url, {
-                hash: data.hash,
-                contract: data,
-            }).then(result => {
-                console.log(result)
-            })
+            // const url = process.env.NEXT_PUBLIC_BACKEND + '/pay'
+            // axios.post(url, {
+            //     hash: data.hash,
+            //     contract: data,
+            // }).then(result => {
+            //     console.log(result)
+            // })
         } catch (error) {
             console.log(error)
         }

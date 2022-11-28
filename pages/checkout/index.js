@@ -29,6 +29,7 @@ export default function CheckOut(){
     const [ orderResult, setOrderResult ] = useState({})
     const [ selectAddress, setSelectAddress ] = useState({})
     const [ isLogin, setIsLogin ] = useState(false)
+    var totalPrice = 0
 
     useEffect(() => {
         if(localStorage.getItem('jwt')){
@@ -73,10 +74,10 @@ export default function CheckOut(){
         var itemPrice = 0
         var itemAmount
         cart.forEach( (element, index) => {
-            if(element.status === 'out' ){
+            if( element.status === 'out' ){
                 return
             }
-            if( element.amount < element.stockAmount ){
+            if( element.amount <= element.stockAmount ){
                 itemAmount = element.amount
             } else {
                 itemAmount = element.stockAmount
@@ -157,7 +158,6 @@ export default function CheckOut(){
         OmiseCard = window.OmiseCard
         OmiseCard.configure({
             publicKey: process.env.NEXT_PUBLIC_OMISE_PUBLIC_KEY,
-            secretKey: 'skey_test_5tphsxg5lj1j0k7uojy',
             currency: 'THB',
             frameLabel: 'PTBookShop',
             submitLabel: 'Pay NOW',
@@ -188,7 +188,9 @@ export default function CheckOut(){
                     selectAddress,
                 }).then(result => {
                     console.log(result.data)
-                    // setOrderResult(result.data)
+                    setOrderResult(result.data)
+                    setState('success')
+                    setCart(result.data.finalOrder)
                 }).catch(error => {
                     console.log(error.response.data)
                 })
@@ -258,25 +260,11 @@ export default function CheckOut(){
             }).then(result => {
                 console.log(result.data)
                 setOrderResult(result.data)
+                setState('success')
+                setCart(result.data.finalOrder)
             }).catch(error => {
                 console.log(error.response.data.message)
             })
-
-            // const jwt = localStorage.getItem('jwt')
-            // const url = process.env.NEXT_PUBLIC_BACKEND + '/user/placeOrder'
-            // axios.post( url , {
-            //     jwt,
-            //     method: 'metamask',
-            //     amount: priceSummary,
-            //     shippingFee,
-            //     exchange_rate,
-            //     cart,
-            //     hash: '0x01',
-            // }).then(result => {
-            //     console.log(result.data)
-            // }).catch(error => {
-            //     console.log(error.response.data.message)
-            // })
         } catch (error) {
             console.log(error)
         }
@@ -336,7 +324,7 @@ export default function CheckOut(){
                 <main className={styles.main}>
                     <div className={styles.checkoutSection}>
                         <div className={styles.Section}>
-                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult, selectAddress, setSelectAddress}}>
+                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult, selectAddress, setSelectAddress, }}>
                                 { (state === 'address') && <SelectAddress /> }
                                 { (state === 'payment') && <PaymentMethod /> }
                                 { (state === 'success') && <PlaceOrderSuccess /> }
@@ -350,6 +338,7 @@ export default function CheckOut(){
                                     if( element.amount > element.stockAmount ) itemAmount = element.stockAmount
                                     var itemPrice = itemAmount * element.price / exchange_rate
                                     var priceSum = Math.round(itemPrice*100)/100
+                                    totalPrice += priceSum
                                     if(itemAmount != 0){
                                         return (
                                             <div key={`cart-item-${index}`} className={styles.item}>
@@ -364,7 +353,7 @@ export default function CheckOut(){
                                                             <a className={styles.title}>{element.title} {element.bookNum}</a>
                                                         </Link> */}
                                                         <div className={styles.title}> {element.status==='preOrder'? '[ PreOrder ]':null} {element.title} {element.bookNum}</div>
-                                                        <div className={styles.category}>{element.category}</div>
+                                                        <div className={styles.category}>{element.thai_category}</div>
                                                         <div className={styles.price}>จำนวน : {itemAmount}</div>
                                                     </div>
                                                     <div className={styles.right}>
@@ -378,6 +367,15 @@ export default function CheckOut(){
                                     }
                                 })
                             }
+                            <div className={styles.item}>
+                                <div className={styles.flexRight}>
+                                    <div className={styles.right}>
+                                        รวมทั้งหมด : 
+                                        <span className={`${styles.priceLabel} text`}>{priceSummary || totalPrice}</span>
+                                        {currency}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     { (state !== 'success') &&  

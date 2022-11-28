@@ -86,9 +86,11 @@
 .cartSection .item .details .title {
 	font-size: 16px;
 	font-weight: 500;
-    text-decoration: underline;
     color: #3761ee;
     width: fit-content;
+}
+.cartSection .item .details .title:hover {
+    text-decoration: underline;
 }
 
 .cartSection .item .details .warningLabel {

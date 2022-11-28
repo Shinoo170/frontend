@@ -169,13 +169,13 @@ const SignUp = () => {
                                 </span>
                             </div>
 
-                            <div className={styles.textLeft}>
+                            {/* <div className={styles.textLeft}>
                                 <input type="checkbox" />
                                 <span className={styles.txt1}>Accept</span>
                                 <span className={styles.txt1Link}>
                                     <Link href="#"><a>Term of use</a></Link>
                                 </span>
-                            </div>
+                            </div> */}
 
                             <div className={styles.containerBtn}>
                                 <button className={styles.btn}>SignUp</button>

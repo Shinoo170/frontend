@@ -31,7 +31,11 @@ export default function QuickBuy(props) {
             // localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
             setShowQuickBuy(false)
             setFireToast('success')
-        }).catch(err => console.log(err.message))
+        }).catch(err => {
+            console.log(err.message)
+            setShowQuickBuy(false)
+            setFireToast('error')
+        })
     }
 
     const amountHandle = (e) => {

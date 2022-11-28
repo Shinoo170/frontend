@@ -1,0 +1,38 @@
+.section {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    padding: 60px 40px;
+    margin-top: 20px;
+    transition: 0.25s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.successIcon {
+    font-size: 65px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: green;
+    border: 2px solid #A3A5A7;
+}
+
+.label {
+    font-size: 32px;
+    padding: 10px 0;
+}
+
+.link {
+    padding: 10px 0;
+}
+
+.link:hover {
+    color: #3761ee;
+}

@@ -156,6 +156,7 @@ export default function Products(){
                 if(query.match) setFilterMatch(query.match)
                 query.sort === 'Up'? setFilterSortReverse(true) : setFilterSortReverse(false)
                 setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
+                if(query.orderBy) setFilterOrderBy(query.orderBy)
             }
             query.category? setFilterCategory(query.category) : setFilterCategory('')
             if(query.score) setStarSelect(query.score)
@@ -263,6 +264,20 @@ export default function Products(){
                 finalSort.sort((a,b) => (a.addDate > b.addDate)? -1 : ((b.addDate > a.addDate)? 1 : 0))
             }else if(filterOrderBy === 'ชื่อ'){
                 finalSort.sort((a,b) => (a.title > b.title)? 1 : ((b.title > a.title)? -1 : 0))
+            }else if(filterOrderBy === 'ความนิยม'){
+                // finalSort.sort((a,b) => (a.sold > b.sold)? -1 : ((b.sold > a.sold)? 1 : (a.score.avg > b.score.avg)? -1 : 1))
+                finalSort.sort((a,b) => {
+                    if(a.sold > b.sold) return -1
+                    else if(a.sold < b.sold) return 1
+                    else {  // a.sold === b.sold
+                        if(a.score.avg > b.score.avg) return -1
+                        else if(a.score.avg < b.score.avg) return 1
+                        else {  // a.score.avg === b.score.avg
+                            if(a.score.count > b.score.count) return -1
+                            else return 1
+                        }
+                    }
+                })
             }
         }
         setFilterProduct(filterSortReverse? finalSort.reverse() : finalSort)
@@ -443,7 +458,7 @@ export default function Products(){
                             </div>
                         </div>
                         <div className={styles.productContainer}>
-                            { (filterProduct[0] != undefined) && <SeriesList data={filterProduct} revert={filterSortReverse} maxPerPage='5' href='/series/'/> }
+                            { (filterProduct[0] != undefined) && <SeriesList data={filterProduct} revert={filterSortReverse} maxPerPage='10' href='/series/'/> }
                         </div>
                     </div>
                 </main>

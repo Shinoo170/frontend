@@ -4,6 +4,9 @@ import Link from "next/link"
 import Image from 'next/image'
 import styles from './quickBuy.module.css'
 
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 import { RiArrowDownSLine } from 'react-icons/ri'
 import { MdShoppingCart } from 'react-icons/md'
 import { CgClose } from 'react-icons/cg'
@@ -27,7 +30,31 @@ export default function QuickBuy(props) {
             amount: selectAmount,
         }).then(result => {
             // localStorage.setItem('cart', JSON.stringify(result.data.currentCart) )
-        }).catch(err => console.log(err.message))
+            setShowQuickBuy(false)
+            toast.success('เพิ่มสินค้าสำเร็จ', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        }).catch(err => {
+            console.log(err.message)
+            setShowQuickBuy(false)
+            toast.error('กรุณาล็อกอิน', {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+        })
     }
 
     const amountHandle = (e) => {
@@ -46,6 +73,7 @@ export default function QuickBuy(props) {
 
     return (
         <div className={styles.quickAddContainer}>
+            <ToastContainer />
             <div className={styles.closeIcon} onClick={e => close()}><CgClose /></div>
             <div className={styles.buySection}>
                 <div className={styles.imageContainer}>

@@ -10,7 +10,7 @@ import { RiArrowLeftSLine } from 'react-icons/ri'
 import { FiChevronLeft,FiChevronRight } from 'react-icons/fi'
 import { TiStarHalf } from 'react-icons/ti'
 
-import QuickBuy from "components/quickBuy"
+import QuickBuy from "./quickBuy"
 
 export const quickBuyContext = createContext()
 
@@ -29,7 +29,7 @@ export default function ProductListMD(prop){
         if(showQuickBuy) {
             document.body.style.overflow = 'hidden';
         } else {
-            document.body.style.overflow = 'scroll';
+            document.body.style.overflow = 'hidden auto';
         }
     },[showQuickBuy])
 

@@ -80,6 +80,19 @@
     display: inline;
 }
 
+.row .emailVerifyAlert {
+    color: red;
+    font-size: 15px;
+}
+
+.row .emailVerifyAlert .link {
+    cursor: pointer;
+}
+
+.row .emailVerifyAlert .link:hover {
+    text-decoration: underline;
+}
+
 .profile_header .edit {
     text-align: center;
     /* margin-left: auto; */

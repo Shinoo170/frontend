@@ -25,7 +25,7 @@ export default function VerifyEmail(){
                 setState('verify')
             }).catch(err => {
                 console.log(err.response)
-                setState('error')
+                setState(err.response.data.code)
                 set_err_message(err.response.data.thai_message)
             })
         }
@@ -55,7 +55,15 @@ export default function VerifyEmail(){
                         </div>
                     }
                     {
-                        state === 'error' &&
+                        state === 'already_verify' &&
+                        <div className={styles.flexCenter}>
+                            <div className={styles.iconSuccess}><GiCheckMark /></div>
+                            <div className={styles.label}>{err_message}</div>
+                            <div className={styles.link}><Link href='/'><a>กลับหน้าหลัก</a></Link></div>
+                        </div>
+                    }
+                    {
+                        state === 'invalid_token' &&
                         <div className={styles.flexCenter}>
                             <div className={styles.iconError}><IoCloseOutline /></div>
                             <div className={styles.label}>{err_message}</div>

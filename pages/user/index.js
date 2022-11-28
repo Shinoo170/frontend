@@ -23,7 +23,7 @@ export default function User() {
     const [ isLogin, setIsLogin ] = useState(false)
     const router = useRouter()
 
-    const [data, setData] = useState({Live: [],})
+    const [data, setData] = useState({Live: [], Tel:''})
     const [showModal, setShowModal] = useState(false)
     const [showLiveModal, setShowLiveModal] = useState(false)
     const [showAddModal, setShowAddModal] = useState(false)
@@ -54,23 +54,27 @@ export default function User() {
                 lastName: result.data.userData.lastName,
                 email: result.data.email,
                 Live: result.data.userData.address || [],
+                isEmailVerified: result.data.userData.verifiedEmail,
             })
+        })
+    }
+
+    const sendEmailVerify = () => {
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/auth/SendVerifyCode'
+        axios.post(url, {
+            email: data.email
+        })
+        .then(result => {
+            toast.success('🦄 SEND EMAIL SUCCESS!')
+        }).catch(err => {
+            toast.error('🦄 FAILED TO SEND EMAIL!')
         })
     }
 
     async function onClickUpload() {
         try {
             if(file.size > 1024 * 1024 * 5){
-                return toast.error('🦄 Maximum file size is 5 MB!', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                })
+                return toast.error('🦄 Maximum file size is 5 MB!')
             }
             const imgName = Date.now() + '-' + file.name.replaceAll(' ', '-')
             const imgURL = process.env.NEXT_PUBLIC_AWS_S3_URL + '/users/' + imgName
@@ -97,29 +101,11 @@ export default function User() {
             .then(result => {
                 getData()
                 localStorage.setItem('userImg', imgURL)
-                toast.success('🦄 UPDATE SUCCESS!', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                })
+                toast.success('🦄 UPDATE SUCCESS!')
                 setFile()
             })
         } catch (error) {
-            toast.error('🦄 UPDATE FAILED!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            toast.error('🦄 UPDATE FAILED!')
         }
         
     }
@@ -135,16 +121,7 @@ export default function User() {
         await axios.patch(url, { jwt: localStorage.getItem('jwt'), u, t, e, firstName, lastName })
         .then(result => {
             getData()
-            toast.success('🦄 Your profile has been updated!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            toast.success('🦄 Your profile has been updated!')
         })
     }
 
@@ -161,16 +138,7 @@ export default function User() {
         await axios.patch(url, { jwt: localStorage.getItem('jwt'), a, l, index, subd, dist, prov, zipC, coun })
         .then(result => {
             getData()
-            toast.success('🦄 Your address is updated!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            toast.success('🦄 Your address is updated!')
         })
     }
 
@@ -179,16 +147,7 @@ export default function User() {
         await axios.patch(url, { jwt: localStorage.getItem('jwt'), index })
         .then(result => {
             getData()
-            toast.success('🦄 Your address is updated!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            toast.success('🦄 Your address is updated!')
         })
     }
 
@@ -205,16 +164,7 @@ export default function User() {
         await axios.post(url, { jwt: localStorage.getItem('jwt'), a, l, subd, dist, prov, zipC, coun })
         .then(result => {
             getData()
-            toast.success('🦄 ADD SUCCESS!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            })
+            toast.success('🦄 ADD SUCCESS!')
         })
     }
 
@@ -243,7 +193,18 @@ export default function User() {
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
                 <Header />
-                <ToastContainer />
+                <ToastContainer 
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    />
                 <div className={styles.container}>
                     
                     <main className={styles.main}>
@@ -272,11 +233,19 @@ export default function User() {
                                             </div>
                                             <div className={styles.row}>
                                                 <div className={styles.label}>Tel :</div>
-                                                <div className={styles.value}>{data.Tel}</div>
+                                                { data.Tel.length === 10 && <div className={styles.value}>{(data.Tel.slice(0,3) + '-' + data.Tel.slice(3,6) + '-' + data.Tel.slice(6))}</div> }
+                                                { data.Tel.length !== 10 && <div className={styles.value}>{data.Tel}</div> }
                                             </div>
                                             <div className={styles.row}>
                                                 <div className={styles.label}>Email :</div>
-                                                <div className={styles.value}>{data.email}</div>
+                                                <div className={styles.value}>{data.email} </div>
+                                                <div className={styles.emailVerifyAlert}>
+                                                    {!data.isEmailVerified && <>
+                                                        <div>*คุณยังไม่ได้ยืนยันอีเมล</div>
+                                                        <div className={styles.link} onClick={sendEmailVerify}>คลิกที่นี่เพิ่มส่งอีเมลยืนยันอีกครั้ง</div>
+                                                    </>
+                                                    }
+                                                </div>
                                             </div>
                                             {/* <label style={{color:'red',cursor:'pointer'}} >เปลี่ยนรหัสผ่าน</label> <br /> */}
                                         </div>

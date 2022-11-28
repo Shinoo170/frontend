@@ -102,6 +102,13 @@ export default function SpecificProduct() {
                 isUrlChange = true 
                 isCategoryChange = true
             }
+            var new_amount = document.getElementById('edit-amount').value
+            var isNotify = false
+            if( productData.amount === 0 && new_amount > 0){
+                isNotify = true
+            } else if( productData.status === 'out' && editStatus.status !== 'out' && new_amount > 0){
+                isNotify = true
+            }
 
             var data = {
                 jwt,
@@ -120,7 +127,8 @@ export default function SpecificProduct() {
                 isUrlChange,
                 isImageChange,
                 listImgURL,
-                previousCategory: productData.category 
+                previousCategory: productData.category,
+                isNotify,
             }
             
             axios.patch(axiosURL, data)
