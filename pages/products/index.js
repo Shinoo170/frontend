@@ -45,10 +45,18 @@ export default function Products(){
     const [ debug, setDebug ] = useState('')
 
     const dropdown1Handle = (e) => {
+        // * if remove this part, when user search product, it gonna disable query
+        setSearchText('')
+        setSearch('')
+        // * ================================
         setFilterMatch(e)
         setShowDropdown1(false)
     }
     const orderByHandle = (e) => {
+        // * if remove this part, when user search product, it gonna disable query
+        setSearchText('')
+        setSearch('')
+        // * ================================
         setFilterOrderBy(e)
         setShowDropdownOrderBy(false)
     }
@@ -149,14 +157,23 @@ export default function Products(){
     useEffect(() => {
         if(router.isReady){
             const query = router.query
-            query.searchText? setSearchText(query.searchText) : setSearchText('')
+            // query.searchText? setSearchText(query.searchText) : setSearchText('')
+            if(query.searchText){
+                setSearchText(query.searchText)
+            }else{
+                setSearchText('')
+                if(search!==''){
+                    setSearch('')
+                    filterProcess()
+                }
+            }
+            if(query.orderBy) setFilterOrderBy(query.orderBy)
             if(filterCount < 2){
                 Array.isArray(query.genres)? setFilterGenres(query.genres) : query.genres? setFilterGenres([query.genres]):setFilterGenres([])
                 // "query.genres?" mean "query.genres" is not unified?"
                 if(query.match) setFilterMatch(query.match)
                 query.sort === 'Up'? setFilterSortReverse(true) : setFilterSortReverse(false)
                 setFilterPrice([query.min? query.min : undefined, query.max? query.max : undefined])
-                if(query.orderBy) setFilterOrderBy(query.orderBy)
             }
             query.category? setFilterCategory(query.category) : setFilterCategory('')
             if(query.score) setStarSelect(query.score)
@@ -210,7 +227,7 @@ export default function Products(){
             if(filterCount > 0) setSearchText('')
             return
         }
-        console.log('sorting')
+        // console.log('sorting')
         setSearch('')
         const tempSort = []
         const genresLength = filterGenres.length
@@ -258,7 +275,7 @@ export default function Products(){
             }
         }
 
-        const finalSort = tempSort.map(e => e)
+        const finalSort = tempSort.map(e => e)  // ! important
         if(filterOrderBy !== 'ค่าเริ่มต้น'){
             if(filterOrderBy === 'เพิ่มล่าสุด'){
                 finalSort.sort((a,b) => (a.addDate > b.addDate)? -1 : ((b.addDate > a.addDate)? 1 : 0))

@@ -19,7 +19,7 @@ export default function ProductListMD(prop){
     const [ listProduct, setListProduct ] = useState([])
     const [ allProduct, setAllProduct ] = useState(prop.data)
     const [ currentPage, setCurrentPage ] = useState(1)
-    const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(9)
+    const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(12)
     const [ maxPage, setMaxPage ] = useState(0)
     const [ quickBuyData, setQuickBuyData ] = useState({})
     const [ showQuickBuy , setShowQuickBuy ] = useState(false)

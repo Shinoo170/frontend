@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from 'next/image'
 import Router from 'next/router'
+import axios from "axios"
 
 import styles from './productListSM.module.css'
 
@@ -15,6 +16,26 @@ export default function ProductListSM(prop){
     const [ Max_Product_Per_Page, setMax_Product_Per_Page ] = useState(10)
     const [ maxPage, setMaxPage ] = useState(0)
     const [ fullView, setFullView ] = useState(false)
+    const [ upToDate, setUpToDate ] = useState(false)
+
+    const getProductByCategory = () => {
+        const url = process.env.NEXT_PUBLIC_BACKEND + '/product/productInSeries?seriesId=' + Router.query.seriesId + '&category=' + prop.category
+        axios.get(url)
+        .then( result => {
+            setAllProduct(result.data)
+        }).catch(err => { })
+    }
+
+    useEffect(() => {
+        setMaxPage( Math.ceil(allProduct.length/Max_Product_Per_Page))
+    }, [allProduct])
+
+    useEffect(() => {
+        if(fullView && !upToDate){
+            getProductByCategory()
+            setUpToDate(true)
+        }
+    }, [fullView])
 
     const toggleFullView = () => {
         setFullView( !fullView )
@@ -44,12 +65,12 @@ export default function ProductListSM(prop){
             arr.push(allProduct[i])
         }
         setListProduct(arr)
-    }, [currentPage])
+    }, [currentPage, maxPage])
 
     return (
         <div className={styles.container}>
             <div className={styles.top}>
-                <div className={styles.categoryTitle}> {prop.title} ( {prop.data.length} รายการ ) </div>
+                <div className={styles.categoryTitle}> {prop.title} ( {prop.length} รายการ ) </div>
                 <div className={styles.seeTotal} onClick={toggleFullView}>
                     { fullView? 'ซ่อน':'ดูทั้งหมด'}
                     <HiOutlineChevronDoubleRight />
@@ -78,7 +99,7 @@ export default function ProductListSM(prop){
             <div className={`${styles.pageButtonGroup} ${fullView? '':styles.hide}`}>
                 <button onClick={e => changePageHandle(-1) }><FiChevronLeft /></button>
                 <div className={styles.currentPageText}>
-                    {currentPage}
+                    {currentPage} / {maxPage}
                 </div>
                 <button onClick={e => changePageHandle(1) }><FiChevronRight /></button>
             </div>

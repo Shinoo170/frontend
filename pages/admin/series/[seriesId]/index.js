@@ -47,17 +47,6 @@ export default function SpecificSeries() {
             setGenres(result.data.seriesData.genres)
             setKeywords(result.data.seriesData.keywords)
         }).catch( (err)=> {
-            // console.log(err)
-            // axios.post('/api/getSeriesDetails', { url })
-            // .then( (result) => { 
-            //     setProductData(result.data.seriesData)
-            //     setMangaProducts(result.data.productData.manga)
-            //     setNovelProducts(result.data.productData.novel)
-            //     setOtherProducts(result.data.productData.other)
-            // })
-            // .catch( (err) => {
-            //     setProductData({ seriesId: 'error'})
-            // })
             const errorMessage = <>ไม่พบข้อมูลซีรี่ย์<br/>กลับหน้าหลักใน 5 วินาที</>
             toast.error(errorMessage, {
                 position: "top-right",
@@ -445,35 +434,35 @@ export default function SpecificSeries() {
                                     <div className={styles.label}>คีย์เวิร์ด :</div>
                                     <div className={styles.editGroup}>
                                         {
-                                            !edit && <div className={styles.genresGroup}>
-                                                {
-                                                    keywords.map((element, index) => {
-                                                        return (
-                                                            <div key={`keyword-${index}`} className={styles.genresItem}>
-                                                                {element}
-                                                            </div>
-                                                        )
-                                                    })
-                                                }
-                                            </div>
+                                        !edit && <div className={styles.genresGroup}>
+                                            {
+                                                keywords.map((element, index) => {
+                                                    return (
+                                                        <div key={`keyword-${index}`} className={styles.genresItem}>
+                                                            {element}
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
                                         }
                                         {
-                                            edit && (
-                                                <div>
-                                                    <div className={styles.genresGroup}>
-                                                        {
-                                                            editKeywords.map((element, index) => {
-                                                                return (
-                                                                    <div key={`keyword-${index}`} className={styles.genresItem}>
-                                                                        {element} <div className={styles.removeIcon} onClick={e => removeKeywords(element)}><RiCloseCircleLine /></div>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
-                                                    </div>
-                                                    <input className={styles.input} style={{marginTop: '10px'}} placeholder='New keyword...' onKeyUp={e => addKeywords(e)}/>
+                                        edit && (
+                                            <div>
+                                                <div className={styles.genresGroup}>
+                                                    {
+                                                        editKeywords.map((element, index) => {
+                                                            return (
+                                                                <div key={`keyword-${index}`} className={styles.genresItem}>
+                                                                    {element} <div className={styles.removeIcon} onClick={e => removeKeywords(element)}><RiCloseCircleLine /></div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
                                                 </div>
-                                            )
+                                                <input className={styles.input} style={{marginTop: '10px'}} placeholder='New keyword...' onKeyUp={e => addKeywords(e)}/>
+                                            </div>
+                                        )
                                         }
                                     </div>
                                 </div>
@@ -524,18 +513,17 @@ export default function SpecificSeries() {
 
                     {/* Novel List */}
                     { (productData.products != undefined) && (productData.products.totalNovel > 0) && (
-                        <ProductListSM data={novelProducts} title='นิยาย' url={`/admin/series/${router.query.seriesId}/`}/>
+                        <ProductListSM data={novelProducts} title='นิยาย' length={productData.products.totalNovel} category='novel' url={`/admin/series/${router.query.seriesId}/`}/>
                     )}
                     
-
                     {/* Manga List */}
                     { (productData.products != undefined) && (productData.products.totalManga > 0) && (
-                        <ProductListSM data={mangaProducts} title='มังงะ' url={`/admin/series/${router.query.seriesId}/`} />
+                        <ProductListSM data={mangaProducts} title='มังงะ' length={productData.products.totalManga} category='manga' url={`/admin/series/${router.query.seriesId}/`} />
                     )}
 
                     {/* Manga List */}
                     { (productData.products != undefined) && (productData.products.totalOther > 0) && (
-                        <ProductListSM data={otherProducts} title='สินค้าอื่นๆ' url={`/admin/series/${router.query.seriesId}/`} />
+                        <ProductListSM data={otherProducts} title='สินค้าอื่นๆ' length={productData.products.totalOther} category='other' url={`/admin/series/${router.query.seriesId}/`} />
                     )}
 
                 </div>
