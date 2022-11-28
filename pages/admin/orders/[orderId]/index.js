@@ -311,7 +311,7 @@ export default function OrderDetails() {
                                                 <div>Transaction Id : {orderData.paymentDetails.omiseTransactionId}</div>
                                                 <div>Charge Id : {orderData.paymentDetails.omiseChargeId}</div>
                                                 <div>Total : {orderData.paymentDetails.total} บาท</div>
-                                                <div>shipping Fee : {orderData.shippingFee} BUSD</div>
+                                                <div>shipping Fee : {orderData.shippingFee} บาท</div>
                                                 <div>Net : {orderData.paymentDetails.net - orderData.shippingFee} บาท</div>
                                                 <div>Fee : {orderData.paymentDetails.fee} บาท</div>
                                                 <div>Vat : {orderData.paymentDetails.fee_vat} บาท</div>
