@@ -71,6 +71,10 @@ export default function SpecificProduct() {
         }
     }, [router])
 
+    useEffect( () => {
+        addViewMoreBtn()
+    }, [productData]) 
+
     const uploadProductData = () => {
         const updatePromise = new Promise( async (resolve, reject) => {
             var listImgName = []

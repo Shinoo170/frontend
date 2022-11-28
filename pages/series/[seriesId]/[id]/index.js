@@ -41,6 +41,7 @@ export default function ProductDetails(){
     const reviewTextarea = useRef()
     const [ otherReview, setOtherReview ] = useState([])
     const [ isWishlist, setIsWishlist ] = useState(false)
+    const [ isAdmin, setIsAdmin ] = useState(false)
 
     useEffect(() => {
         if(router.isReady){
@@ -88,6 +89,12 @@ export default function ProductDetails(){
                     theme: "light",
                 })
             })
+
+            try {
+                axios.get('/api/isAdmin', { headers: { jwt: localStorage.getItem('jwt') }})
+                .then(result => setIsAdmin(result.data.isAdmin))
+                .catch(err => setIsAdmin(false))
+            } catch (error) { }
         }
     },[router])
 
@@ -157,13 +164,6 @@ export default function ProductDetails(){
                 })
                 toast.success('ส่งรีวิวสำเร็จ', {
                     position: "bottom-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
                 })
             }).catch(err => console.log(err.message))
         }
@@ -212,12 +212,6 @@ export default function ProductDetails(){
             return toast.error('กรุณาล็อกอิน', {
                 position: "top-right",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
             }) 
         }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
@@ -235,12 +229,6 @@ export default function ProductDetails(){
             return toast.error('กรุณาล็อกอิน', {
                 position: "top-right",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
             })
         }
         const url = process.env.NEXT_PUBLIC_BACKEND + '/product/wishlist?productId=' + productsData.productId
@@ -260,7 +248,18 @@ export default function ProductDetails(){
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Header />
-            <ToastContainer /> 
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            /> 
             <div className={styles.container}>
                 <main className={styles.main}>
                     <div className={styles.detailContainer}>
@@ -460,22 +459,42 @@ export default function ProductDetails(){
                                             document.removeEventListener('mouseup', mouseUpHandle)
                                             var newValue = e.target.getAttribute('data-value')
                                             if(newValue === 'delete'){
-                                                const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
-                                                axios.delete(url, {
-                                                    headers: { jwt : localStorage.getItem('jwt') }
-                                                }).then( result => {
-                                                    getReview()
-                                                    toast.success('ลบรีวิวแล้ว', {
-                                                        position: "bottom-right",
-                                                        autoClose: 5000,
-                                                        hideProgressBar: false,
-                                                        closeOnClick: true,
-                                                        pauseOnHover: true,
-                                                        draggable: true,
-                                                        progress: undefined,
-                                                        theme: "light",
-                                                    })
-                                                })
+                                                if(!isAdmin){
+                                                    const url = process.env.NEXT_PUBLIC_BACKEND + '/product/review?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
+                                                    axios.delete(url, {
+                                                        headers: { jwt : localStorage.getItem('jwt') }
+                                                    }).then( result => {
+                                                        getReview()
+                                                        toast.success('ลบรีวิวแล้ว', {
+                                                            position: "bottom-right",
+                                                            autoClose: 5000,
+                                                            hideProgressBar: false,
+                                                            closeOnClick: true,
+                                                            pauseOnHover: true,
+                                                            draggable: true,
+                                                            progress: undefined,
+                                                            theme: "light",
+                                                        })
+                                                    })  
+                                                } else {
+                                                    const url = process.env.NEXT_PUBLIC_BACKEND + '/admin/deleteUserReview?reviewId=' + element._id + '&seriesId=' + productsData.seriesId + '&productId=' + productsData.productId + '&score=' + element.score
+                                                    axios.delete(url, {
+                                                        headers: { jwt : localStorage.getItem('jwt') }
+                                                    }).then( result => {
+                                                        getReview()
+                                                        toast.success('ลบรีวิวแล้ว', {
+                                                            position: "bottom-right",
+                                                            autoClose: 5000,
+                                                            hideProgressBar: false,
+                                                            closeOnClick: true,
+                                                            pauseOnHover: true,
+                                                            draggable: true,
+                                                            progress: undefined,
+                                                            theme: "light",
+                                                        })
+                                                    })  
+                                                }
+                                                
                                             }
                                         }
 
@@ -527,7 +546,17 @@ export default function ProductDetails(){
                                                             </div>
                                                         </div>
                                                     }
-                                                    
+                                                    {
+                                                        isAdmin && (userId !== element.user_id) && <div className={styles.reviewMenu}>
+                                                        <div id={dropdownID} className={`${styles.dropdownGroup}`} >
+                                                            <div className={styles.dropdownSelection} onClick={e => showDropdownHandle(e)}> <BsThreeDotsVertical /> </div>
+                                                            <div className={styles.dropdownList} onClick={e => changeStatusHandle(e)}>
+                                                                {/* <div className={styles.dropdownItem} data-value={'edit'}>แก้ไข</div> */}
+                                                                <div className={styles.dropdownItem} data-value={'delete'}>ลบ</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    }
                                                 </div>
                                                 {element.review}
                                             </div>  

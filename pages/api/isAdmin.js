@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 
 export default async function handle(req, res){
     const token = req.headers['jwt'] || req.body.jwt
@@ -12,9 +13,10 @@ export default async function handle(req, res){
                 return res.status(401).send({ message: "Unauthorized!", error: err.message })
             }
             if(decoded.role === 'admin'){
-                return res.status(200).send({ message: "authorized!"})
+                return res.status(200).send({ message: "authorized!", isAdmin: true })
             } else {
-                return res.status(401).send({ message: "Unauthorized!"})
+                return res.status(200).send({ message: "Unauthorized!", isAdmin: false })
+                // return res.status(401).send({ message: "Unauthorized!"})
             }
         })
     }catch(err){
