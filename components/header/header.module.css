@@ -277,6 +277,11 @@
     display: none;
 }
 
+.hideWhenSM {
+    display: inline;
+    min-width: max-content;
+}
+
 /* ------------------------------------------------
 [ Large device (desktop, iPad) ] */
 @media screen and (max-width: 992px) {
@@ -304,11 +309,18 @@
     }
     .rightMenu {
         order: 2;
-        width: 450px;
+        width: 500px;
     }
     .rightMenu .searchBox {
         width: 100%;
         max-width: none;
+    }
+    .rightMenu .searchBoxContainer {
+        width: 100%;
+        max-width: 500px;
+    }
+    .rightMenu .searchBox {
+        width: 100%;
     }
 }
 
@@ -316,7 +328,7 @@
 [ Medium device (tablets) ] */
 @media screen and (max-width: 768px){
     .rightMenu {
-        width: 370px;
+        width: 390px;
     }
 }
 
@@ -413,6 +425,14 @@
         margin: 0 0 0 auto;
     }
 
+}
+
+@media screen and (max-width: 450px) {
+    .hideWhenSM {
+        opacity: 0;
+        display: none;
+        visibility: hidden;
+    }
 }
 
 /* ------------------------------------------------

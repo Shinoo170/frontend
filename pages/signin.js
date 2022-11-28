@@ -99,7 +99,7 @@ const SignIn = () => {
                                 </button>
                             </div>
 
-                            <div className={styles.textCenter}>
+                            {/* <div className={styles.textCenter}>
                                 <span className={styles.txt1}>
                                     Forget
                                 </span>
@@ -108,7 +108,7 @@ const SignIn = () => {
                                         <a>Username / Password?</a>
                                     </Link>
                                 </span>
-                            </div>
+                            </div> */}
 
                             <div className={styles.textBottom}>
                                 <Link href='/signup'>

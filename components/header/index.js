@@ -95,7 +95,7 @@ export default function Header(){
                     </div>
                 </div>
                 {/* <div className={styles.navItem}><div className={styles.title}>ซีรีย์</div></div> */}
-                <div className={styles.navItem}><div className={styles.title}>ขายดี</div></div>
+                <div className={styles.navItem}><Link href='/products?orderBy=ความนิยม'><a><div className={styles.title}>ขายดี</div></a></Link></div>
                 <div className={styles.navItem}><div className={styles.title}>พรีออเดอร์</div></div>
                 {/* <div className={styles.navItem}><div className={styles.title}>โปรโมชั่น</div></div> */}
                 <div className={styles.dummyItem}></div>
@@ -122,7 +122,7 @@ export default function Header(){
                         </a>
                     </Link>
                 </div>
-                { !isSignIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link></div> }
+                { !isSignIn && <div className={styles.userInfo}><Link href='/signin'> Login </Link> <div className={styles.hideWhenSM}><span style={{padding: '0 5px'}}>|</span> <Link href='/signup'> Sign up </Link></div></div> }
                 {
                     isSignIn && ( <div className={styles.userInfo}>
                             <div className={styles.profileImage} onClick={e => userDropdownToggleHandle(e)}>
