@@ -487,12 +487,26 @@ export default function ProductDetails(){
                                                             <div className={styles.userImageContainer}>
                                                                 {/* <img src={element.detail[0].userData.img} className={styles.img}/> */}
                                                                 <div className={styles.image}>
-                                                                    <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='cover' />
+                                                                    {/* <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='cover' /> */}
+                                                                    { element.detail[0].userData.img? 
+                                                                        <Image src={element.detail[0].userData.img} alt='user-profile' layout='fill' objectFit='cover' /> :
+                                                                        <Image src='/no_profile_image.png' alt='user-profile' layout='fill' objectFit='cover' />
+                                                                    }
                                                                 </div>
                                                             </div>
-                                                            {element.detail[0].userData.displayName}
+                                                            {/* {element.detail[0].userData.displayName} */}
+                                                            <div className={styles.user}>
+                                                                {element.detail[0].userData.displayName}
+                                                                <div className={styles.starGroup}>
+                                                                    <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
+                                                                    <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>
+                                                                    <TiStar className={`${styles.star} ${score>=3? styles.starHover:''}`}/>
+                                                                    <TiStar className={`${styles.star} ${score>=4? styles.starHover:''}`}/>
+                                                                    <TiStar className={`${styles.star} ${score>=5? styles.starHover:''}`}/>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className={styles.user}>
+                                                        {/* <div className={styles.user}>
                                                             <div className={styles.starGroup}>
                                                                 <TiStar className={`${styles.star} ${score>=1? styles.starHover:''}`}/>
                                                                 <TiStar className={`${styles.star} ${score>=2? styles.starHover:''}`}/>
@@ -500,7 +514,7 @@ export default function ProductDetails(){
                                                                 <TiStar className={`${styles.star} ${score>=4? styles.starHover:''}`}/>
                                                                 <TiStar className={`${styles.star} ${score>=5? styles.starHover:''}`}/>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                     {
                                                         userId === element.user_id && <div className={styles.reviewMenu}>
@@ -516,7 +530,7 @@ export default function ProductDetails(){
                                                     
                                                 </div>
                                                 {element.review}
-                                            </div>
+                                            </div>  
                                         )
                                     })
                                 }

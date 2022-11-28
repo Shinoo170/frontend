@@ -67,6 +67,12 @@
     justify-content: center;
 }
 
+.largeImage img{
+    height: auto;
+    max-width: 400px;
+    max-height: 325px;
+}
+
 .imageWrap{
     /* image original 560*800 */
     --img-const: 0.7;
@@ -515,6 +521,11 @@
 @media screen and (max-width: 786px) {
     .descriptionText {
         width: 100%
+    }
+    .largeImage img{
+        height: auto;
+        max-width: 300px;
+        max-height: 325px;
     }
 }
 

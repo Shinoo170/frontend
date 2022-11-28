@@ -24,7 +24,7 @@ export default function SideNavbar(){
                 </div>
                 <ul className={styles.navContainer}>
                     <div className={styles.navGroup}>
-                        <li>
+                        {/* <li>
                             <Link href='/admin'> 
                                 <a>
                                     <i><BiGridAlt /></i>
@@ -32,8 +32,8 @@ export default function SideNavbar(){
                                 </a>
                             </Link>
                             <span className={styles.tooltip}>Overview</span>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                             <Link href='/admin/analysis'> 
                                 <a>
                                     <i><BiBarChartAlt2 /></i>
@@ -41,6 +41,15 @@ export default function SideNavbar(){
                                 </a>
                             </Link>
                             <span className={styles.tooltip}>Analysis</span>
+                        </li> */}
+                        <li>
+                            <Link href='/admin/series'> 
+                                <a>
+                                    <i><BiDetail /></i>
+                                    <span className={styles.linkName}>Series</span>
+                                </a>
+                            </Link>
+                            <span className={styles.tooltip}>Series</span>
                         </li>
                         <li>
                             <Link href='/admin/pages'> 
@@ -52,15 +61,6 @@ export default function SideNavbar(){
                             <span className={styles.tooltip}>Pages</span>
                         </li>
                         <li>
-                            <Link href='/admin/series'> 
-                                <a>
-                                    <i><BiDetail /></i>
-                                    <span className={styles.linkName}>Series</span>
-                                </a>
-                            </Link>
-                            <span className={styles.tooltip}>Series</span>
-                        </li>
-                        <li>
                             <Link href='/admin/orders'> 
                                 <a>
                                     <i><BiCart /></i>
@@ -69,7 +69,7 @@ export default function SideNavbar(){
                             </Link>
                             <span className={styles.tooltip}>Orders</span>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link href='#'> 
                                 <a>
                                     <i><BiMessageSquareDetail /></i>
@@ -77,7 +77,7 @@ export default function SideNavbar(){
                                 </a>
                             </Link>
                             <span className={styles.tooltip}>Review</span>
-                        </li>
+                        </li> */}
                         <li>
                             <Link href='/'> 
                                 <a>

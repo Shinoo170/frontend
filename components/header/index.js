@@ -134,7 +134,7 @@ export default function Header(){
                                 </div>
                                 <div className={styles.info}>{localStorage.getItem('displayName')}</div>
                                 <hr />
-                                { isAdmin && <Link href='/admin'><a className={styles.subItem}><MdOutlineSpaceDashboard/>Dashboard</a></Link> }
+                                { isAdmin && <Link href='/admin/series'><a className={styles.subItem}><MdOutlineSpaceDashboard/>Dashboard</a></Link> }
                                 <Link href='/user'><a className={styles.subItem}><BiUser/>บัญชีของฉัน</a></Link>
                                 <Link href='/user/orders'><a className={styles.subItem}><BsBoxSeam/>รายการสั่งซื้อ</a></Link>
                                 <Link href='/user/subscribes'><a className={styles.subItem}><BsBookmarks/>รายการที่ติดตาม</a></Link>

@@ -43,8 +43,11 @@
 .imageContainer img{
     box-shadow: var(--book-shadow);
     border: 1px solid #f0f0f0;
-    height: 320px;
-	width: 215px;
+    height: 100%;
+	width: 100%;
+	height: auto;
+	max-width: 300px;
+	max-height: 325px;
 }
 
 .imageContainer .imgLoading {
