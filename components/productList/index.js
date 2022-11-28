@@ -94,7 +94,7 @@ export default function SeriesList(prop){
                                         <div className={styles.image}>
                                             <Image src={img} alt='img' layout='fill' objectFit='cover' />
                                         </div>
-                                        <div className={styles.title}>{element.title}</div>
+                                        <div className={styles.title}>{element.status === 'preOrder'? '[ PreOrder ] ':null} {element.title}</div>
                                         
                                         <div className={styles.bottomGroup}>
                                             <div className={styles.starGroup}>
