@@ -56,6 +56,7 @@ export default function User() {
                 Live: result.data.userData.address || [],
                 isEmailVerified: result.data.userData.verifiedEmail,
             })
+            localStorage.setItem('displayName', result.data.userData.displayName)
         })
     }
 
