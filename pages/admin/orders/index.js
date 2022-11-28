@@ -114,7 +114,9 @@ export default function Order() {
                 <div className={styles.orderWrap}>
                     <div className={styles.title}>Orders</div>
                     <div className={styles.flewWrap}>
-                        <div className={styles.graph}>graph here</div>
+                        <div className={styles.graph}>
+                            
+                        </div>
                         <div className={styles.orderList}>
                             <div className={styles.flexEnd}>
                                 <div className={`${styles.dropdownGroup} ${showDropdown? styles.showDropdown:''}`}>
