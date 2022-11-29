@@ -36,14 +36,17 @@ export default function AddProduct() {
                   setIsAdmin(true)
                   setSeriesId(router.query.seriesId)
               } else {
-                  // return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                  router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                  return
               }
           }).catch(err => {
             console.log(err)
-              // return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+              router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+              return
           })
       } else {
-          return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+          router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+          return
       }
     }
   }, [router])

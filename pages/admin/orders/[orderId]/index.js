@@ -40,13 +40,16 @@ export default function OrderDetails() {
                         setOrderId(router.query.orderId)
                         getOrder()
                     } else {
-                        return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                        router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                        return
                     }
                 }).catch(err => {
-                    return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                    router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                    return
                 })
             } else {
-                return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                return
             }
         }
     }, [router])
