@@ -44,7 +44,7 @@
     box-shadow: var(--book-shadow);
     border: 1px solid #f0f0f0;
     height: 100%;
-	width: 100%;
+	width: auto;
 	height: auto;
 	max-width: 300px;
 	max-height: 325px;

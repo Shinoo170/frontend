@@ -69,6 +69,7 @@
 
 .largeImage img{
     height: auto;
+    width: auto;
     max-width: 400px;
     max-height: 325px;
 }
