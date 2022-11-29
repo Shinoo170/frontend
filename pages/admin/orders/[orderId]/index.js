@@ -370,7 +370,7 @@ export default function OrderDetails() {
                                                 </div>
                                                 <div>Total : {orderData.paymentDetails.total} BUSD</div>
                                                 <div>shipping Fee : {orderData.shippingFee} BUSD</div>
-                                                <div>Net : {orderData.paymentDetails.net - orderData.shippingFee} BUSD</div>
+                                                <div>Net : {Math.round((orderData.paymentDetails.net - orderData.shippingFee)*100)/100} BUSD</div>
                                                 {
                                                     orderData.paymentDetails.refund && (<>
                                                         <div>Refund : {orderData.paymentDetails.refundDetails.refundTotal} BUSD</div>

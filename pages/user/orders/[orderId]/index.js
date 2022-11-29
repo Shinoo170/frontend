@@ -249,7 +249,7 @@ export default function OrderDetails() {
                                         </div>
                                         <div className={styles.right}>
                                             <span>ทั้งหมด : </span> 
-                                            <span className={`${styles.priceLabel} text`}>{sumPrice + orderData.shippingFee}</span>
+                                            <span className={`${styles.priceLabel} text`}>{Math.round((sumPrice + orderData.shippingFee )* 100) / 100}</span>
                                             <span style={{paddingLeft: '5px'}}>{currency}</span>
                                         </div>
                                     </div>
