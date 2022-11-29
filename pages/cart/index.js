@@ -22,31 +22,33 @@ export default function Cart(){
     const url = process.env.NEXT_PUBLIC_BACKEND + '/user/cart'
 
     const getCart = () => {
-        const jwt = localStorage.getItem('jwt')
-        axios.get(url, {
-            headers: {
-                jwt
-            }
-        })
-        .then( result => {
-            var userCart = result.data.userCartData
-            var product = result.data.product
-            var cartList = []
-            userCart.forEach((element, index) => {
-                for(let i=0; i<product.length; i++){
-                    if(element.productId === product[i].productId){
-                        const result = Object.assign({}, element, product[i])
-                        result.amount = element.amount
-                        result.stockAmount = product[i].amount
-                        cartList.push(result)
-                    }
+        if(localStorage.getItem('jwt')){
+            const jwt = localStorage.getItem('jwt')
+            axios.get(url, {
+                headers: {
+                    jwt
                 }
             })
-            setCart(cartList)
-            setProduct(product)
-        }).catch( err => {
-            console.log(err)
-        })
+            .then( result => {
+                var userCart = result.data.userCartData
+                var product = result.data.product
+                var cartList = []
+                userCart.forEach((element, index) => {
+                    for(let i=0; i<product.length; i++){
+                        if(element.productId === product[i].productId){
+                            const result = Object.assign({}, element, product[i])
+                            result.amount = element.amount
+                            result.stockAmount = product[i].amount
+                            cartList.push(result)
+                        }
+                    }
+                })
+                setCart(cartList)
+                setProduct(product)
+            }).catch( err => {
+                console.log(err)
+            })
+        }
     }
 
     const editCartHandle = (productId, amount) => {

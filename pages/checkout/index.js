@@ -205,7 +205,19 @@ export default function CheckOut(){
     }
 
     const metamaskPayHandle = async () => {
-        if (!window.ethereum) return console.log('No matamask')
+        if (!window.ethereum)  {
+            toast.error('กรุณาติดตั้ง Metamask', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            })
+            return
+        }
         try {
             await window.ethereum.request({
                 method: "wallet_addEthereumChain",
