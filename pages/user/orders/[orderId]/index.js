@@ -22,6 +22,7 @@ export default function OrderDetails() {
     const [ dateTime, setDateTime ] = useState({})
     const [ showPaymentDetails, setShowPaymentDetails ] = useState(false)
     const [ editStatus, setEditStatus ] = useState({})
+    const [ sumPrice, setSumPrice ] = useState(0)
     const router = useRouter()
     const paymentDetails = useRef()
     const statusIcon = useRef()
@@ -41,41 +42,51 @@ export default function OrderDetails() {
     }, [router])
 
     const getOrder = () => {
-        const jwt = localStorage.getItem('jwt')
-        const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/user/getOrderDetails?orderId=' + router.query.orderId
-        axios.get(axiosURL, {
-            headers: {
-                jwt
-            }
-        }).then( result => {
-            // setOrderData(d.order)
-            const d = result.data
-            console.log(d)
-            setProductDetails(d.productDetails)
-            statusIconChange(d.order.status)
-            setNConvertStatus(d.order.status)
-            if(d.order.method === 'metamask') {
-                metamaskDetail(d.order)
-            }
-            else {
-                setOrderData(d.order)
-            }
-            var time = d.order.paymentDetails.date.split(',') || d.order.date.split(',') 
-            setDateTime({date: time[0], time: time[1] })
-        }).catch( err => {
-            if(err.name === 'AxiosError'){
-                toast.error(`can't get orders`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
+        try {
+            const jwt = localStorage.getItem('jwt')
+            const axiosURL = process.env.NEXT_PUBLIC_BACKEND + '/user/getOrderDetails?orderId=' + router.query.orderId
+            axios.get(axiosURL, {
+                headers: {
+                    jwt
+                }
+            }).then( result => {
+                // setOrderData(d.order)
+                const d = result.data
+                // console.log(d)
+                setProductDetails(d.productDetails)
+                statusIconChange(d.order.status)
+                setNConvertStatus(d.order.status)
+                if(d.order.method === 'metamask') {
+                    metamaskDetail(d.order)
+                }
+                else {
+                    setOrderData(d.order)
+                }
+                var time = d.order.paymentDetails.date.split(',') || d.order.date.split(',') 
+                setDateTime({date: time[0], time: time[1] })
+
+                var sum = 0
+                d.order.cart.forEach(e => {
+                    sum += Math.round( (e.price * e.amount) / d.order.exchange_rate *100 ) /100
                 })
-            }
-        })
+                setSumPrice(sum)
+            }).catch( err => {
+                if(err.name === 'AxiosError'){
+                    toast.error(`can't get orders`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    })
+                }
+            })
+        } catch (error) {
+            
+        }
     }
 
     const statusIconChange = (status) => {
@@ -96,7 +107,7 @@ export default function OrderDetails() {
         } else if(status === 'cancel'){
             setEditStatus({status, thai: 'ยกเลิก'})
         } else if(status === 'ordered') {
-            setEditStatus({status, thai: 'รอการชำระเงิน'})
+            setEditStatus({status, thai: 'กำลังตรวจสอบการชำระเงิน'})
         }
     }
 
@@ -224,6 +235,25 @@ export default function OrderDetails() {
                                         )
                                     })
                                 }
+                                <div className={styles.item}>
+                                    <div className={styles.flexRight}>
+                                        <div className={styles.right}>
+                                            <span>รวม : </span>
+                                            <span className={`${styles.priceLabel} text`}>{sumPrice}</span>
+                                            <span style={{paddingLeft: '5px'}}>{currency}</span>
+                                        </div>
+                                        <div className={styles.right}>
+                                            <span>ค่าจัดส่ง : </span>
+                                            <span className={`${styles.priceLabel} text`}>{orderData.shippingFee}</span>
+                                            <span style={{paddingLeft: '5px'}}>{currency}</span>
+                                        </div>
+                                        <div className={styles.right}>
+                                            <span>ทั้งหมด : </span> 
+                                            <span className={`${styles.priceLabel} text`}>{sumPrice + orderData.shippingFee}</span>
+                                            <span style={{paddingLeft: '5px'}}>{currency}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className={styles.orderDetails}>
                                 <div>ข้อมูลคำสั่งซื้อ</div>
@@ -238,7 +268,7 @@ export default function OrderDetails() {
                                                         <div>Bank : {orderData.paymentDetails.bank}</div>
                                                         <div>Brand : {orderData.paymentDetails.brand}</div>
                                                         <div>Total : {orderData.paymentDetails.total} บาท</div>
-                                                        <div>ค่าจัดส่ง : {orderData.shippingFee} บาท</div>
+                                                        {/* <div>ค่าจัดส่ง : {orderData.shippingFee} บาท</div> */}
                                                         <div>วันที่โอน : {dateTime.date.replaceAll('.', '/')}</div>
                                                         <div>เวลา : {dateTime.time} น.  </div>
                                                     </div>
@@ -255,7 +285,7 @@ export default function OrderDetails() {
                                                         </div>
                                                         <div>Total : {orderData.paymentDetails.total} BUSD</div>
                                                         <div>Net : {orderData.paymentDetails.net} BUSD</div>
-                                                        <div>Shipping Fee : {orderData.shippingFee} BUSD</div>
+                                                        {/* <div>Shipping Fee : {orderData.shippingFee} BUSD</div> */}
                                                         {
                                                             orderData.paymentDetails.refund && (<>
                                                                 <div>Refund : {orderData.paymentDetails.refundDetails.refundTotal} BUSD</div>

@@ -115,6 +115,19 @@
     user-select: none;
 }
 
+.flexRight {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.right {
+    text-align: end;
+    margin-top: 5px;
+}
+
+
 /* ------------------------------------------------
 [ Order details ] */
 .orderDetails {

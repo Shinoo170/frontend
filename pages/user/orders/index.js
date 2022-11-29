@@ -21,16 +21,13 @@ export default function Orders() {
     const [ currentPages, setCurrentPages ] = useState(0)
 
     useEffect(() => {
-        if(localStorage.getItem('jwt')){
-            setIsLogin(true)
-            getOrder()
-        } else {
-            router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
-        }
-    }, [])
-
-    useEffect(() => {
         if(router.isReady){
+            if(localStorage.getItem('jwt')){
+                setIsLogin(true)
+                getOrder()
+            } else {
+                return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+            }
             setCurrentPages(parseInt(router.query.pages) || 1)
             setStatusSort(router.query.sort || 'all')
         }
