@@ -28,7 +28,6 @@ export default function AddProduct() {
   
   useEffect( () => {
     if(router.isReady){
-
       if(localStorage.getItem('jwt')){
           axios.get('/api/isAdmin', {
               headers: { jwt: localStorage.getItem('jwt') }
@@ -36,13 +35,12 @@ export default function AddProduct() {
               if(result.data.isAdmin){
                   setIsAdmin(true)
                   setSeriesId(router.query.seriesId)
-                  document.getElementById('title').value = router.query.title
-                  document.getElementById('seriesId').value = router.query.seriesId
               } else {
-                  return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+                  // return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
               }
           }).catch(err => {
-              return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
+            console.log(err)
+              // return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
           })
       } else {
           return router.push({pathname: '/', query:{ } }, undefined,{ shallow: false } )
@@ -50,14 +48,23 @@ export default function AddProduct() {
     }
   }, [router])
 
+  useEffect(() => {
+    try{
+      document.getElementById('title').value = router.query.title
+      document.getElementById('seriesId').value = router.query.seriesId
+    } catch (err){ }
+  }, [isAdmin])
+
 
   useEffect( () => {
-    if(productStatus === 'out'){
-      document.getElementById('amount').disabled = true
-      document.getElementById('amount').value = 0
-    } else {
-      document.getElementById('amount').disabled = false
-    }
+    try{
+      if(productStatus === 'out'){
+        document.getElementById('amount').disabled = true
+        document.getElementById('amount').value = 0
+      } else {
+        document.getElementById('amount').disabled = false
+      }
+    } catch (err){ }
   }, [productStatus])
 
   const saveFile = (e) => {
