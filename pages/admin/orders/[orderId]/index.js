@@ -107,7 +107,7 @@ export default function OrderDetails() {
         } else if(status === 'cancel'){
             setEditStatus({status, thai: 'ยกเลิก'})
         } else if(status === 'ordered') {
-            setEditStatus({status, thai: 'รอการชำระเงิน'})
+            setEditStatus({status, thai: 'ตรวจสอบการชำระเงิน'})
         }
     }
 

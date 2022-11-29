@@ -250,7 +250,8 @@
     border-radius: 8px;
     transition: all ease 0.5;
     cursor: pointer;
-	width: 130px;
+	min-width: 130px;
+    max-width: 200px;
 	user-select: none;
     position: relative;
 }
