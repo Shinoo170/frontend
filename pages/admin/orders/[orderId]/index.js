@@ -363,6 +363,13 @@ export default function OrderDetails() {
                                         orderData.method === 'metamask' && orderData.paymentDetails.hash !== undefined && (
                                             <div>
                                                 <div>Exchange rate : {orderData.exchange_rate} Baht/USD</div>
+                                                { orderData.paymentDetails.currency === 'BUSD' && <div>Currency : { orderData.paymentDetails.currency }</div> }
+                                                {
+                                                    orderData.paymentDetails.currency !== 'BUSD' && <>
+                                                        <div>Currency : { orderData.paymentDetails.currency }</div>
+                                                        <div>Currency Rate : { orderData.crypto_exchange_rate } USD/{ orderData.paymentDetails.currency }</div>
+                                                    </>
+                                                }
                                                 <div>Transaction Hash : 
                                                     <Link href={`https://testnet.bscscan.com/tx/${orderData.paymentDetails.hash}`}>
                                                         <a target="_blank" > {orderData.paymentDetails.hash}</a>

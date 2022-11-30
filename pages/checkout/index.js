@@ -28,7 +28,10 @@ export default function CheckOut(){
     const [ shippingFee, setShippingFee ] = useState(40)
     const [ orderResult, setOrderResult ] = useState({})
     const [ selectAddress, setSelectAddress ] = useState({})
+    const [ cryptoCoinSelect, setCryptoCoinSelect ] = useState('BUSD')
+    const [ crypto_exchange_rate, set_crypto_exchange_rate ] = useState(1)
     const [ isLogin, setIsLogin ] = useState(false)
+    const [ priceRound, setPriceRound ] = useState(100)
     var totalPrice = 0
 
     useEffect(() => {
@@ -41,35 +44,84 @@ export default function CheckOut(){
     }, [])
 
     useEffect(() => {
-        if(paymentMethod === 'metamask'){
+        if(paymentMethod === 'metamask') {
             const local_exchange_rate = JSON.parse(localStorage.getItem('exchange-rate'))
-            if(!local_exchange_rate || local_exchange_rate.expire < Date.now()){
-                animationLoader()
+            animationLoader()
+            if(!local_exchange_rate || local_exchange_rate.expire < Date.now()) {
                 const USD_rate_url = process.env.NEXT_PUBLIC_BACKEND + '/util/exchangeRate/USDTHB'
                 axios.get(USD_rate_url)
                 .then( result => {
                     if(paymentMethod === 'metamask'){
                         set_exchange_rate(result.data.rate)
+                        if(cryptoCoinSelect !== 'BUSD'){
+                            const url1 = 'https://api.binance.com/api/v3/ticker/price?symbol=' + cryptoCoinSelect + 'BUSD'
+                            axios.get(url1)
+                            .then(result => {
+                                set_crypto_exchange_rate(result.data.price)
+                                calPriceSummary(local_exchange_rate.rate, result.data.price)
+                            }).catch(err => { 
+        
+                            }).finally(() => {
+                                hideAnimationLoader()
+                            })
+                        } else {
+                            calPriceSummary(local_exchange_rate.rate, 1)
+                            set_crypto_exchange_rate(1)
+                            set_exchange_rate(local_exchange_rate.rate)
+                            hideAnimationLoader()
+                        }
                     }
                     localStorage.setItem('exchange-rate', JSON.stringify(result.data) )
+                }).catch(err => {
                     hideAnimationLoader()
                 })
-            }else {
-                set_exchange_rate(local_exchange_rate.rate)
+            } else {
+                if(cryptoCoinSelect !== 'BUSD'){
+                    const url1 = 'https://api.binance.com/api/v3/ticker/price?symbol=' + cryptoCoinSelect + 'BUSD'
+                    axios.get(url1)
+                    .then(result => {
+                        calPriceSummary(local_exchange_rate.rate, result.data.price)
+                        set_crypto_exchange_rate(result.data.price)
+                        set_exchange_rate(local_exchange_rate.rate)
+                    }).catch(err => { 
+
+                    }).finally(() => {
+                        hideAnimationLoader()
+                    })
+                } else {
+                    calPriceSummary(local_exchange_rate.rate, 1)
+                    set_crypto_exchange_rate(1)
+                    set_exchange_rate(local_exchange_rate.rate)
+                    hideAnimationLoader()
+                }
             }
-            setCurrency('BUSD')
+            setCurrency(cryptoCoinSelect)
         } else {
+            calPriceSummary(1, 1)
             hideAnimationLoader()
             set_exchange_rate(1)
+            set_crypto_exchange_rate(1)
             setCurrency('บาท')
         }
-    }, [paymentMethod])
+
+        var round = 100
+        if(paymentMethod === 'metamask'){
+            if(cryptoCoinSelect === 'ETH'){ round = 100000 }
+            else if(cryptoCoinSelect === 'BTC'){ round = 100000 }
+        }
+        setPriceRound(round)
+    }, [paymentMethod, cryptoCoinSelect])
 
     useEffect(() => {
-        calPriceSummary()
-    }, [cart, exchange_rate])
+        calPriceSummary(1,1)
+    }, [cart])
 
-    const calPriceSummary = () => {
+    const calPriceSummary = (ex_rate, crypto_ex_rate) => {
+        var round = 100
+        if(paymentMethod === 'metamask'){
+            if(cryptoCoinSelect === 'ETH'){ round = 100000 }
+            else if(cryptoCoinSelect === 'BTC'){ round = 100000 }
+        }
         var priceSum = 0
         var itemPrice = 0
         var itemAmount
@@ -82,10 +134,12 @@ export default function CheckOut(){
             } else {
                 itemAmount = element.stockAmount
             }
-            itemPrice = itemAmount * element.price / exchange_rate
-            priceSum += Math.round(itemPrice*100)/100
+            itemPrice = ( itemAmount * element.price / (ex_rate) ) / crypto_ex_rate
+            priceSum += Math.round(itemPrice * round)/round
         })
-        setPriceSummary(Math.round(priceSum*100)/100)
+        setPriceSummary(Math.round(priceSum * round)/round)
+        var sf = ( 40  / ex_rate ) / crypto_ex_rate
+        setShippingFee(Math.round(sf * round)/round)
     }
 
     const getCart = () => {
@@ -124,9 +178,8 @@ export default function CheckOut(){
 
     const changePageHandle = () => {
         if(state === 'address'){
-            console.log(selectAddress)
             if(!selectAddress.firstName || !selectAddress.lastName || !selectAddress.tel || selectAddress.tel === '' ){
-                toast.error('กรุณากรอกชื่อ-นาม และ เบอร์โทร', {
+                toast.error('กรุณากรอกชื่อ-นามสกุล และ เบอร์โทร', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -149,6 +202,8 @@ export default function CheckOut(){
                 })
             } else {
                 setState('payment')
+                setPaymentMethod('credit_card')
+                setCryptoCoinSelect('BUSD')
             }
         }
     }
@@ -184,6 +239,7 @@ export default function CheckOut(){
                     amount: priceSummary + shippingFee,
                     shippingFee,
                     exchange_rate,
+                    crypto_exchange_rate,
                     cart,
                     selectAddress,
                 }).then(result => {
@@ -226,9 +282,9 @@ export default function CheckOut(){
                     chainId: `0x${Number(97).toString(16)}`,
                     chainName: "BSC Testnet",
                     nativeCurrency: {
-                    name: "BSC Testnet",
-                    symbol: "BUSD",
-                    decimals: 18
+                        name: "BSC Testnet",
+                        symbol: "BUSD",
+                        decimals: 18
                     },
                     rpcUrls: [process.env.NEXT_PUBLIC_BSC_RPC_URLS],
                     blockExplorerUrls: ["https://testnet.bscscan.com/"]
@@ -246,13 +302,18 @@ export default function CheckOut(){
                 "function transfer(address to, uint amount) returns (bool)",
                 "function approve(address _spender, uint256 _value) public returns (bool success)"
             ]
+            var contract_address = process.env.NEXT_PUBLIC_BUSD_CONTRACT
+            if( cryptoCoinSelect === 'ETH' ){
+                contract_address = process.env.NEXT_PUBLIC_ETH_CONTRACT
+            } else if( cryptoCoinSelect === 'BTC') {
+                contract_address = process.env.NEXT_PUBLIC_BTC_CONTRACT
+            }
             let contract = new ethers.Contract(
-                process.env.NEXT_PUBLIC_BUSD_CONTRACT,
+                contract_address,
                 abi,
                 signer
             )
-            const price = String(Math.round((priceSummary + shippingFee/exchange_rate) *100)/100)
-            const shippingFeeConvert = Math.round(shippingFee/exchange_rate *100)/100
+            const price = String( Math.round((priceSummary + shippingFee) *priceRound)/priceRound )
             let numberOfTokens = ethers.utils.parseUnits(price, 18)
             const tx = await contract.transfer(
                 process.env.NEXT_PUBLIC_METAMASK_SHOP_ADDRESS,
@@ -263,10 +324,12 @@ export default function CheckOut(){
             axios.post( url , {
                 jwt,
                 method: 'metamask',
-                amount: priceSummary + shippingFeeConvert,
-                shippingFee: shippingFeeConvert,
+                amount:  Math.round((priceSummary + shippingFee) *priceRound)/priceRound ,
+                shippingFee,
                 exchange_rate,
+                crypto_exchange_rate,
                 cart,
+                currency: cryptoCoinSelect,
                 hash: tx.hash,
                 selectAddress,
             }).then(result => {
@@ -336,7 +399,7 @@ export default function CheckOut(){
                 <main className={styles.main}>
                     <div className={styles.checkoutSection}>
                         <div className={styles.Section}>
-                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult, selectAddress, setSelectAddress, }}>
+                            <checkoutContext.Provider value={{cart, paymentMethod, setPaymentMethod, setState, orderResult, selectAddress, setSelectAddress, cryptoCoinSelect, setCryptoCoinSelect}}>
                                 { (state === 'address') && <SelectAddress /> }
                                 { (state === 'payment') && <PaymentMethod /> }
                                 { (state === 'success') && <PlaceOrderSuccess /> }
@@ -348,9 +411,16 @@ export default function CheckOut(){
                                 cart.map( (element, index) => {
                                     var itemAmount = element.amount
                                     if( element.amount > element.stockAmount ) itemAmount = element.stockAmount
-                                    var itemPrice = itemAmount * element.price / exchange_rate
-                                    var priceSum = Math.round(itemPrice*100)/100
+
+                                    var round = 100
+                                    if(paymentMethod === 'metamask'){
+                                        if(cryptoCoinSelect === 'ETH'){ round = 100000 }
+                                        else if(cryptoCoinSelect === 'BTC'){ round = 100000 }
+                                    }
+                                    var itemPrice = ( itemAmount * element.price / (exchange_rate) ) / crypto_exchange_rate
+                                    var priceSum = Math.round(itemPrice*round)/round
                                     totalPrice += priceSum
+
                                     if(itemAmount != 0){
                                         return (
                                             <div key={`cart-item-${index}`} className={styles.item}>
@@ -399,11 +469,11 @@ export default function CheckOut(){
                                 </div>
                                 <div className={styles.row}>
                                     <div>ค่าจัดส่ง</div>
-                                    <div>{ Math.round(shippingFee/exchange_rate * 100)/100 } {currency}</div>
+                                    <div>{ shippingFee } {currency}</div>
                                 </div>
                                 <div className={styles.row}>
                                     <div>ราคารวม</div>
-                                    <div>{ Math.round((priceSummary + shippingFee/exchange_rate) *100)/100 } {currency}</div>
+                                    <div>{ Math.round((priceSummary + shippingFee) *priceRound)/priceRound } {currency}</div>
                                 </div>
                             </div>
                             <div className={`${styles.summaryContainer} ${styles.hide} loader-container`}>
@@ -411,7 +481,7 @@ export default function CheckOut(){
                             </div>
                             <div className={styles.row}>
                                 { (state === 'address') && <div className={styles.btn} onClick={e => changePageHandle()}>ถัดไป</div> }
-                                { 
+                                {
                                     (state === 'payment' && paymentMethod === 'credit_card') && <div className={styles.btn} onClick={omisePayHandle}>
                                         <Script url="https://cdn.omise.co/omise.js"/>
                                         <form>

@@ -23,6 +23,7 @@ export default function OrderDetails() {
     const [ showPaymentDetails, setShowPaymentDetails ] = useState(false)
     const [ editStatus, setEditStatus ] = useState({})
     const [ sumPrice, setSumPrice ] = useState(0)
+    const [ round, setRound ] = useState(100)
     const router = useRouter()
     const paymentDetails = useRef()
     const statusIcon = useRef()
@@ -56,6 +57,7 @@ export default function OrderDetails() {
                 setProductDetails(d.productDetails)
                 statusIconChange(d.order.status)
                 setNConvertStatus(d.order.status)
+
                 if(d.order.method === 'metamask') {
                     metamaskDetail(d.order)
                 }
@@ -66,8 +68,20 @@ export default function OrderDetails() {
                 setDateTime({date: time[0], time: time[1] })
 
                 var sum = 0
+                var local_round = 100
+                if(d.order.method === 'metamask'){
+                    if(d.order.paymentDetails.currency === 'ETH'){
+                        local_round = 10000
+                        setRound(10000)
+                    }
+                    else if(d.order.paymentDetails.currency === 'BTC'){
+                        local_round = 10000
+                        setRound(10000)
+                    }
+                }
+                const ex_rate = d.order.crypto_exchange_rate || 1
                 d.order.cart.forEach(e => {
-                    sum += Math.round( (e.price * e.amount) / d.order.exchange_rate *100 ) /100
+                    sum += Math.round( ((e.price * e.amount) / d.order.exchange_rate) / ex_rate * local_round ) / local_round
                 })
                 setSumPrice(sum)
             }).catch( err => {
@@ -112,7 +126,7 @@ export default function OrderDetails() {
     }
 
     const metamaskDetail = (data) => {
-        setCurrency('BUSD')
+        setCurrency(data.paymentDetails.currency || 'BUSD')
         if(data.paymentDetails.refund){
             data.total = data.paymentDetails.net
         }
@@ -239,7 +253,7 @@ export default function OrderDetails() {
                                     <div className={styles.flexRight}>
                                         <div className={styles.right}>
                                             <span>รวม : </span>
-                                            <span className={`${styles.priceLabel} text`}>{sumPrice}</span>
+                                            <span className={`${styles.priceLabel} text`}>{Math.round(sumPrice* round) / round}</span>
                                             <span style={{paddingLeft: '5px'}}>{currency}</span>
                                         </div>
                                         <div className={styles.right}>
@@ -249,7 +263,7 @@ export default function OrderDetails() {
                                         </div>
                                         <div className={styles.right}>
                                             <span>ทั้งหมด : </span> 
-                                            <span className={`${styles.priceLabel} text`}>{Math.round((sumPrice + orderData.shippingFee )* 100) / 100}</span>
+                                            <span className={`${styles.priceLabel} text`}>{Math.round((sumPrice + orderData.shippingFee )* round) / round}</span>
                                             <span style={{paddingLeft: '5px'}}>{currency}</span>
                                         </div>
                                     </div>
@@ -277,7 +291,14 @@ export default function OrderDetails() {
                                             {
                                                 orderData.method === 'metamask' && orderData.paymentDetails.hash !== undefined && (
                                                     <div>
-                                                        <div>Exchange rate : {orderData.exchange_rate} Baht/USD</div>
+                                                        <div>Exchange Rate : {orderData.exchange_rate} Baht/USD</div>
+                                                        { orderData.paymentDetails.currency === 'BUSD' && <div>Currency : { orderData.paymentDetails.currency }</div> }
+                                                        {
+                                                            orderData.paymentDetails.currency !== 'BUSD' && <>
+                                                                <div>Currency : { orderData.paymentDetails.currency }</div>
+                                                                <div>Currency Rate : { orderData.crypto_exchange_rate } USD/{ orderData.paymentDetails.currency }</div>
+                                                            </>
+                                                        }
                                                         <div>Transaction Hash : 
                                                             <Link href={`https://testnet.bscscan.com/tx/${orderData.paymentDetails.hash}`}>
                                                                 <a target="_blank" > {orderData.paymentDetails.hash}</a>

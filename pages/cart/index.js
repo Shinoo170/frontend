@@ -148,19 +148,6 @@ export default function Cart(){
 
     const checkoutHandle = () => {
         if(alert){
-            // Swal.fire({
-            //     title: 'ดำเนินการต่อหรือไม่?',
-            //     text: "สินค้าในคลังไม่เพียงพอ",
-            //     icon: 'warning',
-            //     showCancelButton: true,
-            //     confirmButtonColor: '#28A745',
-            //     cancelButtonColor: '#d33',
-            //     confirmButtonText: 'checkout'
-            // }).then((result) => {
-            //     if (result.isConfirmed) {
-            //         Router.push({pathname: '/checkout', query:{} }, undefined,{ shallow: true } )
-            //     }
-            // })
             Swal.fire({
                 icon: 'error',
                 title: 'ไม่สามารถสั่งซื้อสินค้าได้',

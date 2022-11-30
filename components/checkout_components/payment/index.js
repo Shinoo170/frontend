@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -7,7 +7,9 @@ import styles from './payment.module.css'
 import { checkoutContext } from 'pages/checkout'
 
 export default function PaymentMethod(props){
-    const { cart, paymentMethod, setPaymentMethod} = useContext(checkoutContext)
+    const { cart, paymentMethod, setPaymentMethod, cryptoCoinSelect, setCryptoCoinSelect} = useContext(checkoutContext)
+    const crypto_selection = useRef()
+    const crypto_details = useRef()
 
     const paymentMethodHandle = (e) => {
         setPaymentMethod(e)
@@ -19,6 +21,16 @@ export default function PaymentMethod(props){
             document.getElementById('select_metamask').checked = true
         }
     }
+
+    useEffect(() => {
+        try{
+            if(paymentMethod === 'metamask'){
+                crypto_selection.current.style.height = crypto_selection.current.clientHeight + crypto_details.current.clientHeight + 40 + 'px'
+            } else {
+                crypto_selection.current.style.height = '0px'
+            }
+        } catch (err){ }
+    }, [paymentMethod])
 
     return (
         <div className={styles.container}>
@@ -47,7 +59,7 @@ export default function PaymentMethod(props){
                         <div className={styles.detail}>
                             <div className={styles.logo}>
                                 <div className={styles.image_sm}><Image src='/payment/metamask.png' alt='img' layout='fill' objectFit='contain' /></div>
-                                <div className={styles.image}><Image src='/payment/busd_2.png' alt='img' layout='fill' objectFit='contain' /></div>
+                                <div className={styles.image}><Image src='/payment/bsc_chain.png' alt='img' layout='fill' objectFit='contain' /></div>
                             </div>
                             <div className={styles.title}>MeteMask</div>
                         </div>
@@ -56,11 +68,23 @@ export default function PaymentMethod(props){
                 </div>
             </div>
 
-            {/* <div className={`${styles.section} ${paymentMethod !== 'credit_card'? styles.hide:''}`}>
-                <div className={styles.cardContainer}>
-                    Card 1
+            <div ref={crypto_selection} className={`${styles.section} ${paymentMethod !== 'metamask'? styles.hide:''}`}>
+                <div ref={crypto_details} className={`${styles.metamaskSection} ${paymentMethod !== 'metamask'? styles.detailsHide:''}`}>
+                    <div className={`${styles.cardContainer} ${cryptoCoinSelect==='BUSD'? styles.select:''}`} onClick={() => setCryptoCoinSelect('BUSD')}>
+                        <div className={styles.image}><Image src='/payment/busd_coin.png' alt='img' layout='fill' objectFit='contain' /></div>
+                        BUSD
+                    </div>
+                    <div className={`${styles.cardContainer} ${cryptoCoinSelect==='ETH'? styles.select:''}`} onClick={() => setCryptoCoinSelect('ETH')}>
+                        <div className={styles.image}><Image src='/payment/eth_coin.png' alt='img' layout='fill' objectFit='contain' /></div>
+                        ETH
+                    </div>
+                    <div className={`${styles.cardContainer} ${cryptoCoinSelect==='BTC'? styles.select:''}`} onClick={() => setCryptoCoinSelect('BTC')}>
+                        <div className={styles.image}><Image src='/payment/bnb_coin.png' alt='img' layout='fill' objectFit='contain' /></div>
+                        BTC
+                    </div>
                 </div>
-            </div> */}
+            </div>
+
         </div>
     )
 }
