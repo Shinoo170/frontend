@@ -123,6 +123,12 @@ export default function User() {
         .then(result => {
             getData()
             toast.success('🦄 Your profile has been updated!')
+        }).catch(err => {
+            if(err.response.data.code === 'tel_duplicate'){
+                toast.error('🦄 This phone number has already been taken!')
+            } else {
+                toast.error('🦄 update error!')
+            }
         })
     }
 
