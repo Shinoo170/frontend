@@ -166,7 +166,14 @@ export default function ProductDetails(){
                 toast.success('ส่งรีวิวสำเร็จ', {
                     position: "bottom-right",
                 })
-            }).catch(err => console.log(err.message))
+            }).catch(err => {
+                console.log(err.message)
+            })
+        } else {
+            toast.error('กรุณาล็อกอิน', {
+                position: "bottom-right",
+                autoClose: 3000,
+            })
         }
     }
 
