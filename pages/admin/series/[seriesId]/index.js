@@ -48,7 +48,7 @@ export default function SpecificSeries() {
             setGenres(result.data.seriesData.genres)
             setKeywords(result.data.seriesData.keywords)
         }).catch( (err)=> {
-            const errorMessage = <>ไม่พบข้อมูลซีรี่ย์<br/>กลับหน้าหลักใน 5 วินาที</>
+            const errorMessage = <>ไม่พบข้อมูลซีรี่ย์</>
             toast.error(errorMessage, {
                 position: "top-right",
                 autoClose: 5000,
@@ -58,9 +58,6 @@ export default function SpecificSeries() {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
-                onClose: () => {
-                    router.push({pathname: '/admin/series/', query:{} }, undefined,{ shallow: true } )
-                },
                 enableHtml: true
             })
         })

@@ -47,7 +47,7 @@ export default function SpecificProduct() {
             setEditCategory(result.data.thai_category)
         }).catch(err => {
             console.log(err)
-            const errorMessage = <>ไม่พบข้อมูลสินค้า<br/>กลับหน้าหลักใน 5 วินาที</>
+            const errorMessage = <>ไม่พบข้อมูลสินค้า</>
             toast.error(errorMessage, {
                 position: "top-right",
                 autoClose: 5000,
@@ -57,10 +57,6 @@ export default function SpecificProduct() {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
-                onClose: () => {
-                    const redirectURL = '/admin/series/' + router.query.seriesId
-                    router.push({pathname: redirectURL, query:{} }, undefined,{ shallow: true } )
-                },
                 enableHtml: true
             })
         })
