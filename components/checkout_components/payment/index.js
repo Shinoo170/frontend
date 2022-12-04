@@ -61,7 +61,7 @@ export default function PaymentMethod(props){
                                 <div className={styles.image_sm}><Image src='/payment/metamask.png' alt='img' layout='fill' objectFit='contain' /></div>
                                 <div className={styles.image}><Image src='/payment/bsc_chain.png' alt='img' layout='fill' objectFit='contain' /></div>
                             </div>
-                            <div className={styles.title}>MeteMask</div>
+                            <div className={styles.title}>MetaMask</div>
                         </div>
                         <div className={styles.dummy}></div>
                     </div>
